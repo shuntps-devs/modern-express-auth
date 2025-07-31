@@ -1,0 +1,130 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+        
+    services:
+      mongodb:
+        image: mongo:7.0
+        env:
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: password
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand({ping: 1})'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Create test environment file
+      run: |
+        cat > .env.test << EOF
+        NODE_ENV=test
+        PORT=3001
+        MONGODB_URI=mongodb://root:password@localhost:27017/test_db?authSource=admin
+        JWT_SECRET=test-jwt-secret-key-for-testing-purposes-only
+        JWT_REFRESH_SECRET=test-jwt-refresh-secret-key-for-testing-purposes-only
+        JWT_EXPIRES_IN=15m
+        JWT_REFRESH_EXPIRES_IN=7d
+        SESSION_EXPIRES_IN=30d
+        BCRYPT_SALT_ROUNDS=10
+        RATE_LIMIT_WINDOW_MS=900000
+        RATE_LIMIT_MAX_REQUESTS=100
+        COOKIE_SECRET=test-cookie-secret-for-testing-purposes-only
+        EOF
+
+    - name: Run linting
+      run: npm run lint
+
+    - name: Check code formatting
+      run: npm run format:check
+
+    - name: Run unit tests
+      run: npm run test:unit
+      env:
+        NODE_ENV: test
+
+    - name: Run integration tests
+      run: npm run test:integration
+      env:
+        NODE_ENV: test
+
+    - name: Run all tests with coverage
+      run: npm run test:coverage
+      env:
+        NODE_ENV: test
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20.x
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build application
+      run: |
+        echo "Build step - preparing for deployment"
+        # Add any build steps here if needed
+        
+    - name: Run security audit
+      run: npm audit --audit-level moderate
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [test, build]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Deploy to staging
+      run: |
+        echo "Deployment step - would deploy to staging/production"
+        # Add deployment steps here (e.g., Docker, Heroku, AWS, etc.)
+        
+    - name: Notify deployment
+      run: |
+        echo "Deployment completed successfully"
+        # Add notification steps here (e.g., Slack, Discord, email)
