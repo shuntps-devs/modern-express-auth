@@ -140,7 +140,7 @@ export const getMe = asyncHandler(async (req, res) => {
 // @desc    Change password
 // @route   PUT /api/auth/change-password
 // @access  Private
-export const updatePassword = asyncHandler(async (req, res, next) => {
+export const changePassword = asyncHandler(async (req, res, next) => {
   const { currentPassword, newPassword } = req.body;
 
   // Get user with password

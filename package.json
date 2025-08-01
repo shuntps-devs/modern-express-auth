@@ -71,7 +71,6 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
-    "express-async-handler": "^1.2.0",
     "express-rate-limit": "^8.0.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
@@ -81,7 +80,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.23.9",
-    "@babel/preset-env": "^7.23.9",
+    "@babel/preset-env": "^7.28.0",
     "babel-jest": "^29.7.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^10.1.8",
@@ -90,34 +89,5 @@
     "nodemon": "^3.1.10",
     "prettier": "^3.2.5",
     "supertest": "^6.3.3"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "setupFilesAfterEnv": [
-      "<rootDir>/tests/setup.js"
-    ],
-    "testMatch": [
-      "<rootDir>/tests/**/*.test.js"
-    ],
-    "collectCoverageFrom": [
-      "controllers/**/*.js",
-      "services/**/*.js",
-      "models/**/*.js",
-      "validations/**/*.js",
-      "middleware/**/*.js",
-      "utils/**/*.js"
-    ],
-    "coverageDirectory": "coverage",
-    "coverageReporters": [
-      "text",
-      "lcov",
-      "html"
-    ],
-    "verbose": true,
-    "forceExit": true,
-    "detectOpenHandles": true,
-    "transform": {
-      "^.+\\.js$": "babel-jest"
-    }
   }
 }

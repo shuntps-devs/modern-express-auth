@@ -4,7 +4,6 @@ export default {
 
   // Module type
   preset: null,
-  extensionsToTreatAsEsm: ['.js'],
   globals: {
     'ts-jest': {
       useESM: true,
@@ -12,7 +11,9 @@ export default {
   },
 
   // Transform configuration for ES modules
-  transform: {},
+  transform: {
+    '^.+\\.js$': 'babel-jest',
+  },
 
   // Test file patterns
   testMatch: ['**/tests/**/*.test.js', '**/tests/**/*.spec.js'],

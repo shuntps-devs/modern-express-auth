@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 import dotenv from 'dotenv';
-import { logger } from './logger_config.js';
 import {
   CONSOLE_MESSAGES,
   getEnvDisplayMessage,
@@ -169,14 +168,10 @@ class EnvConfig {
       console.error('─'.repeat(30));
       console.error(CONSOLE_MESSAGES.ENV_CANNOT_START);
 
-      // Log the error if logger is available
-      try {
-        logger.error('Application startup failed: Missing required environment variables', {
-          missingEnvs: missingEnvs.map(env => env.key),
-        });
-      } catch (logError) {
-        // Logger might not be available yet
-      }
+      // Log the error with console since logger creates circular dependency
+      console.error('Application startup failed: Missing required environment variables:', {
+        missingEnvs: missingEnvs.map(env => env.key),
+      });
 
       process.exit(1);
     }
@@ -228,11 +223,8 @@ class EnvConfig {
       console.error('═'.repeat(70));
       console.error(CONSOLE_MESSAGES.ENV_CANNOT_START);
 
-      try {
-        logger.error('Application startup failed: Invalid environment variable values', { errors });
-      } catch (logError) {
-        // Logger might not be available yet
-      }
+      // Log the error with console since logger creates circular dependency
+      console.error('Application startup failed: Invalid environment variable values:', { errors });
 
       process.exit(1);
     }
