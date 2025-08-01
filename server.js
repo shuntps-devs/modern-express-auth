@@ -27,22 +27,20 @@ async function startServer() {
 
     // Start HTTP server
     const server = app.listen(env.PORT, () => {
-      logger.info(
-        `${LOGGER_MESSAGES.SERVER_RUNNING} ${env.PORT} in ${env.NODE_ENV} mode`
-      );
+      logger.info(`${LOGGER_MESSAGES.SERVER_RUNNING} ${env.PORT} in ${env.NODE_ENV} mode`);
       logger.info(`${LOGGER_MESSAGES.API_AVAILABLE} http://localhost:${env.PORT}/api`);
       logger.info(`${LOGGER_MESSAGES.HEALTH_CHECK} http://localhost:${env.PORT}/api/health`);
     });
 
     // Graceful shutdown handlers
-    const gracefulShutdown = (signal) => {
+    const gracefulShutdown = signal => {
       logger.info(`${signal} ${LOGGER_MESSAGES.GRACEFUL_SHUTDOWN}`);
 
       server.close(() => {
         logger.info(LOGGER_MESSAGES.HTTP_SERVER_CLOSED);
 
         // Close database connection
-        import('mongoose').then((mongoose) => {
+        import('mongoose').then(mongoose => {
           mongoose.default.connection.close(() => {
             logger.info(LOGGER_MESSAGES.DATABASE_CONNECTION_CLOSED);
             process.exit(0);
@@ -56,7 +54,7 @@ async function startServer() {
     process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
     // Handle uncaught exceptions
-    process.on('uncaughtException', (error) => {
+    process.on('uncaughtException', error => {
       logger.error(LOGGER_MESSAGES.UNCAUGHT_EXCEPTION, error);
       process.exit(1);
     });
@@ -67,7 +65,7 @@ async function startServer() {
         LOGGER_MESSAGES.UNHANDLED_REJECTION_AT,
         promise,
         LOGGER_MESSAGES.UNHANDLED_REJECTION_REASON,
-        reason
+        reason,
       );
       process.exit(1);
     });

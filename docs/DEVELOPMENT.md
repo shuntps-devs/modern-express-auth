@@ -9,6 +9,7 @@ This guide covers the development setup, workflow, and best practices for the Ex
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - **Node.js** >= 18.0.0
 - **npm** >= 8.0.0
 - **MongoDB** >= 5.0.0
@@ -17,23 +18,27 @@ This guide covers the development setup, workflow, and best practices for the Ex
 ### Installation
 
 1. **Clone the repository**
+
 ```bash
 git clone https://github.com/shuntps/modern-express-auth.git
 cd modern-express-auth
 ```
 
 2. **Install dependencies**
+
 ```bash
 npm install
 ```
 
 3. **Environment setup**
+
 ```bash
 cp .env.example .env
 # Edit .env with your configuration
 ```
 
 4. **Start MongoDB**
+
 ```bash
 # Using MongoDB service
 sudo systemctl start mongod
@@ -43,6 +48,7 @@ docker run -d -p 27017:27017 --name mongodb mongo:latest
 ```
 
 5. **Run the application**
+
 ```bash
 # Development mode with hot reload
 npm run dev
@@ -101,12 +107,14 @@ express-auth-api/
 ## 🔧 Development Workflow
 
 ### Code Style & Quality
+
 - **ESLint** for code linting
 - **Prettier** for code formatting
 - **Jest** for testing
 - **Supertest** for API testing
 
 ### Git Workflow
+
 ```bash
 # Create feature branch
 git checkout -b feature/new-feature
@@ -120,6 +128,7 @@ git push origin feature/new-feature
 ```
 
 ### Testing Strategy
+
 ```bash
 # Run all tests
 npm test
@@ -137,6 +146,7 @@ npm run test:coverage
 ## 🛠️ Configuration
 
 ### Environment Variables (.env)
+
 ```env
 # Server Configuration
 NODE_ENV=development
@@ -166,6 +176,7 @@ BCRYPT_ROUNDS=12
 ```
 
 ### Database Setup
+
 ```javascript
 // MongoDB indexes are automatically created
 // User indexes: email, username, role, isActive, etc.
@@ -175,12 +186,14 @@ BCRYPT_ROUNDS=12
 ## 🔍 Debugging
 
 ### Logger Levels
+
 - `error` - Error conditions
-- `warn` - Warning conditions  
+- `warn` - Warning conditions
 - `info` - Informational messages
 - `debug` - Debug-level messages
 
 ### Common Debug Commands
+
 ```bash
 # Enable debug logging
 DEBUG=* npm run dev
@@ -195,6 +208,7 @@ npm test -- --verbose
 ## 📊 Code Quality
 
 ### Linting
+
 ```bash
 # Run ESLint
 npm run lint
@@ -204,11 +218,13 @@ npm run lint:fix
 ```
 
 ### Testing Coverage
+
 - **Target**: >90% code coverage
 - **Current**: 115 tests passing
 - **Areas**: Controllers, Services, Middleware, Validations
 
 ### Performance Monitoring
+
 - Winston logging for performance tracking
 - MongoDB query optimization
 - Rate limiting implementation
@@ -217,6 +233,7 @@ npm run lint:fix
 ## 🚀 Deployment Preparation
 
 ### Build Process
+
 ```bash
 # Install production dependencies only
 npm ci --only=production
@@ -229,6 +246,7 @@ npm test
 ```
 
 ### Environment Checklist
+
 - [ ] All environment variables configured
 - [ ] Database connection tested
 - [ ] JWT secrets are secure and unique
@@ -242,6 +260,7 @@ npm test
 ### Common Issues
 
 **MongoDB Connection Failed**
+
 ```bash
 # Check MongoDB status
 sudo systemctl status mongod
@@ -251,6 +270,7 @@ echo $MONGODB_URI
 ```
 
 **JWT Token Issues**
+
 ```bash
 # Verify JWT secrets are set
 echo $JWT_ACCESS_SECRET
@@ -258,6 +278,7 @@ echo $JWT_REFRESH_SECRET
 ```
 
 **Test Failures**
+
 ```bash
 # Clear test database
 npm run test:clean
@@ -267,6 +288,7 @@ npm test
 ```
 
 **Port Already in Use**
+
 ```bash
 # Find process using port 3000
 lsof -i :3000

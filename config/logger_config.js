@@ -5,7 +5,7 @@ import { env } from './env_config.js';
 import { CONSOLE_MESSAGES } from '../constants/messages.js';
 
 // Get directory path - compatible with both Node.js and Jest
-const __dirname = process.cwd() + '/config';
+const __dirname = `${process.cwd()}/config`;
 
 // Create logs directory if it doesn't exist
 const logsDir = path.join(__dirname, '..', 'logs');
@@ -29,8 +29,10 @@ if (env.NODE_ENV === 'development') {
       fs.truncateSync(combinedLogPath, 0);
     }
 
+    // eslint-disable-next-line no-console
     console.log(CONSOLE_MESSAGES.DEV_MODE_LOGS_CLEARED);
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.warn(CONSOLE_MESSAGES.LOG_FILES_CLEAR_WARNING, error.message);
   }
 }
@@ -42,7 +44,7 @@ const logger = winston.createLogger({
       format: 'YYYY-MM-DD HH:mm:ss',
     }),
     winston.format.errors({ stack: true }),
-    winston.format.json()
+    winston.format.json(),
   ),
   defaultMeta: { service: 'express-auth-api' },
   transports: [
@@ -67,11 +69,8 @@ const logger = winston.createLogger({
 if (env.NODE_ENV !== 'production') {
   logger.add(
     new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.simple()
-      ),
-    })
+      format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
+    }),
   );
 }
 

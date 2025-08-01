@@ -11,7 +11,7 @@ export * from './auth_validation.js';
 export * from './user_validation.js';
 
 // Validation middleware factory
-export const validate = (schema) => {
+export const validate = schema => {
   return (req, res, next) => {
     try {
       // Check if request body exists
@@ -31,7 +31,7 @@ export const validate = (schema) => {
     } catch (error) {
       if (error instanceof z.ZodError) {
         // Use error.issues for Zod v4+ (not error.errors)
-        const errors = (error.issues || []).map((err) => ({
+        const errors = (error.issues || []).map(err => ({
           field: err.path ? err.path.join('.') : VALIDATION_TYPES.UNKNOWN_FIELD,
           message: err.message || ERROR_MESSAGES.INVALID_VALUE,
         }));
@@ -51,7 +51,7 @@ export const validate = (schema) => {
 };
 
 // Query validation middleware factory
-export const validateQuery = (schema) => {
+export const validateQuery = schema => {
   return (req, res, next) => {
     try {
       const validatedData = schema.parse(req.query);
@@ -59,7 +59,7 @@ export const validateQuery = (schema) => {
       next();
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const errors = error.errors.map((err) => ({
+        const errors = error.errors.map(err => ({
           field: err.path.join('.'),
           message: err.message,
         }));

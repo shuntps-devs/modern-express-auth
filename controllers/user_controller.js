@@ -7,12 +7,12 @@ import authService from '../services/auth_service.js';
 // @desc    Get user profile
 // @route   GET /api/user/profile
 // @access  Private
-export const getProfile = asyncHandler(async (req, res, next) => {
+export const getProfile = asyncHandler(async (req, res) => {
   const user = userService.formatUserResponse(req.user, true); // include additional details
 
   res.status(200).json({
     success: true,
-    user
+    user,
   });
 });
 
@@ -42,7 +42,7 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
   const updatedUser = await userService.updateUser(req.user._id, {
     ...(username && { username }),
     ...(email && { email }),
-    ...(bio && { bio })
+    ...(bio && { bio }),
   });
 
   logger.info(`${LOGGER_MESSAGES.PROFILE_UPDATED} ${updatedUser.email}`);
@@ -52,14 +52,14 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: SUCCESS_MESSAGES.PROFILE_UPDATE_SUCCESS,
-    user: userResponse
+    user: userResponse,
   });
 });
 
 // @desc    Delete user account
 // @route   DELETE /api/user/profile
 // @access  Private
-export const deleteAccount = asyncHandler(async (req, res, next) => {
+export const deleteAccount = asyncHandler(async (req, res) => {
   // Deactivate user instead of deleting (soft delete)
   await userService.deactivateUser(req.user._id);
 
@@ -73,7 +73,7 @@ export const deleteAccount = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: SUCCESS_MESSAGES.ACCOUNT_DEACTIVATED_SUCCESS
+    message: SUCCESS_MESSAGES.ACCOUNT_DEACTIVATED_SUCCESS,
   });
 });
 
@@ -81,13 +81,13 @@ export const deleteAccount = asyncHandler(async (req, res, next) => {
 // @desc    Get all users
 // @route   GET /api/user/admin/users
 // @access  Private/Admin
-export const getAllUsers = asyncHandler(async (req, res, next) => {
+export const getAllUsers = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const filters = {
     role: req.query.role,
     isActive: req.query.isActive,
-    search: req.query.search
+    search: req.query.search,
   };
 
   const result = await userService.getAllUsers(page, limit, filters);
@@ -95,7 +95,7 @@ export const getAllUsers = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     users: result.users,
-    pagination: result.pagination
+    pagination: result.pagination,
   });
 });
 
@@ -111,7 +111,7 @@ export const getUserById = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    user: userService.formatUserResponse(user, true)
+    user: userService.formatUserResponse(user, true),
   });
 });
 
@@ -131,7 +131,7 @@ export const updateUser = asyncHandler(async (req, res, next) => {
   const updatedUser = await userService.updateUser(req.params.id, {
     ...(role && { role }),
     ...(isActive !== undefined && { isActive }),
-    ...(isEmailVerified !== undefined && { isEmailVerified })
+    ...(isEmailVerified !== undefined && { isEmailVerified }),
   });
 
   logger.info(`${LOGGER_MESSAGES.USER_UPDATED_BY_ADMIN} ${updatedUser.email} by ${req.user.email}`);
@@ -139,7 +139,7 @@ export const updateUser = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: SUCCESS_MESSAGES.USER_UPDATE_SUCCESS,
-    user: userService.formatUserResponse(updatedUser, true)
+    user: userService.formatUserResponse(updatedUser, true),
   });
 });
 
@@ -165,18 +165,18 @@ export const deleteUser = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: SUCCESS_MESSAGES.USER_DELETE_SUCCESS
+    message: SUCCESS_MESSAGES.USER_DELETE_SUCCESS,
   });
 });
 
 // @desc    Get user statistics (Admin)
 // @route   GET /api/user/admin/stats
 // @access  Private/Admin
-export const getUserStats = asyncHandler(async (req, res, next) => {
+export const getUserStats = asyncHandler(async (req, res) => {
   const stats = await userService.getUserStatistics();
 
   res.status(200).json({
     success: true,
-    stats
+    stats,
   });
 });

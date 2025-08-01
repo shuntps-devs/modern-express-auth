@@ -24,13 +24,13 @@ app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
-        defaultSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        scriptSrc: ["'self'"],
-        imgSrc: ["'self'", 'data:', 'https:'],
+        defaultSrc: ['self'],
+        styleSrc: ['self', 'unsafe-inline'],
+        scriptSrc: ['self'],
+        imgSrc: ['self', 'data:', 'https:'],
       },
     },
-  })
+  }),
 );
 
 // CORS configuration
@@ -40,7 +40,7 @@ app.use(
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-  })
+  }),
 );
 
 // Body parsing middleware

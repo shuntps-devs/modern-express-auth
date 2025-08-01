@@ -15,12 +15,12 @@ export class AppError extends Error {
 }
 
 // Async error handler wrapper
-export const asyncHandler = (fn) => (req, res, next) => {
+export const asyncHandler = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
 
 // Global error handling middleware
-export const errorHandler = (err, req, res, next) => {
+export const errorHandler = (err, req, res, _next) => {
   let error = { ...err };
   error.message = err.message;
 
@@ -43,16 +43,14 @@ export const errorHandler = (err, req, res, next) => {
   // Mongoose duplicate key
   if (err.code === 11000) {
     const field = Object.keys(err.keyValue)[0];
-    const message = `${
-      field.charAt(0).toUpperCase() + field.slice(1)
-    } already exists`;
+    const message = `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`;
     error = new AppError(message, 400);
   }
 
   // Mongoose validation error
   if (err.name === 'ValidationError') {
     const message = Object.values(err.errors)
-      .map((val) => val.message)
+      .map(val => val.message)
       .join(', ');
     error = new AppError(message, 400);
   }

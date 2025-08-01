@@ -11,12 +11,14 @@ http://localhost:3000/api
 ## 🔐 Authentication
 
 This API uses JWT (JSON Web Tokens) for authentication with dual-token system:
+
 - **Access Token**: Short-lived (15 minutes) for API requests
 - **Refresh Token**: Long-lived (7 days) for token renewal
 
 ### Token Usage
 
 **Header Authentication:**
+
 ```
 Authorization: Bearer <access_token>
 ```
@@ -29,9 +31,11 @@ Tokens are automatically sent via secure HTTP-only cookies.
 ### Authentication Routes (`/api/auth`)
 
 #### POST `/api/auth/register`
+
 Register a new user account.
 
 **Request Body:**
+
 ```json
 {
   "username": "johndoe",
@@ -41,6 +45,7 @@ Register a new user account.
 ```
 
 **Response (201):**
+
 ```json
 {
   "success": true,
@@ -59,9 +64,11 @@ Register a new user account.
 ```
 
 #### POST `/api/auth/login`
+
 Authenticate user and receive tokens.
 
 **Request Body:**
+
 ```json
 {
   "emailOrUsername": "john@example.com",
@@ -70,6 +77,7 @@ Authenticate user and receive tokens.
 ```
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -88,11 +96,13 @@ Authenticate user and receive tokens.
 ```
 
 #### POST `/api/auth/refresh`
+
 Refresh access token using refresh token.
 
 **Request:** Refresh token via cookie or header
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -104,11 +114,13 @@ Refresh access token using refresh token.
 ```
 
 #### POST `/api/auth/logout`
+
 Logout user and invalidate tokens.
 
 **Headers:** `Authorization: Bearer <access_token>`
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -117,9 +129,11 @@ Logout user and invalidate tokens.
 ```
 
 #### POST `/api/auth/forgot-password`
+
 Request password reset.
 
 **Request Body:**
+
 ```json
 {
   "email": "john@example.com"
@@ -127,6 +141,7 @@ Request password reset.
 ```
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -135,9 +150,11 @@ Request password reset.
 ```
 
 #### POST `/api/auth/reset-password`
+
 Reset password using reset token.
 
 **Request Body:**
+
 ```json
 {
   "resetToken": "reset_token_from_email",
@@ -146,11 +163,13 @@ Reset password using reset token.
 ```
 
 #### POST `/api/auth/change-password`
+
 Change password (authenticated users).
 
 **Headers:** `Authorization: Bearer <access_token>`
 
 **Request Body:**
+
 ```json
 {
   "currentPassword": "CurrentPassword123!",
@@ -161,11 +180,13 @@ Change password (authenticated users).
 ### User Routes (`/api/users`)
 
 #### GET `/api/users/me`
+
 Get current user profile.
 
 **Headers:** `Authorization: Bearer <access_token>`
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -185,11 +206,13 @@ Get current user profile.
 ```
 
 #### PUT `/api/users/profile`
+
 Update user profile.
 
 **Headers:** `Authorization: Bearer <access_token>`
 
 **Request Body:**
+
 ```json
 {
   "username": "newusername",
@@ -198,16 +221,19 @@ Update user profile.
 ```
 
 #### DELETE `/api/users/deactivate`
+
 Deactivate user account.
 
 **Headers:** `Authorization: Bearer <access_token>`
 
 #### GET `/api/users/sessions`
+
 Get user's active sessions.
 
 **Headers:** `Authorization: Bearer <access_token>`
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -226,6 +252,7 @@ Get user's active sessions.
 ```
 
 #### DELETE `/api/users/sessions/:sessionId`
+
 Revoke specific session.
 
 **Headers:** `Authorization: Bearer <access_token>`
@@ -235,12 +262,15 @@ Revoke specific session.
 **Note:** Requires `admin` role.
 
 #### GET `/api/admin/users`
+
 Get all users (admin only).
 
 #### PUT `/api/admin/users/:userId/role`
+
 Update user role.
 
 **Request Body:**
+
 ```json
 {
   "role": "admin"
@@ -250,6 +280,7 @@ Update user role.
 ## 🚨 Error Responses
 
 ### Standard Error Format
+
 ```json
 {
   "success": false,
@@ -260,6 +291,7 @@ Update user role.
 ```
 
 ### Common Status Codes
+
 - `200` - Success
 - `201` - Created
 - `400` - Bad Request
@@ -275,6 +307,7 @@ Update user role.
 ## 🛡️ Rate Limiting
 
 Different endpoints have different rate limits:
+
 - **General API**: 100 requests per 15 minutes
 - **Authentication**: 5 requests per 15 minutes
 - **Password Reset**: 3 requests per hour

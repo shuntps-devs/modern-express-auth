@@ -15,7 +15,7 @@ const connectDB = async () => {
 };
 
 // Handle connection events
-mongoose.connection.on('error', (err) => {
+mongoose.connection.on('error', err => {
   logger.error(LOGGER_MESSAGES.MONGOOSE_CONNECTION_ERROR, err);
 });
 

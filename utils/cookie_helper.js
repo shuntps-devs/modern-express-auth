@@ -16,7 +16,7 @@ import { COOKIE_NAMES, COOKIE_PATHS, COOKIE_CONFIG } from '../constants/messages
 export const createCookieOptions = (
   expiresAt,
   path = COOKIE_PATHS.DEFAULT,
-  additionalOptions = {}
+  additionalOptions = {},
 ) => {
   const baseOptions = {
     expires: expiresAt,
@@ -39,7 +39,7 @@ export const createCookieOptions = (
  * @param {Date} expiresAt - Expiration date for the access token
  * @returns {Object} Access token cookie options
  */
-export const createAccessTokenCookieOptions = (expiresAt) => {
+export const createAccessTokenCookieOptions = expiresAt => {
   return createCookieOptions(expiresAt);
 };
 
@@ -48,7 +48,7 @@ export const createAccessTokenCookieOptions = (expiresAt) => {
  * @param {Date} expiresAt - Expiration date for the refresh token
  * @returns {Object} Refresh token cookie options
  */
-export const createRefreshTokenCookieOptions = (expiresAt) => {
+export const createRefreshTokenCookieOptions = expiresAt => {
   return createCookieOptions(expiresAt, COOKIE_PATHS.REFRESH_TOKEN);
 };
 
@@ -57,7 +57,7 @@ export const createRefreshTokenCookieOptions = (expiresAt) => {
  * @param {Date} expiresAt - Expiration date for the session
  * @returns {Object} Session ID cookie options
  */
-export const createSessionCookieOptions = (expiresAt) => {
+export const createSessionCookieOptions = expiresAt => {
   return createCookieOptions(expiresAt);
 };
 
@@ -67,10 +67,7 @@ export const createSessionCookieOptions = (expiresAt) => {
  * @param {number} refreshTokenExpiry - Refresh token expiry in milliseconds
  * @returns {Object} Object containing calculated expiration dates
  */
-export const calculateTokenExpirations = (
-  accessTokenExpiry,
-  refreshTokenExpiry
-) => {
+export const calculateTokenExpirations = (accessTokenExpiry, refreshTokenExpiry) => {
   const now = Date.now();
   return {
     accessTokenExpiresAt: new Date(now + accessTokenExpiry),
@@ -92,29 +89,25 @@ export const setAuthCookies = (res, tokens, expirations) => {
   res.cookie(
     COOKIE_NAMES.ACCESS_TOKEN,
     accessToken,
-    createAccessTokenCookieOptions(accessTokenExpiresAt)
+    createAccessTokenCookieOptions(accessTokenExpiresAt),
   );
 
   // Set refresh token cookie
   res.cookie(
     COOKIE_NAMES.REFRESH_TOKEN,
     refreshToken,
-    createRefreshTokenCookieOptions(refreshTokenExpiresAt)
+    createRefreshTokenCookieOptions(refreshTokenExpiresAt),
   );
 
   // Set session ID cookie
-  res.cookie(
-    COOKIE_NAMES.SESSION_ID,
-    sessionId,
-    createSessionCookieOptions(accessTokenExpiresAt)
-  );
+  res.cookie(COOKIE_NAMES.SESSION_ID, sessionId, createSessionCookieOptions(accessTokenExpiresAt));
 };
 
 /**
  * Clear authentication cookies
  * @param {Object} res - Express response object
  */
-export const clearAuthCookies = (res) => {
+export const clearAuthCookies = res => {
   const clearOptions = {
     httpOnly: true,
     secure: env.isProduction,

@@ -4,19 +4,10 @@
  */
 
 // Authentication Middleware
-export {
-  protect,
-  authorize,
-  optionalAuth,
-  checkOwnership
-} from './auth_middleware.js';
+export { protect, authorize, optionalAuth, checkOwnership } from './auth_middleware.js';
 
 // Error Handling Middleware
-export {
-  AppError,
-  asyncHandler,
-  errorHandler
-} from './error_handler.js';
+export { AppError, asyncHandler, errorHandler } from './error_handler.js';
 
 // Rate Limiting Middleware
 export {
@@ -27,7 +18,7 @@ export {
   readOnlyLimiter,
   adminLimiter,
   createCustomLimiter,
-  getRateLimiterInfo
+  getRateLimiterInfo,
 } from './rate_limiter.js';
 
 // Individual exports are available above - no default exports needed

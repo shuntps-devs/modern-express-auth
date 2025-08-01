@@ -19,7 +19,7 @@ class UserService {
   // Find user by email or username
   async findUserByEmailOrUsername(email, username) {
     return await User.findOne({
-      $or: [{ email }, { username }]
+      $or: [{ email }, { username }],
     });
   }
 
@@ -37,9 +37,9 @@ class UserService {
     const session = await Session.findOne({
       _id: sessionId,
       isActive: true,
-      expiresAt: { $gt: new Date() }
+      expiresAt: { $gt: new Date() },
     }).populate('userId');
-    
+
     return session ? session.userId : null;
   }
 
@@ -54,12 +54,12 @@ class UserService {
       userId,
       {
         ...updateData,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       },
       {
         new: true,
-        runValidators: true
-      }
+        runValidators: true,
+      },
     );
   }
 
@@ -72,13 +72,17 @@ class UserService {
 
   // Deactivate user (soft delete)
   async deactivateUser(userId) {
-    return await User.findByIdAndUpdate(userId, { 
-      isActive: false,
-      updatedAt: new Date()
-    }, {
-      new: true,
-      runValidators: true
-    });
+    return await User.findByIdAndUpdate(
+      userId,
+      {
+        isActive: false,
+        updatedAt: new Date(),
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
   }
 
   // Get all users with pagination and filters
@@ -96,7 +100,7 @@ class UserService {
     if (filters.search) {
       filter.$or = [
         { username: { $regex: filters.search, $options: 'i' } },
-        { email: { $regex: filters.search, $options: 'i' } }
+        { email: { $regex: filters.search, $options: 'i' } },
       ];
     }
 
@@ -114,8 +118,8 @@ class UserService {
         page,
         limit,
         total,
-        pages: Math.ceil(total / limit)
-      }
+        pages: Math.ceil(total / limit),
+      },
     };
   }
 
@@ -132,15 +136,15 @@ class UserService {
       {
         $group: {
           _id: '$role',
-          count: { $sum: 1 }
-        }
-      }
+          count: { $sum: 1 },
+        },
+      },
     ]);
 
     // Recent registrations (last 30 days)
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const recentRegistrations = await User.countDocuments({
-      createdAt: { $gte: thirtyDaysAgo }
+      createdAt: { $gte: thirtyDaysAgo },
     });
 
     return {
@@ -150,7 +154,7 @@ class UserService {
       verifiedUsers,
       unverifiedUsers,
       usersByRole,
-      recentRegistrations
+      recentRegistrations,
     };
   }
 
@@ -163,14 +167,14 @@ class UserService {
       role: user.role,
       isActive: user.isActive,
       isEmailVerified: user.isEmailVerified,
-      createdAt: user.createdAt
+      createdAt: user.createdAt,
     };
 
     if (includeDetails) {
       return {
         ...baseResponse,
         lastLogin: user.lastLogin,
-        updatedAt: user.updatedAt
+        updatedAt: user.updatedAt,
       };
     }
 
@@ -186,7 +190,7 @@ class UserService {
   // Validate user credentials
   async validateCredentials(email, password) {
     const user = await this.findUserByEmail(email, true);
-    
+
     if (!user || !user.isActive || user.isLocked) {
       return null;
     }

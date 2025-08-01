@@ -2,12 +2,13 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import Session from '../models/session_model.js';
 import { env } from '../config/env_config.js';
-import { logger } from '../config/logger_config.js';
-import { SUCCESS_MESSAGES, ERROR_MESSAGES, COOKIE_CONFIG, COOKIE_PATHS } from '../constants/messages.js';
 import {
-  setAuthCookies,
-  calculateTokenExpirations,
-} from '../utils/cookie_helper.js';
+  SUCCESS_MESSAGES,
+  ERROR_MESSAGES,
+  COOKIE_CONFIG,
+  COOKIE_PATHS,
+} from '../constants/messages.js';
+import { setAuthCookies, calculateTokenExpirations } from '../utils/cookie_helper.js';
 
 class AuthService {
   // Convert JWT time string to milliseconds
@@ -54,15 +55,8 @@ class AuthService {
 
   // Verify Refresh JWT token
   verifyRefreshToken(token) {
-    try {
-      const result = jwt.verify(token, env.JWT_REFRESH_SECRET);
-      return result;
-    } catch (error) {
-      throw error;
-    }
+    return jwt.verify(token, env.JWT_REFRESH_SECRET);
   }
-
-
 
   // Send token response
   async sendTokenResponse(user, statusCode, res, req) {
@@ -73,8 +67,10 @@ class AuthService {
     // Calculate expiration times using utility
     const accessTokenExpiryMs = this.parseJwtTime(env.JWT_EXPIRES_IN);
     const refreshTokenExpiryMs = this.parseJwtTime(env.JWT_REFRESH_EXPIRES_IN);
-    const { accessTokenExpiresAt, refreshTokenExpiresAt } =
-      calculateTokenExpirations(accessTokenExpiryMs, refreshTokenExpiryMs);
+    const { accessTokenExpiresAt, refreshTokenExpiresAt } = calculateTokenExpirations(
+      accessTokenExpiryMs,
+      refreshTokenExpiryMs,
+    );
     const sessionExpiryMs = this.parseJwtTime(env.SESSION_EXPIRES_IN);
     const sessionExpiresAt = new Date(Date.now() + sessionExpiryMs);
 
@@ -103,7 +99,7 @@ class AuthService {
         refreshToken,
         sessionId: session._id.toString(),
       },
-      { accessTokenExpiresAt, refreshTokenExpiresAt }
+      { accessTokenExpiresAt, refreshTokenExpiresAt },
     );
 
     const userResponse = {
@@ -122,7 +118,7 @@ class AuthService {
   }
 
   // Refresh tokens using refresh token
-  async refreshTokens(refreshToken, req) {
+  async refreshTokens(refreshToken, _req) {
     try {
       // Find session by refresh token
       const session = await Session.findByRefreshToken(refreshToken);
@@ -138,10 +134,12 @@ class AuthService {
 
       // Verify the refresh token
       const decoded = this.verifyRefreshToken(refreshToken);
-      
+
       // Handle populated userId field - get the actual ID
-      const sessionUserId = session.userId._id ? session.userId._id.toString() : session.userId.toString();
-      
+      const sessionUserId = session.userId._id
+        ? session.userId._id.toString()
+        : session.userId.toString();
+
       if (!decoded || decoded.id !== sessionUserId) {
         throw new Error(ERROR_MESSAGES.TOKEN_VALIDATION_FAILED);
       }
@@ -161,7 +159,7 @@ class AuthService {
         newAccessToken,
         newRefreshToken,
         accessTokenExpiresAt,
-        refreshTokenExpiresAt
+        refreshTokenExpiresAt,
       );
 
       return {
@@ -179,7 +177,7 @@ class AuthService {
   async validateAccessToken(accessToken) {
     try {
       // Verify JWT token
-      const decoded = this.verifyAccessToken(accessToken);
+      this.verifyAccessToken(accessToken);
 
       // Find session by access token
       const session = await Session.findByAccessToken(accessToken);
@@ -223,8 +221,8 @@ class AuthService {
   // Format user sessions for response
   formatUserSessions(sessions, currentSessionId) {
     return sessions
-      .filter((session) => session.isActive && session.expiresAt > new Date())
-      .map((session) => ({
+      .filter(session => session.isActive && session.expiresAt > new Date())
+      .map(session => ({
         _id: session._id,
         ipAddress: session.ipAddress,
         userAgent: session.userAgent,
@@ -244,11 +242,11 @@ class AuthService {
 
       // Calculate expiration dates for cookies
       const accessTokenExpiryMs = this.parseJwtTime(env.JWT_EXPIRES_IN);
-      const refreshTokenExpiryMs = this.parseJwtTime(
-        env.JWT_REFRESH_EXPIRES_IN
+      const refreshTokenExpiryMs = this.parseJwtTime(env.JWT_REFRESH_EXPIRES_IN);
+      const { accessTokenExpiresAt, refreshTokenExpiresAt } = calculateTokenExpirations(
+        accessTokenExpiryMs,
+        refreshTokenExpiryMs,
       );
-      const { accessTokenExpiresAt, refreshTokenExpiresAt } =
-        calculateTokenExpirations(accessTokenExpiryMs, refreshTokenExpiryMs);
 
       // Set authentication cookies
       setAuthCookies(
@@ -258,7 +256,7 @@ class AuthService {
           refreshToken: result.refreshToken,
           sessionId: result.session._id.toString(),
         },
-        { accessTokenExpiresAt, refreshTokenExpiresAt }
+        { accessTokenExpiresAt, refreshTokenExpiresAt },
       );
 
       // Send standardized response
@@ -375,7 +373,7 @@ class AuthService {
         expiresAt: { $gt: new Date() },
       }).sort({ lastActivity: -1 });
 
-      return sessions.map((session) => ({
+      return sessions.map(session => ({
         _id: session._id,
         ipAddress: session.ipAddress,
         userAgent: session.userAgent,
@@ -393,7 +391,7 @@ class AuthService {
       const result = await Session.findOneAndUpdate(
         { _id: sessionId, userId, isActive: true },
         { $set: { isActive: false, deactivatedAt: new Date() } },
-        { new: true }
+        { new: true },
       );
 
       if (!result) {

@@ -13,22 +13,26 @@ Comprehensive guide to the Continuous Integration and Continuous Deployment pipe
 The project includes a comprehensive CI/CD pipeline with three main workflows:
 
 ### 1. **Main CI/CD Pipeline** (`.github/workflows/ci.yml`)
+
 - **Triggers**: Push/PR to `main` and `develop` branches
 - **Node.js versions**: 18.x, 20.x (matrix testing)
 - **Database**: MongoDB 7.0 with health checks
 - **Stages**: Test → Build → Deploy
 
 ### 2. **Security Audit** (`.github/workflows/security.yml`)
+
 - **Triggers**: Daily at 2 AM UTC, push to `main`, PRs
 - **Features**: npm audit, dependency review, vulnerability scanning
 
 ### 3. **Code Quality** (`.github/workflows/code-quality.yml`)
+
 - **Triggers**: Push/PR to `main` and `develop` branches
 - **Features**: ESLint, Prettier, dependency checks, code analysis
 
 ## 🔧 Pipeline Stages
 
 ### Testing Stage
+
 ```yaml
 - Checkout code
 - Setup Node.js (18.x, 20.x)
@@ -43,6 +47,7 @@ The project includes a comprehensive CI/CD pipeline with three main workflows:
 ```
 
 ### Build Stage
+
 ```yaml
 - Checkout code
 - Setup Node.js 20.x
@@ -52,6 +57,7 @@ The project includes a comprehensive CI/CD pipeline with three main workflows:
 ```
 
 ### Deploy Stage
+
 ```yaml
 - Deploy to staging/production
 - Send deployment notifications
@@ -60,6 +66,7 @@ The project includes a comprehensive CI/CD pipeline with three main workflows:
 ## 📊 Quality Gates
 
 ### Code Quality Requirements
+
 - **ESLint**: All rules must pass
 - **Prettier**: Code must be properly formatted
 - **Tests**: All 115 tests must pass
@@ -67,6 +74,7 @@ The project includes a comprehensive CI/CD pipeline with three main workflows:
 - **Security**: No high/critical vulnerabilities
 
 ### Coverage Thresholds
+
 ```javascript
 coverageThreshold: {
   global: {
@@ -81,12 +89,14 @@ coverageThreshold: {
 ## 🛡️ Security Features
 
 ### Automated Security Checks
+
 - **npm audit**: Daily vulnerability scanning
 - **Dependency review**: PR-based dependency analysis
 - **Known vulnerabilities**: audit-ci integration
 - **Package validation**: Ensure package integrity
 
 ### Security Workflow Features
+
 - **Scheduled scans**: Daily at 2 AM UTC
 - **PR integration**: Security review on pull requests
 - **Severity levels**: Fail on moderate+ vulnerabilities
@@ -95,12 +105,14 @@ coverageThreshold: {
 ## 🔍 Code Quality Checks
 
 ### Linting & Formatting
+
 - **ESLint**: Comprehensive rule set with modern JS standards
 - **Prettier**: Consistent code formatting
 - **Unused dependencies**: depcheck integration
 - **Package validation**: validate-package-name
 
 ### Additional Quality Checks
+
 - **TODO/FIXME detection**: Identify technical debt
 - **Console statement detection**: Ensure proper logging usage
 - **Type checking**: Additional code validation
@@ -108,12 +120,14 @@ coverageThreshold: {
 ## 📈 Monitoring & Reporting
 
 ### Coverage Reporting
+
 - **Codecov integration**: Automatic coverage uploads
 - **Multiple formats**: lcov, html, json-summary
 - **PR comments**: Coverage diff reporting
 - **Trend tracking**: Historical coverage data
 
 ### Test Reporting
+
 - **Verbose output**: Detailed test results
 - **Matrix testing**: Multiple Node.js versions
 - **Timeout handling**: 30-second test timeout
@@ -122,12 +136,14 @@ coverageThreshold: {
 ## 🚀 Deployment Pipeline
 
 ### Environment Strategy
+
 - **Staging**: Automatic deployment from `main`
 - **Production**: Manual approval process
 - **Feature branches**: No deployment
 - **PR previews**: Optional preview deployments
 
 ### Deployment Steps
+
 1. **Pre-deployment checks**: All tests pass, security clear
 2. **Build verification**: Application builds successfully
 3. **Staging deployment**: Automatic deployment to staging
@@ -137,6 +153,7 @@ coverageThreshold: {
 ## 🔧 Configuration Files
 
 ### ESLint Configuration (`.eslintrc.js`)
+
 ```javascript
 export default {
   env: { browser: true, es2021: true, node: true, jest: true },
@@ -151,6 +168,7 @@ export default {
 ```
 
 ### Prettier Configuration (`.prettierrc`)
+
 ```json
 {
   "semi": true,
@@ -163,6 +181,7 @@ export default {
 ```
 
 ### Jest Configuration (`jest.config.js`)
+
 ```javascript
 export default {
   testEnvironment: 'node',
@@ -176,6 +195,7 @@ export default {
 ## 📋 Available Scripts
 
 ### Development Scripts
+
 ```bash
 npm run dev          # Start development server
 npm run lint         # Run ESLint
@@ -185,6 +205,7 @@ npm run format:check # Check formatting
 ```
 
 ### Testing Scripts
+
 ```bash
 npm test             # Run all tests
 npm run test:unit    # Run unit tests only
@@ -194,6 +215,7 @@ npm run test:watch       # Run tests in watch mode
 ```
 
 ### Production Scripts
+
 ```bash
 npm start            # Start production server
 npm run build        # Build application
@@ -205,21 +227,25 @@ npm audit            # Security audit
 ### Common CI/CD Issues
 
 **Tests failing in CI but passing locally:**
+
 - Check Node.js version compatibility
 - Verify environment variables
 - Check MongoDB connection
 
 **Coverage threshold failures:**
+
 - Review uncovered code paths
 - Add missing test cases
 - Update thresholds if appropriate
 
 **Security audit failures:**
+
 - Run `npm audit fix`
 - Update vulnerable dependencies
 - Review security advisories
 
 **Linting failures:**
+
 - Run `npm run lint:fix`
 - Check ESLint configuration
 - Review code style guidelines
@@ -227,11 +253,13 @@ npm audit            # Security audit
 ### Pipeline Debugging
 
 **View detailed logs:**
+
 - Check GitHub Actions tab
 - Review individual step outputs
 - Check artifact uploads
 
 **Local testing:**
+
 ```bash
 # Test the same commands locally
 npm ci
@@ -244,12 +272,14 @@ npm audit
 ## 🔄 Continuous Improvement
 
 ### Pipeline Enhancements
+
 - **Performance optimization**: Cache dependencies, parallel jobs
 - **Advanced security**: SAST/DAST integration
 - **Deployment strategies**: Blue-green, canary deployments
 - **Monitoring integration**: APM, error tracking
 
 ### Quality Improvements
+
 - **Code complexity analysis**: ESLint complexity rules
 - **Performance testing**: Load testing integration
 - **Accessibility testing**: Automated a11y checks

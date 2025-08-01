@@ -5,6 +5,7 @@ This document describes the centralized constants system implemented in the Expr
 ## 📋 Overview
 
 All hardcoded strings, messages, and configuration values have been centralized in `constants/messages.js` to ensure:
+
 - **Consistency** across the entire application
 - **Maintainability** with single source of truth
 - **Internationalization** readiness
@@ -13,33 +14,39 @@ All hardcoded strings, messages, and configuration values have been centralized 
 ## 🏗️ Constants Structure
 
 ### Error Messages (`ERROR_MESSAGES`)
+
 - Authentication errors (invalid credentials, token issues)
 - Validation errors (required fields, format issues)
 - Authorization errors (insufficient permissions)
 - System errors (database, server issues)
 
 ### Success Messages (`SUCCESS_MESSAGES`)
+
 - User operations (registration, login, profile updates)
 - Authentication flows (token refresh, logout)
 - Administrative actions
 
 ### Validation Messages (`VALIDATION_MESSAGES`)
+
 - Field validation errors
 - Format validation messages
 - Required field notifications
 
 ### Logger Messages (`LOGGER_MESSAGES`)
+
 - System events logging
 - User activity tracking
 - Security event logging
 - Performance monitoring
 
 ### Console Messages (`CONSOLE_MESSAGES`)
+
 - Development environment messages
 - Configuration loading messages
 - System startup notifications
 
 ### Technical Constants
+
 - **`COOKIE_NAMES`** - Cookie identifiers
 - **`COOKIE_PATHS`** - Cookie path configurations
 - **`COOKIE_CONFIG`** - Cookie security settings
@@ -73,7 +80,7 @@ logger.info(LOGGER_MESSAGES.USER_REGISTERED(user.email));
 
 - **171 total constants** centralized
 - **53 error messages**
-- **15 success messages** 
+- **15 success messages**
 - **25 validation messages**
 - **40 logger messages**
 - **26 technical constants**
@@ -89,6 +96,7 @@ logger.info(LOGGER_MESSAGES.USER_REGISTERED(user.email));
 ## 🔍 Verification
 
 All constants are used consistently across:
+
 - Controllers (`auth_controller.js`, `user_controller.js`)
 - Services (`auth_service.js`, `user_service.js`)
 - Middleware (`auth_middleware.js`, `rate_limiter.js`, `error_handler.js`)

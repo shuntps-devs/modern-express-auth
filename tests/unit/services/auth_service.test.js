@@ -2,12 +2,7 @@ import AuthService from '../../../services/auth_service.js';
 import Session from '../../../models/session_model.js';
 import jwt from 'jsonwebtoken';
 import { env } from '../../../config/env_config.js';
-import {
-  TestDataFactory,
-  DatabaseHelpers,
-  MockHelpers,
-  AssertionHelpers,
-} from '../../helpers/test_helpers.js';
+import { DatabaseHelpers, MockHelpers, AssertionHelpers } from '../../helpers/test_helpers.js';
 import { ERROR_MESSAGES } from '../../../constants/index.js';
 
 describe('AuthService', () => {
@@ -18,7 +13,7 @@ describe('AuthService', () => {
   beforeEach(async () => {
     // Create test user
     testUser = await DatabaseHelpers.createTestUser();
-    
+
     // Create mock request and response
     mockReq = MockHelpers.createMockRequest();
     mockRes = MockHelpers.createMockResponse();
@@ -56,9 +51,9 @@ describe('AuthService', () => {
     test('should generate valid access token', () => {
       const payload = { id: testUser._id };
       const token = AuthService.generateAccessToken(payload);
-      
+
       AssertionHelpers.expectValidJWT(token);
-      
+
       // Verify token can be decoded
       const decoded = jwt.verify(token, env.JWT_SECRET);
       expect(decoded.id).toBe(testUser._id.toString());
@@ -69,7 +64,7 @@ describe('AuthService', () => {
     test('should generate different tokens for different payloads', () => {
       const token1 = AuthService.generateAccessToken({ id: testUser._id });
       const token2 = AuthService.generateAccessToken({ id: 'different-id' });
-      
+
       expect(token1).not.toBe(token2);
     });
   });
@@ -78,9 +73,9 @@ describe('AuthService', () => {
     test('should generate valid refresh token', () => {
       const payload = { id: testUser._id };
       const token = AuthService.generateRefreshToken(payload);
-      
+
       AssertionHelpers.expectValidJWT(token);
-      
+
       // Verify token can be decoded with refresh secret
       const decoded = jwt.verify(token, env.JWT_REFRESH_SECRET);
       expect(decoded.id).toBe(testUser._id.toString());
@@ -90,7 +85,7 @@ describe('AuthService', () => {
   describe('generateRandomToken', () => {
     test('should generate random hex token', () => {
       const token = AuthService.generateRandomToken();
-      
+
       expect(token).toBeDefined();
       expect(typeof token).toBe('string');
       expect(token.length).toBe(80); // 40 bytes = 80 hex chars
@@ -100,7 +95,7 @@ describe('AuthService', () => {
     test('should generate different tokens each time', () => {
       const token1 = AuthService.generateRandomToken();
       const token2 = AuthService.generateRandomToken();
-      
+
       expect(token1).not.toBe(token2);
     });
   });
@@ -109,7 +104,7 @@ describe('AuthService', () => {
     test('should verify valid access token', () => {
       const payload = { id: testUser._id };
       const token = AuthService.generateAccessToken(payload);
-      
+
       const decoded = AuthService.verifyAccessToken(token);
       expect(decoded.id).toBe(testUser._id.toString());
     });
@@ -128,7 +123,7 @@ describe('AuthService', () => {
     test('should verify valid refresh token', () => {
       const payload = { id: testUser._id };
       const token = AuthService.generateRefreshToken(payload);
-      
+
       const decoded = AuthService.verifyRefreshToken(token);
       expect(decoded.id).toBe(testUser._id.toString());
     });
@@ -182,26 +177,23 @@ describe('AuthService', () => {
       const { user, session } = await DatabaseHelpers.createTestUserWithSession();
 
       const result = await AuthService.validateAccessToken(session.accessToken);
-      
+
       expect(result.session._id.toString()).toBe(session._id.toString());
       expect(result.user._id.toString()).toBe(user._id.toString());
     });
 
     test('should throw error for non-existent token', async () => {
-      await expect(
-        AuthService.validateAccessToken('non-existent-token')
-      ).rejects.toThrow(ERROR_MESSAGES.TOKEN_VALIDATION_FAILED);
+      await expect(AuthService.validateAccessToken('non-existent-token')).rejects.toThrow(
+        ERROR_MESSAGES.TOKEN_VALIDATION_FAILED,
+      );
     });
 
     test('should throw error for inactive session', async () => {
-      const { session } = await DatabaseHelpers.createTestUserWithSession(
-        {},
-        { isActive: false }
-      );
+      const { session } = await DatabaseHelpers.createTestUserWithSession({}, { isActive: false });
 
-      await expect(
-        AuthService.validateAccessToken(session.accessToken)
-      ).rejects.toThrow(ERROR_MESSAGES.TOKEN_VALIDATION_FAILED);
+      await expect(AuthService.validateAccessToken(session.accessToken)).rejects.toThrow(
+        ERROR_MESSAGES.TOKEN_VALIDATION_FAILED,
+      );
     });
   });
 
@@ -218,9 +210,9 @@ describe('AuthService', () => {
       });
 
       const result = await AuthService.cleanupExpiredSessions();
-      
+
       expect(result.deletedCount).toBe(1);
-      
+
       // Verify only active session remains
       const remainingSessions = await Session.find({ userId: testUser._id });
       expect(remainingSessions).toHaveLength(1);
@@ -242,9 +234,9 @@ describe('AuthService', () => {
       });
 
       const result = await AuthService.cleanupExpiredSessions(testUser._id);
-      
+
       expect(result.deletedCount).toBe(1);
-      
+
       // Verify other user's session still exists
       const otherUserSessions = await Session.find({ userId: otherUser._id });
       expect(otherUserSessions).toHaveLength(1);
@@ -258,9 +250,9 @@ describe('AuthService', () => {
       await DatabaseHelpers.createTestSession(testUser._id, { isActive: true });
 
       const result = await AuthService.revokeAllUserSessions(testUser._id);
-      
+
       expect(result.modifiedCount).toBe(2);
-      
+
       // Verify all sessions are inactive
       const sessions = await Session.find({ userId: testUser._id });
       sessions.forEach(session => {
@@ -274,13 +266,13 @@ describe('AuthService', () => {
       const session2 = await DatabaseHelpers.createTestSession(testUser._id, { isActive: true });
 
       const result = await AuthService.revokeAllUserSessions(testUser._id, session1._id);
-      
+
       expect(result.modifiedCount).toBe(1);
-      
+
       // Verify session1 is still active, session2 is inactive
       const updatedSession1 = await Session.findById(session1._id);
       const updatedSession2 = await Session.findById(session2._id);
-      
+
       expect(updatedSession1.isActive).toBe(true);
       expect(updatedSession2.isActive).toBe(false);
     });
@@ -294,7 +286,7 @@ describe('AuthService', () => {
       await DatabaseHelpers.createTestSession(testUser._id, { isActive: false });
 
       const count = await AuthService.getActiveSessionsCount(testUser._id);
-      
+
       expect(count).toBe(2);
     });
 
@@ -305,7 +297,7 @@ describe('AuthService', () => {
       });
 
       const count = await AuthService.getActiveSessionsCount(testUser._id);
-      
+
       expect(count).toBe(0);
     });
   });

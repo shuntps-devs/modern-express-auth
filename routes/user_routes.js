@@ -1,6 +1,18 @@
 import express from 'express';
-import { protect, authorize, profileLimiter, readOnlyLimiter, adminLimiter } from '../middleware/index.js';
-import { validate, validateQuery, updateProfileSchema, adminUpdateUserSchema, getUsersQuerySchema } from '../validations/index.js';
+import {
+  protect,
+  authorize,
+  profileLimiter,
+  readOnlyLimiter,
+  adminLimiter,
+} from '../middleware/index.js';
+import {
+  validate,
+  validateQuery,
+  updateProfileSchema,
+  adminUpdateUserSchema,
+  getUsersQuerySchema,
+} from '../validations/index.js';
 import {
   getProfile,
   updateProfile,
@@ -9,7 +21,7 @@ import {
   getUserById,
   updateUser,
   deleteUser,
-  getUserStats
+  getUserStats,
 } from '../controllers/index.js';
 
 const router = express.Router();
@@ -36,7 +48,13 @@ router.delete('/profile', deleteAccount);
 // @desc    Get all users
 // @route   GET /api/user/admin/users
 // @access  Private/Admin
-router.get('/admin/users', adminLimiter, authorize('admin'), validateQuery(getUsersQuerySchema), getAllUsers);
+router.get(
+  '/admin/users',
+  adminLimiter,
+  authorize('admin'),
+  validateQuery(getUsersQuerySchema),
+  getAllUsers,
+);
 
 // @desc    Get single user (Admin)
 // @route   GET /api/user/admin/users/:id
@@ -46,7 +64,13 @@ router.get('/admin/users/:id', adminLimiter, authorize('admin'), getUserById);
 // @desc    Update user (Admin)
 // @route   PUT /api/user/admin/users/:id
 // @access  Private/Admin
-router.put('/admin/users/:id', adminLimiter, authorize('admin'), validate(adminUpdateUserSchema), updateUser);
+router.put(
+  '/admin/users/:id',
+  adminLimiter,
+  authorize('admin'),
+  validate(adminUpdateUserSchema),
+  updateUser,
+);
 
 // @desc    Delete user (Admin)
 // @route   DELETE /api/user/admin/users/:id

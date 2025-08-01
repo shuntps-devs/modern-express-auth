@@ -10,29 +10,25 @@
 
 export const SUCCESS_MESSAGES = {
   // Authentication
-  REGISTRATION_SUCCESS:
-    'User registered successfully. Please log in to continue.',
+  REGISTRATION_SUCCESS: 'User registered successfully. Please log in to continue.',
   LOGIN_SUCCESS: 'User logged in successfully',
   LOGOUT_SUCCESS: 'Logged out successfully',
   LOGOUT_ALL_SUCCESS: 'Logged out from all devices successfully',
   TOKEN_REFRESH_SUCCESS: 'Tokens refreshed successfully',
   PASSWORD_UPDATE_SUCCESS: 'Password updated successfully',
   SESSION_REVOKED_SUCCESS: 'Session revoked successfully',
-  SESSIONS_CLEANUP_SUCCESS: (count) => `Cleaned up ${count} expired sessions`,
-  SESSIONS_REVOKE_SUCCESS: (count) => `Revoked ${count} user sessions`,
+  SESSIONS_CLEANUP_SUCCESS: count => `Cleaned up ${count} expired sessions`,
+  SESSIONS_REVOKE_SUCCESS: count => `Revoked ${count} user sessions`,
 
   // User Management
   PROFILE_UPDATE_SUCCESS: 'Profile updated successfully',
   ACCOUNT_DEACTIVATED_SUCCESS: 'Account deactivated successfully',
   USER_UPDATE_SUCCESS: 'User updated successfully',
-  SESSIONS_RETRIEVED_SUCCESS: 'Sessions retrieved successfully',
   USER_DELETE_SUCCESS: 'User deleted successfully',
 
   // Session Management
   SESSIONS_RETRIEVED_SUCCESS: 'Sessions retrieved successfully',
-  SESSION_REVOKED_SUCCESS: 'Session revoked successfully',
-  SESSIONS_CLEANUP_SUCCESS: (count) => `Cleaned up ${count} expired sessions`,
-  USER_SESSIONS_REVOKED_SUCCESS: (count) => `Revoked ${count} user sessions`,
+  USER_SESSIONS_REVOKED_SUCCESS: count => `Revoked ${count} user sessions`,
 };
 
 // ============================================================================
@@ -43,8 +39,7 @@ export const ERROR_MESSAGES = {
   // Authentication Errors
   INVALID_CREDENTIALS: 'Invalid credentials',
   ACCOUNT_DEACTIVATED: 'Account has been deactivated',
-  ACCOUNT_LOCKED:
-    'Account is temporarily locked due to too many failed login attempts',
+  ACCOUNT_LOCKED: 'Account is temporarily locked due to too many failed login attempts',
   ACCESS_TOKEN_REQUIRED: 'Access token required for authentication',
   ACCESS_TOKEN_EXPIRED: 'Access token expired. Please refresh your token.',
   ACCESS_TOKEN_INVALID: 'Invalid access token',
@@ -60,8 +55,7 @@ export const ERROR_MESSAGES = {
   CANNOT_DELETE_OWN_ACCOUNT: 'You cannot delete your own account',
 
   // Authorization Errors
-  UNAUTHORIZED_ROLE: (role) =>
-    `User role ${role} is not authorized to access this route`,
+  UNAUTHORIZED_ROLE: role => `User role ${role} is not authorized to access this route`,
   UNAUTHORIZED_RESOURCE: 'Not authorized to access this resource',
   ADMIN_ROLE_REQUIRED: 'Access denied. Admin role required.',
 
@@ -86,14 +80,12 @@ export const ERROR_MESSAGES = {
   JWT_INVALID: 'Invalid JWT token',
   RATE_LIMIT_EXCEEDED: 'Too many requests, please try again later',
   RATE_LIMIT_IP: 'Too many requests from this IP, please try again later.',
-  RATE_LIMIT_AUTH:
-    'Too many authentication attempts from this IP, please try again later.',
+  RATE_LIMIT_AUTH: 'Too many authentication attempts from this IP, please try again later.',
   RATE_LIMIT_PASSWORD_RESET:
     'Too many password reset attempts from this IP, please try again later.',
   RATE_LIMIT_PROFILE_UPDATE:
     'Too many profile update attempts from this IP, please try again later.',
-  RATE_LIMIT_ADMIN:
-    'Too many admin requests from this IP, please try again later.',
+  RATE_LIMIT_ADMIN: 'Too many admin requests from this IP, please try again later.',
   TOKEN_EXPIRED: 'Token expired',
   SERVER_ERROR: 'Server Error',
 
@@ -108,7 +100,6 @@ export const ERROR_MESSAGES = {
   SESSION_REVOCATION_OPERATION_FAILED: 'Session revocation failed:',
   ACTIVE_SESSIONS_COUNT_FAILED: 'Failed to get active sessions count:',
   USER_SESSIONS_RETRIEVAL_FAILED: 'Failed to get user sessions:',
-  ACCESS_TOKEN_EXPIRED: 'Access token expired',
   REFRESH_TOKEN_EXPIRED_OR_INVALID: 'Refresh token expired or invalid',
   ACCESS_TOKEN_EXPIRED_OR_INVALID: 'Access token expired or invalid',
   INVALID_REFRESH_TOKEN: 'Invalid refresh token',
@@ -134,8 +125,7 @@ export const VALIDATION_MESSAGES = {
   USERNAME_REQUIRED: 'Username is required',
   USERNAME_MIN_LENGTH: 'Username must be at least 3 characters long',
   USERNAME_MAX_LENGTH: 'Username cannot exceed 30 characters',
-  USERNAME_INVALID_CHARS:
-    'Username can only contain letters, numbers, underscores, and hyphens',
+  USERNAME_INVALID_CHARS: 'Username can only contain letters, numbers, underscores, and hyphens',
 
   // Email Validation
   EMAIL_REQUIRED: 'Email is required',
@@ -145,17 +135,13 @@ export const VALIDATION_MESSAGES = {
   PASSWORD_REQUIRED: 'Password is required',
   PASSWORD_MIN_LENGTH: 'Password must be at least 8 characters long',
   PASSWORD_NEW_MIN_LENGTH: 'New password must be at least 8 characters long',
-  PASSWORD_LOWERCASE_REQUIRED:
-    'Password must contain at least one lowercase letter',
-  PASSWORD_UPPERCASE_REQUIRED:
-    'Password must contain at least one uppercase letter',
+  PASSWORD_LOWERCASE_REQUIRED: 'Password must contain at least one lowercase letter',
+  PASSWORD_UPPERCASE_REQUIRED: 'Password must contain at least one uppercase letter',
   PASSWORD_NUMBER_REQUIRED: 'Password must contain at least one number',
-  PASSWORD_SPECIAL_CHAR_REQUIRED:
-    'Password must contain at least one special character',
+  PASSWORD_SPECIAL_CHAR_REQUIRED: 'Password must contain at least one special character',
   PASSWORD_CONFIRM_REQUIRED: 'Please confirm your password',
   PASSWORDS_DO_NOT_MATCH: 'Passwords do not match',
-  PASSWORD_MUST_BE_DIFFERENT:
-    'New password must be different from current password',
+  PASSWORD_MUST_BE_DIFFERENT: 'New password must be different from current password',
   CURRENT_PASSWORD_REQUIRED: 'Current password is required',
 
   // Token Validation
@@ -192,7 +178,7 @@ export const VALIDATION_MESSAGES = {
  * @param {string} key - The message key
  * @returns {string} The validation message
  */
-export const getValidationMessage = (key) => {
+export const getValidationMessage = key => {
   return VALIDATION_MESSAGES[key] || 'Validation error';
 };
 
@@ -204,9 +190,7 @@ export const getValidationMessage = (key) => {
  */
 export const getErrorMessage = (key, ...args) => {
   const message = ERROR_MESSAGES[key];
-  return typeof message === 'function'
-    ? message(...args)
-    : message || 'An error occurred';
+  return typeof message === 'function' ? message(...args) : message || 'An error occurred';
 };
 
 /**
@@ -217,9 +201,7 @@ export const getErrorMessage = (key, ...args) => {
  */
 export const getSuccessMessage = (key, ...args) => {
   const message = SUCCESS_MESSAGES[key];
-  return typeof message === 'function'
-    ? message(...args)
-    : message || 'Operation successful';
+  return typeof message === 'function' ? message(...args) : message || 'Operation successful';
 };
 
 // Console and Logger Messages
@@ -238,8 +220,7 @@ export const CONSOLE_MESSAGES = {
   ENV_STEP_3: '3. You can copy .env.example as a starting point',
   ENV_EXAMPLE_FILE: 'Example .env file:',
   ENV_CANNOT_START: '\n💀 Application cannot start without these variables.\n',
-  DEV_MODE_LOGS_CLEARED:
-    '🧹 Development mode: Log files cleared for fresh start',
+  DEV_MODE_LOGS_CLEARED: '🧹 Development mode: Log files cleared for fresh start',
   DEV_MODE_DETAILED_LOGGING: '🔧 Development mode: Detailed logging enabled',
   LOG_FILES_CLEAR_WARNING: '⚠️  Could not clear log files:',
 
@@ -251,9 +232,6 @@ export const CONSOLE_MESSAGES = {
 export const LOGGER_MESSAGES = {
   // Database
   DATABASE_CONNECTION_SUCCESS: '✅ MongoDB Connected:',
-  DATABASE_CONNECTION_ERROR: 'Database connection error:',
-  MONGOOSE_CONNECTION_ERROR: 'Mongoose connection error:',
-  MONGOOSE_DISCONNECTED: 'MongoDB disconnected',
 
   // Server
   HTTP_SERVER_CLOSED: 'HTTP server closed',
@@ -360,7 +338,7 @@ export const RATE_LIMIT_DESCRIPTIONS = {
 // Auth Messages
 export const AUTH_MESSAGES = {
   NOT_AUTHORIZED_RESOURCE: 'Not authorized to access this resource',
-  ROLE_NOT_AUTHORIZED: (role) => `User role ${role} is not authorized to access this route`,
+  ROLE_NOT_AUTHORIZED: role => `User role ${role} is not authorized to access this route`,
 };
 
 // Token Keywords
@@ -376,8 +354,7 @@ export const USER_ROLES = {
 };
 
 // Dynamic message functions
-export const getAuthRateLimitWarning = (ip) =>
-  `Auth rate limit exceeded for IP: ${ip}`;
+export const getAuthRateLimitWarning = ip => `Auth rate limit exceeded for IP: ${ip}`;
 export const getEnvDisplayMessage = (label, value) => `${label}: ${value}`;
 export const getEnvErrorMessage = (key, description, example) =>
   `❌ ${key}\n   Description: ${description}\n   Example: ${example}`;

@@ -15,10 +15,7 @@ export const protect = asyncHandler(async (req, res, next) => {
   let accessToken;
 
   // Get access token from header or cookie
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     accessToken = req.headers.authorization.split(' ')[1];
   } else if (req.cookies.accessToken) {
     accessToken = req.cookies.accessToken;
@@ -31,8 +28,7 @@ export const protect = asyncHandler(async (req, res, next) => {
 
   try {
     // Validate access token using AuthService
-    const { session, user } =
-      await AuthService.validateAccessToken(accessToken);
+    const { session, user } = await AuthService.validateAccessToken(accessToken);
 
     // Check if user account is locked
     if (user.isLocked) {
@@ -48,7 +44,7 @@ export const protect = asyncHandler(async (req, res, next) => {
     const currentIP = req.ip || req.connection.remoteAddress;
     if (session.ipAddress !== currentIP) {
       logger.warn(
-        `${LOGGER_MESSAGES.SESSION_IP_MISMATCH} ${user._id}: expected ${session.ipAddress}, got ${currentIP}`
+        `${LOGGER_MESSAGES.SESSION_IP_MISMATCH} ${user._id}: expected ${session.ipAddress}, got ${currentIP}`,
       );
       // Log warning but don't block (user might be on different network)
     }
@@ -73,9 +69,7 @@ export const protect = asyncHandler(async (req, res, next) => {
 export const authorize = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      return next(
-        new AppError(AUTH_MESSAGES.ROLE_NOT_AUTHORIZED(req.user.role), 403)
-      );
+      return next(new AppError(AUTH_MESSAGES.ROLE_NOT_AUTHORIZED(req.user.role), 403));
     }
     next();
   };
@@ -85,10 +79,7 @@ export const authorize = (...roles) => {
 export const optionalAuth = asyncHandler(async (req, res, next) => {
   let accessToken;
 
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     accessToken = req.headers.authorization.split(' ')[1];
   } else if (req.cookies.accessToken) {
     accessToken = req.cookies.accessToken;
@@ -96,8 +87,7 @@ export const optionalAuth = asyncHandler(async (req, res, next) => {
 
   if (accessToken) {
     try {
-      const { session, user } =
-        await AuthService.validateAccessToken(accessToken);
+      const { session, user } = await AuthService.validateAccessToken(accessToken);
 
       if (user && user.isActive && !user.isLocked) {
         req.user = user;
@@ -121,14 +111,9 @@ export const checkOwnership = (resourceUserField = 'user') => {
     }
 
     // Check if user owns the resource
-    const resourceUserId = req.resource
-      ? req.resource[resourceUserField]
-      : req.params.userId;
+    const resourceUserId = req.resource ? req.resource[resourceUserField] : req.params.userId;
 
-    if (
-      resourceUserId &&
-      resourceUserId.toString() !== req.user._id.toString()
-    ) {
+    if (resourceUserId && resourceUserId.toString() !== req.user._id.toString()) {
       return next(new AppError(AUTH_MESSAGES.NOT_AUTHORIZED_RESOURCE, 403));
     }
 

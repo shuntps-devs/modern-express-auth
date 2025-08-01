@@ -10,48 +10,34 @@ export const registerSchema = z
       .trim()
       .min(3, VALIDATION_MESSAGES.USERNAME_MIN_LENGTH)
       .max(30, VALIDATION_MESSAGES.USERNAME_MAX_LENGTH)
-      .regex(
-        /^[a-zA-Z0-9_-]+$/,
-        VALIDATION_MESSAGES.USERNAME_INVALID_CHARS
-      ),
+      .regex(/^[a-zA-Z0-9_-]+$/, VALIDATION_MESSAGES.USERNAME_INVALID_CHARS),
 
     email: z
       .string()
       .trim()
       .email(VALIDATION_MESSAGES.EMAIL_INVALID)
-      .transform((val) => val.toLowerCase()),
+      .transform(val => val.toLowerCase()),
 
     password: z
       .string()
       .min(1, VALIDATION_MESSAGES.PASSWORD_REQUIRED)
       .min(8, VALIDATION_MESSAGES.PASSWORD_MIN_LENGTH)
-      .regex(
-        /^(?=.*[a-z])/,
-        VALIDATION_MESSAGES.PASSWORD_LOWERCASE_REQUIRED
-      )
-      .regex(
-        /^(?=.*[A-Z])/,
-        VALIDATION_MESSAGES.PASSWORD_UPPERCASE_REQUIRED
-      )
+      .regex(/^(?=.*[a-z])/, VALIDATION_MESSAGES.PASSWORD_LOWERCASE_REQUIRED)
+      .regex(/^(?=.*[A-Z])/, VALIDATION_MESSAGES.PASSWORD_UPPERCASE_REQUIRED)
       .regex(/^(?=.*\d)/, VALIDATION_MESSAGES.PASSWORD_NUMBER_REQUIRED)
-      .regex(
-        /^(?=.*[!@#$%^&*(),.?":{}|<>])/,
-        VALIDATION_MESSAGES.PASSWORD_SPECIAL_CHAR_REQUIRED
-      ),
+      .regex(/^(?=.*[!@#$%^&*(),.?":{}|<>])/, VALIDATION_MESSAGES.PASSWORD_SPECIAL_CHAR_REQUIRED),
 
     confirmPassword: z.string().min(1, VALIDATION_MESSAGES.PASSWORD_CONFIRM_REQUIRED),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine(data => data.password === data.confirmPassword, {
     message: VALIDATION_MESSAGES.PASSWORDS_DO_NOT_MATCH,
     path: ['confirmPassword'],
   })
-  .transform(({ confirmPassword, ...rest }) => rest);
+  .transform(({ confirmPassword: _confirmPassword, ...rest }) => rest);
 
 // User login validation schema
 export const loginSchema = z.object({
-  email: z
-    .email(VALIDATION_MESSAGES.EMAIL_INVALID)
-    .transform((val) => val.toLowerCase()),
+  email: z.email(VALIDATION_MESSAGES.EMAIL_INVALID).transform(val => val.toLowerCase()),
 
   password: z.string().min(1, VALIDATION_MESSAGES.PASSWORD_REQUIRED),
 });
@@ -64,37 +50,26 @@ export const changePasswordSchema = z
     newPassword: z
       .string()
       .min(8, VALIDATION_MESSAGES.PASSWORD_NEW_MIN_LENGTH)
-      .regex(
-        /^(?=.*[a-z])/,
-        VALIDATION_MESSAGES.PASSWORD_LOWERCASE_REQUIRED
-      )
-      .regex(
-        /^(?=.*[A-Z])/,
-        VALIDATION_MESSAGES.PASSWORD_UPPERCASE_REQUIRED
-      )
+      .regex(/^(?=.*[a-z])/, VALIDATION_MESSAGES.PASSWORD_LOWERCASE_REQUIRED)
+      .regex(/^(?=.*[A-Z])/, VALIDATION_MESSAGES.PASSWORD_UPPERCASE_REQUIRED)
       .regex(/^(?=.*\d)/, VALIDATION_MESSAGES.PASSWORD_NUMBER_REQUIRED)
-      .regex(
-        /^(?=.*[!@#$%^&*(),.?":{}|<>])/,
-        VALIDATION_MESSAGES.PASSWORD_SPECIAL_CHAR_REQUIRED
-      ),
+      .regex(/^(?=.*[!@#$%^&*(),.?":{}|<>])/, VALIDATION_MESSAGES.PASSWORD_SPECIAL_CHAR_REQUIRED),
 
     confirmNewPassword: z.string().min(1, VALIDATION_MESSAGES.PASSWORD_CONFIRM_REQUIRED),
   })
-  .refine((data) => data.newPassword === data.confirmNewPassword, {
+  .refine(data => data.newPassword === data.confirmNewPassword, {
     message: VALIDATION_MESSAGES.PASSWORDS_DO_NOT_MATCH,
     path: ['confirmNewPassword'],
   })
-  .refine((data) => data.currentPassword !== data.newPassword, {
+  .refine(data => data.currentPassword !== data.newPassword, {
     message: VALIDATION_MESSAGES.PASSWORD_MUST_BE_DIFFERENT,
     path: ['newPassword'],
   })
-  .transform(({ confirmNewPassword, ...rest }) => rest);
+  .transform(({ confirmNewPassword: _confirmNewPassword, ...rest }) => rest);
 
 // Forgot password validation schema
 export const forgotPasswordSchema = z.object({
-  email: z
-    .email(VALIDATION_MESSAGES.EMAIL_INVALID)
-    .transform((val) => val.toLowerCase()),
+  email: z.email(VALIDATION_MESSAGES.EMAIL_INVALID).transform(val => val.toLowerCase()),
 });
 
 // Reset password validation schema
@@ -105,23 +80,14 @@ export const resetPasswordSchema = z
     newPassword: z
       .string()
       .min(8, VALIDATION_MESSAGES.PASSWORD_MIN_LENGTH)
-      .regex(
-        /^(?=.*[a-z])/,
-        VALIDATION_MESSAGES.PASSWORD_LOWERCASE_REQUIRED
-      )
-      .regex(
-        /^(?=.*[A-Z])/,
-        VALIDATION_MESSAGES.PASSWORD_UPPERCASE_REQUIRED
-      )
+      .regex(/^(?=.*[a-z])/, VALIDATION_MESSAGES.PASSWORD_LOWERCASE_REQUIRED)
+      .regex(/^(?=.*[A-Z])/, VALIDATION_MESSAGES.PASSWORD_UPPERCASE_REQUIRED)
       .regex(/^(?=.*\d)/, VALIDATION_MESSAGES.PASSWORD_NUMBER_REQUIRED)
-      .regex(
-        /^(?=.*[!@#$%^&*(),.?":{}|<>])/,
-        VALIDATION_MESSAGES.PASSWORD_SPECIAL_CHAR_REQUIRED
-      ),
+      .regex(/^(?=.*[!@#$%^&*(),.?":{}|<>])/, VALIDATION_MESSAGES.PASSWORD_SPECIAL_CHAR_REQUIRED),
 
     confirmNewPassword: z.string().min(1, VALIDATION_MESSAGES.PASSWORD_CONFIRM_REQUIRED),
   })
-  .refine((data) => data.newPassword === data.confirmNewPassword, {
+  .refine(data => data.newPassword === data.confirmNewPassword, {
     message: VALIDATION_MESSAGES.PASSWORDS_DO_NOT_MATCH,
     path: ['confirmNewPassword'],
   });

@@ -1,7 +1,7 @@
 export default {
   // Test environment
   testEnvironment: 'node',
-  
+
   // Module type
   preset: null,
   extensionsToTreatAsEsm: ['.js'],
@@ -10,16 +10,13 @@ export default {
       useESM: true,
     },
   },
-  
+
   // Transform configuration for ES modules
   transform: {},
-  
+
   // Test file patterns
-  testMatch: [
-    '**/tests/**/*.test.js',
-    '**/tests/**/*.spec.js',
-  ],
-  
+  testMatch: ['**/tests/**/*.test.js', '**/tests/**/*.spec.js'],
+
   // Coverage configuration
   collectCoverage: false,
   collectCoverageFrom: [
@@ -34,7 +31,7 @@ export default {
     '!**/tests/**',
     '!**/coverage/**',
   ],
-  
+
   // Coverage thresholds
   coverageThreshold: {
     global: {
@@ -44,30 +41,25 @@ export default {
       statements: 80,
     },
   },
-  
+
   // Coverage reporters
-  coverageReporters: [
-    'text',
-    'lcov',
-    'html',
-    'json-summary',
-  ],
-  
+  coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
+
   // Setup files
   setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
-  
+
   // Test timeout
   testTimeout: 30000,
-  
+
   // Verbose output
   verbose: true,
-  
+
   // Clear mocks between tests
   clearMocks: true,
-  
+
   // Detect open handles
   detectOpenHandles: true,
-  
+
   // Force exit after tests
   forceExit: true,
 };

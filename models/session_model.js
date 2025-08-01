@@ -68,7 +68,7 @@ const sessionSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Instance methods
@@ -86,7 +86,7 @@ sessionSchema.methods.refreshTokens = function (
   newAccessToken,
   newRefreshToken,
   accessTokenExpiresAt,
-  refreshTokenExpiresAt
+  refreshTokenExpiresAt,
 ) {
   this.accessToken = newAccessToken;
   this.refreshToken = newRefreshToken;

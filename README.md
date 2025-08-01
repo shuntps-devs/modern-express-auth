@@ -22,6 +22,7 @@ A **production-ready** Express.js authentication API with comprehensive security
 ## 🚀 Features
 
 ### 🔒 Authentication & Security
+
 - **JWT Authentication** with dual-token system (15min access, 7-day refresh)
 - **Session Management** with IP tracking and device fingerprinting
 - **Account Security** with login attempt limiting and automatic lockout
@@ -32,6 +33,7 @@ A **production-ready** Express.js authentication API with comprehensive security
 - **CORS Protection** with configurable origins
 
 ### 📊 Data & Validation
+
 - **Input Validation** with Zod schemas and custom validators
 - **MongoDB Integration** with optimized indexes and queries
 - **Centralized Constants** (171 constants, zero hardcoded strings)
@@ -39,6 +41,7 @@ A **production-ready** Express.js authentication API with comprehensive security
 - **Comprehensive Logging** with Winston (structured JSON logs)
 
 ### 🧪 Testing & Quality
+
 - **115 Tests** covering all critical paths
 - **Unit Tests** for services and utilities
 - **Integration Tests** for API endpoints
@@ -49,12 +52,14 @@ A **production-ready** Express.js authentication API with comprehensive security
 ## 🛠️ Technology Stack
 
 ### Core Technologies
+
 - **Node.js** (≥18.0.0) - Runtime environment
 - **Express.js** - Web application framework
 - **MongoDB** (≥5.0.0) - NoSQL database
 - **Mongoose** - MongoDB ODM with schema validation
 
 ### Authentication & Security
+
 - **jsonwebtoken** - JWT token generation and verification
 - **bcryptjs** - Password hashing and comparison
 - **helmet** - Security headers middleware
@@ -63,11 +68,13 @@ A **production-ready** Express.js authentication API with comprehensive security
 - **cookie-parser** - Cookie parsing and management
 
 ### Validation & Logging
+
 - **zod** - TypeScript-first schema validation
 - **winston** - Professional logging library
 - **dotenv** - Environment variable management
 
 ### Testing & Development
+
 - **jest** - Testing framework
 - **supertest** - HTTP assertion library
 - **eslint** - Code linting
@@ -82,6 +89,7 @@ A **production-ready** Express.js authentication API with comprehensive security
 ## 🚀 Quick Start
 
 ### 1. Clone & Install
+
 ```bash
 git clone https://github.com/shuntps/modern-express-auth.git
 cd modern-express-auth
@@ -89,11 +97,13 @@ npm install
 ```
 
 ### 2. Environment Configuration
+
 ```bash
 cp .env.example .env
 ```
 
 Edit `.env` with your settings:
+
 ```env
 # Server
 NODE_ENV=development
@@ -116,6 +126,7 @@ BCRYPT_ROUNDS=12
 ```
 
 ### 3. Start Services
+
 ```bash
 # Start MongoDB (if local)
 sudo systemctl start mongod
@@ -128,6 +139,7 @@ npm test        # Run test suite
 ```
 
 ### 4. Verify Installation
+
 ```bash
 # Health check
 curl http://localhost:3000/api/health
@@ -141,6 +153,7 @@ curl -X POST http://localhost:3000/api/auth/register \
 ## 📚 Documentation
 
 ### 📖 Complete Documentation
+
 - **[API Reference](./docs/API.md)** - Complete endpoint documentation
 - **[Development Guide](./docs/DEVELOPMENT.md)** - Setup and development workflow
 - **[Constants Documentation](./docs/CONSTANTS.md)** - Centralized constants system
@@ -152,23 +165,24 @@ curl -X POST http://localhost:3000/api/auth/register \
 
 **Base URL:** `http://localhost:3000/api`
 
-| Endpoint | Method | Description | Auth Required |
-|----------|--------|-------------|---------------|
-| `/auth/register` | POST | Register new user | ❌ |
-| `/auth/login` | POST | User login | ❌ |
-| `/auth/logout` | POST | User logout | ✅ |
-| `/auth/refresh` | POST | Refresh access token | ✅ |
-| `/auth/forgot-password` | POST | Request password reset | ❌ |
-| `/auth/reset-password` | POST | Reset password | ❌ |
-| `/auth/change-password` | POST | Change password | ✅ |
-| `/users/me` | GET | Get current user | ✅ |
-| `/users/profile` | PUT | Update profile | ✅ |
-| `/users/sessions` | GET | Get active sessions | ✅ |
-| `/admin/users` | GET | Get all users | ✅ (Admin) |
+| Endpoint                | Method | Description            | Auth Required |
+| ----------------------- | ------ | ---------------------- | ------------- |
+| `/auth/register`        | POST   | Register new user      | ❌            |
+| `/auth/login`           | POST   | User login             | ❌            |
+| `/auth/logout`          | POST   | User logout            | ✅            |
+| `/auth/refresh`         | POST   | Refresh access token   | ✅            |
+| `/auth/forgot-password` | POST   | Request password reset | ❌            |
+| `/auth/reset-password`  | POST   | Reset password         | ❌            |
+| `/auth/change-password` | POST   | Change password        | ✅            |
+| `/users/me`             | GET    | Get current user       | ✅            |
+| `/users/profile`        | PUT    | Update profile         | ✅            |
+| `/users/sessions`       | GET    | Get active sessions    | ✅            |
+| `/admin/users`          | GET    | Get all users          | ✅ (Admin)    |
 
 ## 🧪 Testing
 
 ### Test Suite Overview
+
 - **115 Tests** covering all critical functionality
 - **90%+ Code Coverage** across the entire codebase
 - **Unit Tests** for services, utilities, and helpers
@@ -176,6 +190,7 @@ curl -X POST http://localhost:3000/api/auth/register \
 - **Validation Tests** for Zod schemas and input validation
 
 ### Running Tests
+
 ```bash
 # Run all tests
 npm test
@@ -194,6 +209,7 @@ npm test -- --verbose
 ```
 
 ### Test Categories
+
 - **Authentication Tests** (login, register, tokens, sessions)
 - **User Management Tests** (profile, roles, permissions)
 - **Middleware Tests** (auth, rate limiting, error handling)
@@ -245,6 +261,7 @@ express-auth-api/
 ## 🚀 Production Deployment
 
 ### Environment Checklist
+
 - [ ] Secure JWT secrets generated
 - [ ] MongoDB connection configured
 - [ ] Environment variables set
@@ -254,6 +271,7 @@ express-auth-api/
 - [ ] SSL/TLS certificates installed
 
 ### Deployment Commands
+
 ```bash
 # Install production dependencies
 npm ci --only=production
@@ -280,13 +298,16 @@ Contributions are welcome! Please:
 6. **Submit a pull request**
 
 ### 🐛 Bug Reports
+
 Found a bug? Please [open an issue](https://github.com/shuntps/modern-express-auth/issues) with:
+
 - Clear description of the problem
 - Steps to reproduce
 - Expected vs actual behavior
 - Environment details
 
 ### Development Guidelines
+
 - Follow the existing code style (ESLint + Prettier)
 - Write tests for new features
 - Update documentation as needed
@@ -330,6 +351,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Made with ❤️ for secure, scalable authentication**
 
 #### Get User Statistics (Admin Only)
+
 ```http
 GET /api/user/admin/stats
 Authorization: Bearer <admin-token>
@@ -338,20 +360,24 @@ Authorization: Bearer <admin-token>
 ## 🔒 Security Features
 
 ### Password Security
+
 - Minimum 6 characters
 - Must contain uppercase, lowercase, and number
 - Bcrypt hashing with salt rounds of 12
 
 ### Account Protection
+
 - Login attempt limiting (5 attempts)
 - Account locking for 2 hours after failed attempts
 - Session-based authentication with IP tracking
 
 ### Rate Limiting
+
 - 100 requests per 15 minutes per IP
 - Configurable through environment variables
 
 ### Security Headers
+
 - Helmet.js for security headers
 - Content Security Policy
 - XSS Protection
@@ -395,6 +421,7 @@ npm run test:watch
 ## 🚀 Deployment
 
 ### Environment Variables for Production
+
 ```env
 NODE_ENV=production
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/express-auth-api
@@ -403,6 +430,7 @@ PORT=5000
 ```
 
 ### Deployment Platforms
+
 - **Heroku**: Ready for Heroku deployment
 - **Railway**: Compatible with Railway
 - **DigitalOcean**: App Platform ready

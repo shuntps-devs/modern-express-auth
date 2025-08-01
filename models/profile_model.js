@@ -29,7 +29,7 @@ const profileSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Timestamp index (for sorting/querying by creation date)

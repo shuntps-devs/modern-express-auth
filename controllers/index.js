@@ -17,7 +17,7 @@ export {
   getUserSessions,
   revokeSession,
   revokeAllSessions,
-  cleanupSessions
+  cleanupSessions,
 } from './auth_controller.js';
 
 // User Controller
@@ -29,7 +29,7 @@ export {
   getUserById,
   updateUser,
   deleteUser,
-  getUserStats
+  getUserStats,
 } from './user_controller.js';
 
 // Individual function exports are available above - no default exports needed

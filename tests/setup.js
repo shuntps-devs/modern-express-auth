@@ -9,15 +9,15 @@ beforeAll(async () => {
   // Start in-memory MongoDB server
   mongoServer = await MongoMemoryServer.create();
   const mongoUri = mongoServer.getUri();
-  
+
   // Disconnect any existing connection first
   if (mongoose.connection.readyState !== 0) {
     await mongoose.disconnect();
   }
-  
+
   // Connect to the in-memory database
   await mongoose.connect(mongoUri);
-  
+
   // Set test environment
   env.NODE_ENV = 'test';
 });
@@ -37,7 +37,7 @@ afterAll(async () => {
   // Close database connection
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
-  
+
   // Stop the in-memory MongoDB instance
   if (mongoServer) {
     await mongoServer.stop();

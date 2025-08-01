@@ -1,12 +1,7 @@
 import UserService from '../../../services/user_service.js';
 import User from '../../../models/user_model.js';
-import Session from '../../../models/session_model.js';
 import bcrypt from 'bcryptjs';
-import {
-  TestDataFactory,
-  DatabaseHelpers,
-  AssertionHelpers,
-} from '../../helpers/test_helpers.js';
+import { TestDataFactory, DatabaseHelpers, AssertionHelpers } from '../../helpers/test_helpers.js';
 
 describe('UserService', () => {
   let testUser;
@@ -20,7 +15,7 @@ describe('UserService', () => {
   describe('findUserByEmail', () => {
     test('should find user by email', async () => {
       const foundUser = await UserService.findUserByEmail(testUser.email);
-      
+
       AssertionHelpers.expectValidUser(foundUser, {
         email: testUser.email,
         username: testUser.username,
@@ -34,7 +29,7 @@ describe('UserService', () => {
 
     test('should include password when requested', async () => {
       const foundUser = await UserService.findUserByEmail(testUser.email, true);
-      
+
       expect(foundUser.password).toBeDefined();
       expect(typeof foundUser.password).toBe('string');
     });
@@ -49,7 +44,7 @@ describe('UserService', () => {
   describe('findUserByUsername', () => {
     test('should find user by username', async () => {
       const foundUser = await UserService.findUserByUsername(testUser.username);
-      
+
       AssertionHelpers.expectValidUser(foundUser, {
         username: testUser.username,
         email: testUser.email,
@@ -66,9 +61,9 @@ describe('UserService', () => {
     test('should find user by email', async () => {
       const foundUser = await UserService.findUserByEmailOrUsername(
         testUser.email,
-        'different-username'
+        'different-username',
       );
-      
+
       AssertionHelpers.expectValidUser(foundUser, {
         email: testUser.email,
       });
@@ -77,9 +72,9 @@ describe('UserService', () => {
     test('should find user by username', async () => {
       const foundUser = await UserService.findUserByEmailOrUsername(
         'different@email.com',
-        testUser.username
+        testUser.username,
       );
-      
+
       AssertionHelpers.expectValidUser(foundUser, {
         username: testUser.username,
       });
@@ -88,9 +83,9 @@ describe('UserService', () => {
     test('should return null when neither email nor username match', async () => {
       const foundUser = await UserService.findUserByEmailOrUsername(
         'nonexistent@example.com',
-        'nonexistent'
+        'nonexistent',
       );
-      
+
       expect(foundUser).toBeNull();
     });
   });
@@ -98,7 +93,7 @@ describe('UserService', () => {
   describe('findUserById', () => {
     test('should find user by ID', async () => {
       const foundUser = await UserService.findUserById(testUser._id);
-      
+
       AssertionHelpers.expectValidUser(foundUser, {
         _id: testUser._id,
         email: testUser.email,
@@ -123,16 +118,13 @@ describe('UserService', () => {
       const { session } = await DatabaseHelpers.createTestUserWithSession();
 
       const foundUser = await UserService.findUserBySession(session._id);
-      
+
       expect(foundUser).toBeDefined();
       expect(foundUser._id.toString()).toBe(session.userId.toString());
     });
 
     test('should return null for inactive session', async () => {
-      const { session } = await DatabaseHelpers.createTestUserWithSession(
-        {},
-        { isActive: false }
-      );
+      const { session } = await DatabaseHelpers.createTestUserWithSession({}, { isActive: false });
 
       const foundUser = await UserService.findUserBySession(session._id);
       expect(foundUser).toBeNull();
@@ -141,7 +133,7 @@ describe('UserService', () => {
     test('should return null for expired session', async () => {
       const { session } = await DatabaseHelpers.createTestUserWithSession(
         {},
-        { expiresAt: new Date(Date.now() - 1000) }
+        { expiresAt: new Date(Date.now() - 1000) },
       );
 
       const foundUser = await UserService.findUserBySession(session._id);
@@ -163,7 +155,7 @@ describe('UserService', () => {
       });
 
       const createdUser = await UserService.createUser(newUserData);
-      
+
       AssertionHelpers.expectValidUser(createdUser, {
         username: newUserData.username,
         email: newUserData.email,
@@ -183,7 +175,7 @@ describe('UserService', () => {
       });
 
       const createdUser = await UserService.createUser(newUserData);
-      
+
       // Password should be hashed
       expect(createdUser.password).not.toBe('plaintext-password');
       expect(createdUser.password).toMatch(/^\$2[aby]\$\d+\$/); // bcrypt hash pattern
@@ -198,7 +190,7 @@ describe('UserService', () => {
       };
 
       const updatedUser = await UserService.updateUser(testUser._id, updateData);
-      
+
       expect(updatedUser.username).toBe(updateData.username);
       expect(updatedUser.role).toBe(updateData.role);
       expect(updatedUser.email).toBe(testUser.email); // Should remain unchanged
@@ -206,17 +198,15 @@ describe('UserService', () => {
 
     test('should set updatedAt timestamp', async () => {
       const originalUpdatedAt = testUser.updatedAt;
-      
+
       // Wait a bit to ensure timestamp difference
       await new Promise(resolve => setTimeout(resolve, 10));
-      
+
       const updatedUser = await UserService.updateUser(testUser._id, {
         username: 'newusername',
       });
-      
-      expect(updatedUser.updatedAt.getTime()).toBeGreaterThan(
-        originalUpdatedAt.getTime()
-      );
+
+      expect(updatedUser.updatedAt.getTime()).toBeGreaterThan(originalUpdatedAt.getTime());
     });
 
     test('should return null for non-existent user', async () => {
@@ -229,19 +219,16 @@ describe('UserService', () => {
   describe('updateUserPassword', () => {
     test('should update user password', async () => {
       const newPassword = 'NewPassword123!';
-      
-      const updatedUser = await UserService.updateUserPassword(
-        testUser._id,
-        newPassword
-      );
-      
+
+      const updatedUser = await UserService.updateUserPassword(testUser._id, newPassword);
+
       expect(updatedUser).toBeDefined();
-      
+
       // Verify password was hashed and changed
       const userWithPassword = await User.findById(testUser._id).select('+password');
       expect(userWithPassword.password).not.toBe(newPassword);
       expect(userWithPassword.password).toMatch(/^\$2[aby]\$\d+\$/);
-      
+
       // Verify new password works
       const isValid = await bcrypt.compare(newPassword, userWithPassword.password);
       expect(isValid).toBe(true);
@@ -251,7 +238,7 @@ describe('UserService', () => {
   describe('deactivateUser', () => {
     test('should deactivate user', async () => {
       const deactivatedUser = await UserService.deactivateUser(testUser._id);
-      
+
       expect(deactivatedUser.isActive).toBe(false);
       expect(deactivatedUser.updatedAt).toBeDefined();
     });
@@ -280,7 +267,7 @@ describe('UserService', () => {
 
     test('should return paginated users', async () => {
       const result = await UserService.getAllUsers(1, 2);
-      
+
       expect(result.users).toHaveLength(2);
       expect(result.pagination).toEqual({
         page: 1,
@@ -292,28 +279,28 @@ describe('UserService', () => {
 
     test('should filter by role', async () => {
       const result = await UserService.getAllUsers(1, 10, { role: 'admin' });
-      
+
       expect(result.users).toHaveLength(1);
       expect(result.users[0].role).toBe('admin');
     });
 
     test('should filter by active status', async () => {
       const result = await UserService.getAllUsers(1, 10, { isActive: 'false' });
-      
+
       expect(result.users).toHaveLength(1);
       expect(result.users[0].isActive).toBe(false);
     });
 
     test('should search by username and email', async () => {
       const result = await UserService.getAllUsers(1, 10, { search: 'user2' });
-      
+
       expect(result.users).toHaveLength(1);
       expect(result.users[0].username).toBe('user2');
     });
 
     test('should not include sensitive data', async () => {
       const result = await UserService.getAllUsers();
-      
+
       result.users.forEach(user => {
         expect(user.password).toBeUndefined();
         expect(user.sessions).toBeUndefined();
@@ -339,7 +326,7 @@ describe('UserService', () => {
 
     test('should return correct user statistics', async () => {
       const stats = await UserService.getUserStatistics();
-      
+
       expect(stats.totalUsers).toBe(3);
       expect(stats.activeUsers).toBe(2);
       expect(stats.inactiveUsers).toBe(1);
@@ -349,7 +336,7 @@ describe('UserService', () => {
         expect.arrayContaining([
           { _id: 'user', count: 2 },
           { _id: 'admin', count: 1 },
-        ])
+        ]),
       );
       expect(stats.recentRegistrations).toBe(3); // All created within 30 days
     });
@@ -358,7 +345,7 @@ describe('UserService', () => {
   describe('formatUserResponse', () => {
     test('should format basic user response', async () => {
       const formatted = UserService.formatUserResponse(testUser);
-      
+
       expect(formatted).toEqual({
         _id: testUser._id,
         username: testUser.username,
@@ -368,14 +355,14 @@ describe('UserService', () => {
         isEmailVerified: testUser.isEmailVerified,
         createdAt: testUser.createdAt,
       });
-      
+
       // Should not include sensitive data
       expect(formatted.password).toBeUndefined();
     });
 
     test('should include additional details when requested', async () => {
       const formatted = UserService.formatUserResponse(testUser, true);
-      
+
       // Check that additional details are included
       expect(formatted.updatedAt).toBeDefined();
       // lastLogin may be undefined if user never logged in, so we just check it's included in response
@@ -390,10 +377,7 @@ describe('UserService', () => {
     });
 
     test('should return false for non-existing user', async () => {
-      const exists = await UserService.userExists(
-        'nonexistent@example.com',
-        'nonexistent'
-      );
+      const exists = await UserService.userExists('nonexistent@example.com', 'nonexistent');
       expect(exists).toBe(false);
     });
   });
@@ -408,29 +392,26 @@ describe('UserService', () => {
 
       const validatedUser = await UserService.validateCredentials(
         userWithPassword.email,
-        plainPassword
+        plainPassword,
       );
-      
+
       expect(validatedUser).toBeDefined();
       expect(validatedUser).not.toBeNull();
       expect(validatedUser.email).toBe(userWithPassword.email);
     });
 
     test('should return null for incorrect password', async () => {
-      const result = await UserService.validateCredentials(
-        testUser.email,
-        'wrong-password'
-      );
-      
+      const result = await UserService.validateCredentials(testUser.email, 'wrong-password');
+
       expect(result).toBeNull();
     });
 
     test('should return null for non-existent user', async () => {
       const result = await UserService.validateCredentials(
         'nonexistent@example.com',
-        'any-password'
+        'any-password',
       );
-      
+
       expect(result).toBeNull();
     });
 
@@ -441,11 +422,8 @@ describe('UserService', () => {
         isActive: false,
       });
 
-      const result = await UserService.validateCredentials(
-        inactiveUser.email,
-        'any-password'
-      );
-      
+      const result = await UserService.validateCredentials(inactiveUser.email, 'any-password');
+
       expect(result).toBeNull();
     });
 
@@ -456,11 +434,8 @@ describe('UserService', () => {
         lockUntil: new Date(Date.now() + 1000 * 60 * 60), // Locked for 1 hour
       });
 
-      const result = await UserService.validateCredentials(
-        lockedUser.email,
-        'any-password'
-      );
-      
+      const result = await UserService.validateCredentials(lockedUser.email, 'any-password');
+
       expect(result).toBeNull();
     });
   });

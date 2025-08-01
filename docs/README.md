@@ -19,6 +19,7 @@ Welcome to the comprehensive documentation for the Modern Express Authentication
 ## 🚀 Quick Start
 
 For a quick overview, start with:
+
 1. [DEVELOPMENT.md](./DEVELOPMENT.md) - Setup your development environment
 2. [API.md](./API.md) - Understand the available endpoints
 3. [AUTHENTICATION.md](./AUTHENTICATION.md) - Learn about the auth flow

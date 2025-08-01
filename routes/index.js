@@ -34,8 +34,8 @@ apiRouter.use((req, res) => {
     success: false,
     error: {
       message: ERROR_MESSAGES.API_ENDPOINT_NOT_FOUND,
-      path: req.originalUrl
-    }
+      path: req.originalUrl,
+    },
   });
 });
 

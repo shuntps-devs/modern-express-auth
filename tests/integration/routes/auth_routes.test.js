@@ -2,11 +2,8 @@ import request from 'supertest';
 import app from '../../../app.js';
 import User from '../../../models/user_model.js';
 import Session from '../../../models/session_model.js';
-import {
-  TestDataFactory,
-  DatabaseHelpers,
-} from '../../helpers/test_helpers.js';
-import { SUCCESS_MESSAGES, ERROR_MESSAGES, VALIDATION_MESSAGES } from '../../../constants/index.js';
+import { TestDataFactory, DatabaseHelpers } from '../../helpers/test_helpers.js';
+import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../../../constants/index.js';
 
 describe('Auth Routes Integration Tests', () => {
   let testUser;
@@ -25,10 +22,7 @@ describe('Auth Routes Integration Tests', () => {
         confirmPassword: 'Test123!@#',
       });
 
-      const response = await request(app)
-        .post('/api/auth/register')
-        .send(newUserData)
-        .expect(201);
+      const response = await request(app).post('/api/auth/register').send(newUserData).expect(201);
 
       expect(response.body.success).toBe(true);
       expect(response.body.message).toContain(SUCCESS_MESSAGES.REGISTRATION_SUCCESS);
@@ -47,10 +41,7 @@ describe('Auth Routes Integration Tests', () => {
         confirmPassword: 'different',
       };
 
-      const response = await request(app)
-        .post('/api/auth/register')
-        .send(invalidData)
-        .expect(400);
+      const response = await request(app).post('/api/auth/register').send(invalidData).expect(400);
 
       expect(response.body.success).toBe(false);
       expect(response.body.error.message).toContain(ERROR_MESSAGES.VALIDATION_FAILED);
@@ -96,10 +87,7 @@ describe('Auth Routes Integration Tests', () => {
         password: testUserData.password, // Plain password before hashing
       };
 
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send(loginData)
-        .expect(200);
+      const response = await request(app).post('/api/auth/login').send(loginData).expect(200);
 
       expect(response.body.success).toBe(true);
       expect(response.body.user).toBeDefined();
@@ -124,10 +112,7 @@ describe('Auth Routes Integration Tests', () => {
         password: testUserData.password,
       };
 
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send(loginData)
-        .expect(401);
+      const response = await request(app).post('/api/auth/login').send(loginData).expect(401);
 
       expect(response.body.success).toBe(false);
       expect(response.body.error.message).toContain(ERROR_MESSAGES.INVALID_CREDENTIALS);
@@ -139,10 +124,7 @@ describe('Auth Routes Integration Tests', () => {
         password: 'wrongpassword',
       };
 
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send(loginData)
-        .expect(401);
+      const response = await request(app).post('/api/auth/login').send(loginData).expect(401);
 
       expect(response.body.success).toBe(false);
       expect(response.body.error.message).toContain(ERROR_MESSAGES.INVALID_CREDENTIALS);
@@ -154,10 +136,7 @@ describe('Auth Routes Integration Tests', () => {
         password: '',
       };
 
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send(invalidData)
-        .expect(400);
+      const response = await request(app).post('/api/auth/login').send(invalidData).expect(400);
 
       expect(response.body.success).toBe(false);
       expect(response.body.error.message).toContain(ERROR_MESSAGES.VALIDATION_FAILED);
@@ -175,10 +154,7 @@ describe('Auth Routes Integration Tests', () => {
         password: testUserData.password,
       };
 
-      const response = await request(app)
-        .post('/api/auth/login')
-        .send(loginData)
-        .expect(401);
+      const response = await request(app).post('/api/auth/login').send(loginData).expect(401);
 
       expect(response.body.success).toBe(false);
       expect(response.body.error.message).toContain(ERROR_MESSAGES.ACCOUNT_DEACTIVATED);
@@ -190,12 +166,10 @@ describe('Auth Routes Integration Tests', () => {
 
     beforeEach(async () => {
       // Login to get auth cookies
-      const loginResponse = await request(app)
-        .post('/api/auth/login')
-        .send({
-          email: testUser.email,
-          password: testUserData.password,
-        });
+      const loginResponse = await request(app).post('/api/auth/login').send({
+        email: testUser.email,
+        password: testUserData.password,
+      });
 
       authCookies = loginResponse.headers['set-cookie'];
     });
@@ -220,9 +194,7 @@ describe('Auth Routes Integration Tests', () => {
     });
 
     test('should handle logout without valid session', async () => {
-      const response = await request(app)
-        .post('/api/auth/logout')
-        .expect(401);
+      const response = await request(app).post('/api/auth/logout').expect(401);
 
       expect(response.body.success).toBe(false);
       expect(response.body.error.message).toContain(ERROR_MESSAGES.ACCESS_TOKEN_REQUIRED);
@@ -234,17 +206,13 @@ describe('Auth Routes Integration Tests', () => {
 
     beforeEach(async () => {
       // Login to get refresh token
-      const loginResponse = await request(app)
-        .post('/api/auth/login')
-        .send({
-          email: testUser.email,
-          password: testUserData.password,
-        });
+      const loginResponse = await request(app).post('/api/auth/login').send({
+        email: testUser.email,
+        password: testUserData.password,
+      });
 
       const cookies = loginResponse.headers['set-cookie'];
-      refreshToken = cookies
-        .find(cookie => cookie.startsWith('refreshToken='))
-        ?.split(';')[0];
+      refreshToken = cookies.find(cookie => cookie.startsWith('refreshToken='))?.split(';')[0];
     });
 
     test('should refresh tokens successfully', async () => {
@@ -273,9 +241,7 @@ describe('Auth Routes Integration Tests', () => {
     });
 
     test('should reject refresh without token', async () => {
-      const response = await request(app)
-        .post('/api/auth/refresh')
-        .expect(401);
+      const response = await request(app).post('/api/auth/refresh').expect(401);
 
       expect(response.body.success).toBe(false);
       expect(response.body.error.message).toContain(ERROR_MESSAGES.REFRESH_TOKEN_REQUIRED);
@@ -287,12 +253,10 @@ describe('Auth Routes Integration Tests', () => {
 
     beforeEach(async () => {
       // Login to get auth cookies
-      const loginResponse = await request(app)
-        .post('/api/auth/login')
-        .send({
-          email: testUser.email,
-          password: testUserData.password,
-        });
+      const loginResponse = await request(app).post('/api/auth/login').send({
+        email: testUser.email,
+        password: testUserData.password,
+      });
 
       authCookies = loginResponse.headers['set-cookie'];
     });
@@ -311,9 +275,7 @@ describe('Auth Routes Integration Tests', () => {
     });
 
     test('should reject request without authentication', async () => {
-      const response = await request(app)
-        .get('/api/auth/me')
-        .expect(401);
+      const response = await request(app).get('/api/auth/me').expect(401);
 
       expect(response.body.success).toBe(false);
       expect(response.body.error.message).toContain(ERROR_MESSAGES.ACCESS_TOKEN_REQUIRED);
@@ -338,18 +300,16 @@ describe('Auth Routes Integration Tests', () => {
       };
 
       // Make multiple failed login attempts
-      const promises = Array(10).fill().map(() =>
-        request(app)
-          .post('/api/auth/login')
-          .send(loginData)
-      );
+      const promises = Array(10)
+        .fill()
+        .map(() => request(app).post('/api/auth/login').send(loginData));
 
       const responses = await Promise.all(promises);
 
       // In test environment, rate limiting is disabled, so all requests should return 401
       const unauthorizedResponses = responses.filter(res => res.status === 401);
       expect(unauthorizedResponses.length).toBe(10);
-      
+
       // Rate limiting is skipped in test environment
       const rateLimitedResponses = responses.filter(res => res.status === 429);
       expect(rateLimitedResponses.length).toBe(0);
@@ -358,8 +318,7 @@ describe('Auth Routes Integration Tests', () => {
 
   describe('Security headers', () => {
     test('should include security headers in responses', async () => {
-      const response = await request(app)
-        .get('/api/auth/me');
+      const response = await request(app).get('/api/auth/me');
 
       // Check for common security headers (set by helmet)
       expect(response.headers['x-content-type-options']).toBe('nosniff');

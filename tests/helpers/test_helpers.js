@@ -2,8 +2,6 @@ import User from '../../models/user_model.js';
 import Session from '../../models/session_model.js';
 import Profile from '../../models/profile_model.js';
 import AuthService from '../../services/auth_service.js';
-import bcrypt from 'bcryptjs';
-import env from '../../config/env_config.js';
 
 /**
  * Test Data Factory
@@ -11,9 +9,8 @@ import env from '../../config/env_config.js';
  */
 export class TestDataFactory {
   static createUserData(overrides = {}) {
-    const timestamp = Date.now();
     const randomSuffix = Math.random().toString(36).substring(2, 8);
-    
+
     return {
       username: `testuser${randomSuffix}`,
       email: `test${randomSuffix}@example.com`,
@@ -52,7 +49,7 @@ export class TestDataFactory {
   static createSessionData(userId, overrides = {}) {
     const timestamp = Date.now();
     const randomSuffix = Math.random().toString(36).substring(2, 15);
-    
+
     return {
       userId,
       accessToken: `test-access-token-${timestamp}-${randomSuffix}`,
@@ -75,7 +72,7 @@ export class TestDataFactory {
 export class DatabaseHelpers {
   static async createTestUser(userData = {}) {
     const userInfo = TestDataFactory.createUserData(userData);
-    
+
     // Let the User model's pre-save middleware handle password hashing
     const user = await User.create(userInfo);
     return user;
@@ -83,10 +80,8 @@ export class DatabaseHelpers {
 
   static async createTestUserWithProfile(userData = {}, profileData = {}) {
     const user = await this.createTestUser(userData);
-    const profile = await Profile.create(
-      TestDataFactory.createProfileData(user._id, profileData)
-    );
-    
+    const profile = await Profile.create(TestDataFactory.createProfileData(user._id, profileData));
+
     return { user, profile };
   }
 
@@ -98,20 +93,20 @@ export class DatabaseHelpers {
 
   static async createTestUserWithSession(userData = {}, sessionData = {}) {
     const user = await this.createTestUser(userData);
-    
+
     // Generate real JWT tokens using AuthService (same payload format as sendTokenResponse)
     const accessToken = AuthService.generateAccessToken({ id: user._id });
     const refreshToken = AuthService.generateRefreshToken({ id: user._id });
-    
+
     // Calculate expiration times using hardcoded test values (same as env defaults)
     const accessTokenExpiryMs = 15 * 60 * 1000; // 15 minutes
     const refreshTokenExpiryMs = 7 * 24 * 60 * 60 * 1000; // 7 days
     const sessionExpiryMs = 30 * 24 * 60 * 60 * 1000; // 30 days
-    
+
     const accessTokenExpiresAt = new Date(Date.now() + accessTokenExpiryMs);
     const refreshTokenExpiresAt = new Date(Date.now() + refreshTokenExpiryMs);
     const sessionExpiresAt = new Date(Date.now() + sessionExpiryMs);
-    
+
     // Create session with real tokens and proper expiration dates
     const sessionInfo = {
       userId: user._id,
@@ -125,9 +120,9 @@ export class DatabaseHelpers {
       expiresAt: sessionExpiresAt,
       ...sessionData,
     };
-    
+
     const session = await Session.create(sessionInfo);
-    
+
     return { user, session, accessToken, refreshToken };
   }
 
@@ -151,7 +146,7 @@ export class MockHelpers {
       headers: {},
       cookies: {},
       ip: '127.0.0.1',
-      get: jest.fn((header) => {
+      get: jest.fn(header => {
         const headers = {
           'User-Agent': 'Test User Agent',
           ...overrides.headers,
@@ -193,7 +188,7 @@ export class AssertionHelpers {
     expect(user.email).toBeDefined();
     expect(user.createdAt).toBeDefined();
     expect(user.updatedAt).toBeDefined();
-    
+
     // Check expected data if provided
     Object.keys(expectedData).forEach(key => {
       expect(user[key]).toEqual(expectedData[key]);
@@ -208,7 +203,7 @@ export class AssertionHelpers {
     expect(session.refreshToken).toBeDefined();
     expect(session.isActive).toBeDefined();
     expect(session.createdAt).toBeDefined();
-    
+
     // Check expected data if provided
     Object.keys(expectedData).forEach(key => {
       expect(session[key]).toEqual(expectedData[key]);
@@ -227,7 +222,7 @@ export class AssertionHelpers {
       expect.objectContaining({
         success: false,
         message: expect.stringContaining(message),
-      })
+      }),
     );
   }
 
@@ -237,7 +232,7 @@ export class AssertionHelpers {
       expect.objectContaining({
         success: true,
         ...data,
-      })
+      }),
     );
   }
 }

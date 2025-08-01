@@ -1,6 +1,11 @@
 import express from 'express';
 import { protect, optionalAuth, authLimiter, readOnlyLimiter } from '../middleware/index.js';
-import { validate, registerSchema, loginSchema, changePasswordSchema } from '../validations/index.js';
+import {
+  validate,
+  registerSchema,
+  loginSchema,
+  changePasswordSchema,
+} from '../validations/index.js';
 import {
   register,
   login,
@@ -14,7 +19,7 @@ import {
   getUserSessions,
   revokeSession,
   revokeAllSessions,
-  cleanupSessions
+  cleanupSessions,
 } from '../controllers/index.js';
 
 const router = express.Router();
@@ -47,7 +52,13 @@ router.get('/me', readOnlyLimiter, protect, getMe);
 // @desc    Change password
 // @route   PUT /api/auth/change-password
 // @access  Private
-router.put('/change-password', authLimiter, protect, validate(changePasswordSchema), changePassword);
+router.put(
+  '/change-password',
+  authLimiter,
+  protect,
+  validate(changePasswordSchema),
+  changePassword,
+);
 
 // @desc    Get user sessions
 // @route   GET /api/auth/sessions

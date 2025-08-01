@@ -1,5 +1,12 @@
+/* eslint-disable no-console */
 import dotenv from 'dotenv';
-import { CONSOLE_MESSAGES, getEnvDisplayMessage, getEnvErrorMessage, getEnvExampleLine } from '../constants/messages.js';
+import { logger } from './logger_config.js';
+import {
+  CONSOLE_MESSAGES,
+  getEnvDisplayMessage,
+  getEnvErrorMessage,
+  getEnvExampleLine,
+} from '../constants/messages.js';
 
 // Load environment variables
 dotenv.config();
@@ -126,21 +133,26 @@ class EnvConfig {
     const missingEnvs = [];
 
     // Check required environment variables
-    this.requiredEnvs.forEach((env) => {
+    this.requiredEnvs.forEach(env => {
       if (!process.env[env.key] || process.env[env.key].trim() === '') {
         missingEnvs.push(env);
       }
     });
 
     if (missingEnvs.length > 0) {
+      // eslint-disable-next-line no-console
       console.error(CONSOLE_MESSAGES.ENV_MISSING_TITLE);
+      // eslint-disable-next-line no-console
       console.error('═'.repeat(70));
 
       for (const env of missingEnvs) {
+        // eslint-disable-next-line no-console
         console.error(getEnvErrorMessage(env.key, env.description, env.example));
+        // eslint-disable-next-line no-console
         console.error('');
       }
 
+      // eslint-disable-next-line no-console
       console.error('═'.repeat(70));
       console.error(CONSOLE_MESSAGES.ENV_HOW_TO_FIX);
       console.error(CONSOLE_MESSAGES.ENV_STEP_1);
@@ -159,12 +171,9 @@ class EnvConfig {
 
       // Log the error if logger is available
       try {
-        logger.error(
-          'Application startup failed: Missing required environment variables',
-          {
-            missingEnvs: missingEnvs.map((env) => env.key),
-          }
-        );
+        logger.error('Application startup failed: Missing required environment variables', {
+          missingEnvs: missingEnvs.map(env => env.key),
+        });
       } catch (logError) {
         // Logger might not be available yet
       }
@@ -183,27 +192,18 @@ class EnvConfig {
     const errors = [];
 
     // Validate MongoDB URI format
-    if (
-      process.env.MONGODB_URI &&
-      !process.env.MONGODB_URI.startsWith('mongodb')
-    ) {
-      errors.push(
-        'MONGODB_URI must start with "mongodb://" or "mongodb+srv://"'
-      );
+    if (process.env.MONGODB_URI && !process.env.MONGODB_URI.startsWith('mongodb')) {
+      errors.push('MONGODB_URI must start with "mongodb://" or "mongodb+srv://"');
     }
 
     // Validate JWT_SECRET length
     if (process.env.JWT_SECRET && process.env.JWT_SECRET.length < 32) {
-      errors.push(
-        'JWT_SECRET should be at least 32 characters long for security'
-      );
+      errors.push('JWT_SECRET should be at least 32 characters long for security');
     }
 
     // Validate SESSION_SECRET length
     if (process.env.SESSION_SECRET && process.env.SESSION_SECRET.length < 32) {
-      errors.push(
-        'SESSION_SECRET should be at least 32 characters long for security'
-      );
+      errors.push('SESSION_SECRET should be at least 32 characters long for security');
     }
 
     // Validate PORT is a number
@@ -229,10 +229,7 @@ class EnvConfig {
       console.error(CONSOLE_MESSAGES.ENV_CANNOT_START);
 
       try {
-        logger.error(
-          'Application startup failed: Invalid environment variable values',
-          { errors }
-        );
+        logger.error('Application startup failed: Invalid environment variable values', { errors });
       } catch (logError) {
         // Logger might not be available yet
       }
@@ -245,7 +242,7 @@ class EnvConfig {
    * Set default values for optional environment variables
    */
   setDefaults() {
-    this.optionalEnvs.forEach((env) => {
+    this.optionalEnvs.forEach(env => {
       if (!process.env[env.key]) {
         process.env[env.key] = env.defaultValue;
       }
@@ -288,9 +285,7 @@ class EnvConfig {
       LOG_FILE: process.env.LOG_FILE,
 
       // CORS Configuration
-      CORS_ORIGIN: process.env.CORS_ORIGIN.split(',').map((origin) =>
-        origin.trim()
-      ),
+      CORS_ORIGIN: process.env.CORS_ORIGIN.split(',').map(origin => origin.trim()),
 
       // Development flags
       isDevelopment: process.env.NODE_ENV === 'development',
@@ -313,9 +308,10 @@ class EnvConfig {
     console.log(getEnvDisplayMessage('🔒 CORS Origins', config.CORS_ORIGIN.join(', ')));
     console.log(getEnvDisplayMessage('🛡️  Max Login Attempts', config.MAX_LOGIN_ATTEMPTS));
     console.log(
-      getEnvDisplayMessage('⏰ Rate Limit', `${config.RATE_LIMIT_MAX_REQUESTS} requests per ${
-        config.RATE_LIMIT_WINDOW_MS / 1000
-      }s`)
+      getEnvDisplayMessage(
+        '⏰ Rate Limit',
+        `${config.RATE_LIMIT_MAX_REQUESTS} requests per ${config.RATE_LIMIT_WINDOW_MS / 1000}s`,
+      ),
     );
     console.log('═'.repeat(50));
 

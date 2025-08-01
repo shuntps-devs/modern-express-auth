@@ -1,6 +1,7 @@
 # New Project Plan
 
 ## Notes
+
 - User's name is Shunt.
 - Project is in JavaScript, English, Windows environment.
 - User builds web, desktop, mobile, and tablet apps.
@@ -78,8 +79,8 @@
 - User clarified intent to discuss `index: true` at the schema field level (vs. userSchema.index()).
 - Decision: Use hybrid index strategy—`index: true` for simple fields, keep only advanced (TTL, sparse, compound) indexes at schema level for user model.
 - Only essential comments remain in user_model.js after cleanup.
-- User questioned the need for a separate sessionId in session_model.js since MongoDB already provides an _id; rationale and necessity under review.
-- sessionId field has been removed from session_model.js; session model now uses MongoDB _id for session identification.
+- User questioned the need for a separate sessionId in session_model.js since MongoDB already provides an \_id; rationale and necessity under review.
+- sessionId field has been removed from session_model.js; session model now uses MongoDB \_id for session identification.
 - profile_model.js has been refactored and simplified as per user edits.
 - profile_model.js has been fully cleaned up: removed virtuals and references to deleted fields, fixed indexes, and eliminated redundant fields and middleware.
 - twoFactorAuth is now nested under preferences in profile_model.js; all references and methods updated accordingly.
@@ -90,6 +91,7 @@
 - All references to `config` in rate_limiter.js have been replaced with the appropriate `env` variables, and centralized configuration usage is now consistent. The error regarding 'config is not defined' is resolved.
 
 ## Task List
+
 - [x] Audit and clean up existing backend code
 - [x] Set up npm and git (if not already)
 - [x] Configure basic project structure
@@ -117,7 +119,7 @@
 - [x] Analyze and add relevant indexes to user model fields
 - [x] Refactor user model to use hybrid index strategy (field-level `index: true` for simple fields, keep only advanced indexes at schema level)
 - [x] Clean up comments in user_model.js, keep only essential ones
-- [x] Remove redundant sessionId field from session_model.js and use _id for session identification
+- [x] Remove redundant sessionId field from session_model.js and use \_id for session identification
 - [x] Clean up and finalize profile_model.js: remove virtuals, fix indexes, eliminate redundant fields and middleware
 - [x] Move twoFactorAuth under preferences in profile_model.js and remove empty preferences object
 - [x] Refactor services to match updated model structures (user, session, profile)
@@ -129,4 +131,5 @@
 - [x] Validation centralization completed: single source of truth achieved with Zod handling all business validation and Mongoose handling only database persistence and constraints. Maintenance simplified to single location per validation rule.
 
 ## Current Goal
+
 Continue backend feature development

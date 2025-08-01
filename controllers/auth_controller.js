@@ -17,10 +17,7 @@ export const register = asyncHandler(async (req, res, next) => {
   const { username, email, password } = req.body;
 
   // Check if user already exists
-  const existingUser = await userService.findUserByEmailOrUsername(
-    email,
-    username
-  );
+  const existingUser = await userService.findUserByEmailOrUsername(email, username);
 
   if (existingUser) {
     if (existingUser.email === email) {
@@ -92,7 +89,7 @@ export const login = asyncHandler(async (req, res, next) => {
 // @desc    Logout user
 // @route   POST /api/auth/logout
 // @access  Private
-export const logout = asyncHandler(async (req, res, next) => {
+export const logout = asyncHandler(async (req, res) => {
   // Use session from auth middleware (req.session is set by protect middleware)
   if (req.session && req.session._id) {
     // Deactivate the current session using Session model
@@ -113,7 +110,7 @@ export const logout = asyncHandler(async (req, res, next) => {
 // @desc    Logout from all devices
 // @route   POST /api/auth/logout-all
 // @access  Private
-export const logoutAll = asyncHandler(async (req, res, next) => {
+export const logoutAll = asyncHandler(async (req, res) => {
   // Deactivate all sessions
   await req.user.deactivateAllSessions();
 
@@ -131,7 +128,7 @@ export const logoutAll = asyncHandler(async (req, res, next) => {
 // @desc    Get current logged in user
 // @route   GET /api/auth/me
 // @access  Private
-export const getMe = asyncHandler(async (req, res, next) => {
+export const getMe = asyncHandler(async (req, res) => {
   const user = userService.formatUserResponse(req.user);
 
   res.status(200).json({
@@ -143,7 +140,7 @@ export const getMe = asyncHandler(async (req, res, next) => {
 // @desc    Change password
 // @route   PUT /api/auth/change-password
 // @access  Private
-export const changePassword = asyncHandler(async (req, res, next) => {
+export const updatePassword = asyncHandler(async (req, res, next) => {
   const { currentPassword, newPassword } = req.body;
 
   // Get user with password
@@ -170,7 +167,7 @@ export const changePassword = asyncHandler(async (req, res, next) => {
 // @desc    Get user sessions
 // @route   GET /api/auth/sessions
 // @access  Private
-export const getSessions = asyncHandler(async (req, res, next) => {
+export const getSessions = asyncHandler(async (req, res) => {
   // Get active sessions for the user from Session model
   const sessions = await Session.find({
     userId: req.user._id,
@@ -178,10 +175,7 @@ export const getSessions = asyncHandler(async (req, res, next) => {
     expiresAt: { $gt: new Date() },
   }).sort({ lastActivity: -1 });
 
-  const formattedSessions = authService.formatUserSessions(
-    sessions,
-    req.cookies.sessionId
-  );
+  const formattedSessions = authService.formatUserSessions(sessions, req.cookies.sessionId);
 
   res.status(200).json({
     success: true,
@@ -192,7 +186,7 @@ export const getSessions = asyncHandler(async (req, res, next) => {
 // @desc    Refresh access token using refresh token
 // @route   POST /api/auth/refresh
 // @access  Public
-export const refreshToken = asyncHandler(async (req, res, next) => {
+export const refreshToken = asyncHandler(async (req, res) => {
   let refreshToken;
 
   // Extract refresh token from cookies or body
@@ -217,7 +211,7 @@ export const refreshToken = asyncHandler(async (req, res, next) => {
 // @desc    Verify access token validity
 // @route   GET /api/auth/verify
 // @access  Private
-export const verifyToken = asyncHandler(async (req, res, next) => {
+export const verifyToken = asyncHandler(async (req, res) => {
   // If we reach here, the token is valid (middleware already validated it)
   const user = userService.formatUserResponse(req.user);
 
@@ -236,7 +230,7 @@ export const verifyToken = asyncHandler(async (req, res, next) => {
 // @desc    Check authentication status
 // @route   GET /api/auth/status
 // @access  Public (with optional auth)
-export const getAuthStatus = asyncHandler(async (req, res, next) => {
+export const getAuthStatus = asyncHandler(async (req, res) => {
   const isAuthenticated = !!req.user;
 
   res.status(200).json({
@@ -275,10 +269,7 @@ export const revokeSession = asyncHandler(async (req, res, next) => {
   const { sessionId } = req.params;
 
   try {
-    const result = await authService.revokeSpecificSession(
-      sessionId,
-      req.user.id
-    );
+    const result = await authService.revokeSpecificSession(sessionId, req.user.id);
 
     logger.info(`${LOGGER_MESSAGES.SESSION_REVOKED} ${sessionId} ${req.user.id}`);
 
@@ -299,14 +290,9 @@ export const revokeAllSessions = asyncHandler(async (req, res, next) => {
   const currentSessionId = req.cookies.sessionId;
 
   try {
-    const result = await authService.revokeAllUserSessions(
-      req.user.id,
-      currentSessionId
-    );
+    const result = await authService.revokeAllUserSessions(req.user.id, currentSessionId);
 
-    logger.info(
-      `${LOGGER_MESSAGES.ALL_SESSIONS_REVOKED} ${req.user.id}, except current session`
-    );
+    logger.info(`${LOGGER_MESSAGES.ALL_SESSIONS_REVOKED} ${req.user.id}, except current session`);
 
     res.status(200).json({
       success: true,
@@ -332,7 +318,7 @@ export const cleanupSessions = asyncHandler(async (req, res, next) => {
     const result = await authService.cleanupExpiredSessions();
 
     logger.info(
-      `${LOGGER_MESSAGES.SESSION_CLEANUP_COMPLETED} ${result.deletedCount} sessions removed`
+      `${LOGGER_MESSAGES.SESSION_CLEANUP_COMPLETED} ${result.deletedCount} sessions removed`,
     );
 
     res.status(200).json({
