@@ -20,18 +20,20 @@ const __dirname = process.cwd();
 const app = express();
 
 // Security middleware
+/* eslint-disable quotes */
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
-        defaultSrc: ['\'self\''],
-        styleSrc: ['\'self\'', '\'unsafe-inline\''],
-        scriptSrc: ['\'self\''],
-        imgSrc: ['\'self\'', 'data:', 'https:'],
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
       },
     },
   }),
 );
+/* eslint-enable quotes */
 
 // CORS configuration
 app.use(
