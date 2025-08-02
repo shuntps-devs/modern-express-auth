@@ -41,6 +41,3 @@ apiRouter.use((req, res) => {
 
 // Export the main API router
 export default apiRouter;
-
-// Also export individual routes for direct access if needed
-export { authRoutes, userRoutes };
