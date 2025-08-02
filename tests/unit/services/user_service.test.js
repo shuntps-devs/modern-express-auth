@@ -292,10 +292,12 @@ describe('UserService', () => {
     });
 
     test('should search by username and email', async () => {
-      const result = await UserService.getAllUsers(1, 10, { search: 'user2' });
+      // Search for 'user2@example.com' which should only match the admin user
+      const result = await UserService.getAllUsers(1, 10, { search: 'user2@example.com' });
 
       expect(result.users).toHaveLength(1);
       expect(result.users[0].username).toBe('user2');
+      expect(result.users[0].email).toBe('user2@example.com');
     });
 
     test('should not include sensitive data', async () => {
