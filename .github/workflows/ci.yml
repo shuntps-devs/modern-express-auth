@@ -43,19 +43,20 @@ jobs:
 
       - name: Create test environment file
         run: |
-          cat > .env.test << EOF
+          cat > .env << EOF
           NODE_ENV=test
           PORT=3001
           MONGODB_URI=mongodb://root:password@localhost:27017/test_db?authSource=admin
-          JWT_SECRET=test-jwt-secret-key-for-testing-purposes-only
-          JWT_REFRESH_SECRET=test-jwt-refresh-secret-key-for-testing-purposes-only
+          JWT_SECRET=test-jwt-secret-key-for-testing-purposes-only-very-long-and-secure
+          JWT_REFRESH_SECRET=test-jwt-refresh-secret-key-for-testing-purposes-only-very-long-and-secure
           JWT_EXPIRES_IN=15m
           JWT_REFRESH_EXPIRES_IN=7d
+          SESSION_SECRET=test-session-secret-key-for-testing-purposes-only-very-long-and-secure
           SESSION_EXPIRES_IN=30d
           BCRYPT_SALT_ROUNDS=10
           RATE_LIMIT_WINDOW_MS=900000
           RATE_LIMIT_MAX_REQUESTS=100
-          COOKIE_SECRET=test-cookie-secret-for-testing-purposes-only
+          COOKIE_SECRET=test-cookie-secret-for-testing-purposes-only-very-long-and-secure
           EOF
 
       - name: Run linting
