@@ -139,19 +139,14 @@ class EnvConfig {
     });
 
     if (missingEnvs.length > 0) {
-      // eslint-disable-next-line no-console
       console.error(CONSOLE_MESSAGES.ENV_MISSING_TITLE);
-      // eslint-disable-next-line no-console
       console.error('═'.repeat(70));
 
       for (const env of missingEnvs) {
-        // eslint-disable-next-line no-console
         console.error(getEnvErrorMessage(env.key, env.description, env.example));
-        // eslint-disable-next-line no-console
         console.error('');
       }
 
-      // eslint-disable-next-line no-console
       console.error('═'.repeat(70));
       console.error(CONSOLE_MESSAGES.ENV_HOW_TO_FIX);
       console.error(CONSOLE_MESSAGES.ENV_STEP_1);

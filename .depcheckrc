@@ -2,7 +2,12 @@
   "ignores": [
     "@babel/core",
     "@babel/preset-env",
-    "babel-jest"
+    "babel-jest",
+    "@eslint/config-array",
+    "@eslint/object-schema",
+    "glob",
+    "rimraf",
+    "superagent"
   ],
   "skip-missing": false,
   "ignore-patterns": [

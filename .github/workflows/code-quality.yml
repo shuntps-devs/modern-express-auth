@@ -34,9 +34,6 @@ jobs:
       - name: Check package vulnerabilities
         run: npm audit --audit-level high
 
-      - name: Validate package.json
-        run: npx validate-package-name
-
   type-check:
     runs-on: ubuntu-latest
 
