@@ -3,9 +3,6 @@
     "@babel/core",
     "@babel/preset-env",
     "babel-jest",
-    "@eslint/config-array",
-    "@eslint/object-schema",
-    "glob",
     "rimraf",
     "superagent"
   ],
