@@ -49,4 +49,22 @@ export default [
       'eol-last': 'error',
     },
   },
+  // Specific configuration for CommonJS files (.cjs)
+  {
+    files: ['**/*.cjs'],
+    languageOptions: {
+      sourceType: 'commonjs',
+      globals: {
+        module: 'writable',
+        exports: 'writable',
+        require: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        process: 'readonly',
+        Buffer: 'readonly',
+        global: 'readonly',
+        console: 'readonly',
+      },
+    },
+  },
 ];
