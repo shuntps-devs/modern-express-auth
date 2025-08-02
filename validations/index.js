@@ -6,30 +6,9 @@
 import { z } from 'zod';
 import { ERROR_MESSAGES, VALIDATION_TYPES } from '../constants/messages.js';
 
-// Pre-configured validation middleware for common use cases
-import {
-  registerSchema,
-  loginSchema,
-  changePasswordSchema,
-  forgotPasswordSchema,
-  resetPasswordSchema,
-} from './auth_validation.js';
-import { updateUserSchema, createUserSchema } from './user_validation.js';
-
 // Re-export validation schemas
 export * from './auth_validation.js';
 export * from './user_validation.js';
-
-// Auth validation middleware
-export const validateRegister = validate(registerSchema);
-export const validateLogin = validate(loginSchema);
-export const validateChangePassword = validate(changePasswordSchema);
-export const validateForgotPassword = validate(forgotPasswordSchema);
-export const validateResetPassword = validate(resetPasswordSchema);
-
-// User validation middleware
-export const validateUpdateUser = validate(updateUserSchema);
-export const validateCreateUser = validate(createUserSchema);
 
 // Validation middleware factory
 export const validate = schema => {
