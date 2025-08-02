@@ -2,9 +2,7 @@
   "ignores": [
     "@babel/core",
     "@babel/preset-env",
-    "babel-jest",
-    "rimraf",
-    "superagent"
+    "babel-jest"
   ],
   "skip-missing": false,
   "ignore-patterns": [
