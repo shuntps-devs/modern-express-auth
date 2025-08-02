@@ -1,0 +1,14 @@
+{
+  "ignores": [
+    "@babel/core",
+    "@babel/preset-env",
+    "babel-jest"
+  ],
+  "skip-missing": false,
+  "ignore-patterns": [
+    "dist",
+    "build",
+    "coverage",
+    "node_modules"
+  ]
+}
