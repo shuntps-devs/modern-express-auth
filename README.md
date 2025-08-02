@@ -1,7 +1,7 @@
 # Express Authentication API 🚀
 
 [![Tests](https://img.shields.io/badge/tests-115%20passing-brightgreen)](./tests/)
-[![Coverage](https://img.shields.io/badge/coverage-90%2B%25-brightgreen)](#testing)
+[![Coverage](https://img.shields.io/badge/coverage-55%25-yellow)](#testing)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
 [![MongoDB](https://img.shields.io/badge/mongodb-%3E%3D5.0.0-brightgreen)](https://mongodb.com/)
 [![GitHub](https://img.shields.io/badge/GitHub-shuntps%2Fmodern--express--auth-blue)](https://github.com/shuntps/modern-express-auth)
@@ -46,7 +46,7 @@ A **production-ready** Express.js authentication API with comprehensive security
 - **Unit Tests** for services and utilities
 - **Integration Tests** for API endpoints
 - **Validation Tests** for Zod schemas
-- **90%+ Code Coverage** across the codebase
+- **55% Code Coverage** across the codebase (with room for improvement)
 - **ESLint & Prettier** for code quality
 
 ## 🛠️ Technology Stack
