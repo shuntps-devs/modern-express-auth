@@ -1,10 +1,20 @@
 // Load environment variables FIRST before any other imports
 import dotenv from 'dotenv';
+
+// Set test environment variables to avoid requiring real API keys
+process.env.NODE_ENV = 'test';
+process.env.RESEND_API_KEY = 'test_fake_key_for_testing';
+process.env.FROM_EMAIL = 'test@example.com';
+process.env.APP_NAME = 'Test App';
+process.env.FRONTEND_URL = 'http://localhost:3000';
+
 dotenv.config({ override: false, quiet: true });
 
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import { env } from '../config/index.js';
+
+// Note: Email service mocking is handled in individual test files to avoid conflicts
 
 let mongoServer;
 

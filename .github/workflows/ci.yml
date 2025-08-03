@@ -43,6 +43,10 @@ jobs:
 
       - name: Setup test environment
         run: |
+          # Create test environment with fake API keys for CI
+          cp .env.example .env.test
+          echo "RESEND_API_KEY=test_fake_resend_key_for_ci" >> .env.test
+          echo "FROM_EMAIL=test@example.com" >> .env.test
           cp .env.test .env
           # Override MongoDB URI for CI with authentication
           sed -i 's|mongodb://localhost:27017/test_db|mongodb://root:password@localhost:27017/test_db?authSource=admin|' .env
@@ -52,6 +56,15 @@ jobs:
 
       - name: Check code formatting
         run: npm run format:check
+
+      - name: Run tests
+        run: npm test
+
+      - name: Test email service (CI mode)
+        run: npm run test:email:ci
+        env:
+          CI: true
+          NODE_ENV: test
 
       - name: Run unit tests
         run: npm run test:unit

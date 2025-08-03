@@ -67,4 +67,11 @@ export default [
       },
     },
   },
+  // Specific configuration for scripts that need console.log
+  {
+    files: ['scripts/**/*.js'],
+    rules: {
+      'no-console': 'off', // Allow console statements in scripts
+    },
+  },
 ];

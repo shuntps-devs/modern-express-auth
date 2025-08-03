@@ -16,8 +16,8 @@ jest.mock('../../../services/index.js', () => ({
     updateEmailVerificationToken: jest.fn(),
   },
   emailService: {
-    sendWelcomeEmail: jest.fn(),
-    sendEmailVerification: jest.fn(),
+    sendWelcomeEmail: jest.fn().mockResolvedValue({ success: true }),
+    sendEmailVerification: jest.fn().mockResolvedValue({ success: true }),
   },
 }));
 
@@ -35,14 +35,23 @@ describe('Email Verification Controller', () => {
     req = {
       params: {},
       body: {},
-      user: {},
     };
     res = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
     next = jest.fn();
+
+    // Reset all mocks before each test
     jest.clearAllMocks();
+
+    // Reset mock implementations
+    userService.findUserByEmailVerificationToken.mockReset();
+    userService.verifyUserEmail.mockReset();
+    userService.findUserByEmail.mockReset();
+    userService.updateEmailVerificationToken.mockReset();
+    emailService.sendWelcomeEmail.mockReset();
+    emailService.sendEmailVerification.mockReset();
   });
 
   describe('verifyEmail', () => {

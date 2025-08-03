@@ -152,6 +152,11 @@ class EnvConfig {
    * Validate required environment variables
    */
   validate() {
+    // Skip strict validation in test environment
+    if (process.env.NODE_ENV === 'test') {
+      return;
+    }
+
     const missingEnvs = [];
 
     // Check required environment variables
