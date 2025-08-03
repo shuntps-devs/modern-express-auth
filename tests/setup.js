@@ -10,27 +10,15 @@ process.env.FRONTEND_URL = 'http://localhost:3000';
 
 dotenv.config({ override: false, quiet: true });
 
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import mongoose from 'mongoose';
+import { testDbManager } from './helpers/database_manager.js';
 import { env } from '../config/index.js';
 
 // Note: Email service mocking is handled in individual test files to avoid conflicts
 
-let mongoServer;
-
 // Setup before all tests
 beforeAll(async () => {
-  // Start in-memory MongoDB server
-  mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-
-  // Disconnect any existing connection first
-  if (mongoose.connection.readyState !== 0) {
-    await mongoose.disconnect();
-  }
-
-  // Connect to the in-memory database
-  await mongoose.connect(mongoUri);
+  // Connect to test database using dedicated manager
+  await testDbManager.connect();
 
   // Set test environment
   env.NODE_ENV = 'test';
@@ -38,35 +26,25 @@ beforeAll(async () => {
 
 // Cleanup after each test
 afterEach(async () => {
-  // Clear all collections
-  const collections = mongoose.connection.collections;
-  for (const key in collections) {
-    const collection = collections[key];
-    await collection.deleteMany({});
-  }
+  // Clear collections using dedicated manager
+  await testDbManager.clearCollections();
 });
 
 // Cleanup after all tests
 afterAll(async () => {
-  // Close database connection
-  await mongoose.connection.dropDatabase();
-  await mongoose.connection.close();
-
-  // Stop the in-memory MongoDB instance
-  if (mongoServer) {
-    await mongoServer.stop();
-  }
+  // Disconnect using dedicated manager
+  await testDbManager.disconnect();
 });
 
 // Global test timeout
 jest.setTimeout(30000);
 
-// Mock console methods in test environment
-global.console = {
-  ...console,
-  log: jest.fn(),
-  debug: jest.fn(),
-  info: jest.fn(),
-  warn: jest.fn(),
-  error: jest.fn(),
-};
+// Mock console methods in test environment (temporarily disabled for debugging)
+// global.console = {
+//   ...console,
+//   log: jest.fn(),
+//   debug: jest.fn(),
+//   info: jest.fn(),
+//   warn: jest.fn(),
+//   error: jest.fn(),
+// };

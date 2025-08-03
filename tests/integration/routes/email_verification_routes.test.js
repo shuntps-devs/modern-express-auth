@@ -63,7 +63,7 @@ describe('Email Verification Routes Integration Tests', () => {
       const response = await request(app).get('/api/auth/verify-email/invalid-token').expect(400);
 
       expect(response.body.success).toBe(false);
-      expect(response.body.message).toBe(ERROR_MESSAGES.EMAIL_VERIFICATION_TOKEN_INVALID);
+      expect(response.body.error.message).toBe(ERROR_MESSAGES.EMAIL_VERIFICATION_TOKEN_INVALID);
     });
 
     it('should return error for expired token', async () => {
@@ -84,7 +84,7 @@ describe('Email Verification Routes Integration Tests', () => {
         .expect(400);
 
       expect(response.body.success).toBe(false);
-      expect(response.body.message).toBe(ERROR_MESSAGES.EMAIL_VERIFICATION_TOKEN_EXPIRED);
+      expect(response.body.error.message).toBe(ERROR_MESSAGES.EMAIL_VERIFICATION_TOKEN_EXPIRED);
     });
 
     it('should return error for already verified email', async () => {
@@ -105,7 +105,7 @@ describe('Email Verification Routes Integration Tests', () => {
         .expect(400);
 
       expect(response.body.success).toBe(false);
-      expect(response.body.message).toBe(ERROR_MESSAGES.EMAIL_ALREADY_VERIFIED);
+      expect(response.body.error.message).toBe(ERROR_MESSAGES.EMAIL_ALREADY_VERIFIED);
     });
 
     it('should return error for missing token', async () => {
@@ -153,7 +153,7 @@ describe('Email Verification Routes Integration Tests', () => {
         .expect(400);
 
       expect(response.body.success).toBe(false);
-      expect(response.body.message).toBe('Email is required');
+      expect(response.body.error.message).toBe('Email is required');
     });
 
     it('should return error for non-existent user', async () => {
@@ -163,7 +163,7 @@ describe('Email Verification Routes Integration Tests', () => {
         .expect(404);
 
       expect(response.body.success).toBe(false);
-      expect(response.body.message).toBe(ERROR_MESSAGES.USER_NOT_FOUND);
+      expect(response.body.error.message).toBe(ERROR_MESSAGES.USER_NOT_FOUND);
     });
 
     it('should return error for already verified email', async () => {
@@ -182,7 +182,7 @@ describe('Email Verification Routes Integration Tests', () => {
         .expect(400);
 
       expect(response.body.success).toBe(false);
-      expect(response.body.message).toBe(ERROR_MESSAGES.EMAIL_ALREADY_VERIFIED);
+      expect(response.body.error.message).toBe(ERROR_MESSAGES.EMAIL_ALREADY_VERIFIED);
     });
 
     it('should handle email service failure', async () => {
@@ -204,7 +204,7 @@ describe('Email Verification Routes Integration Tests', () => {
         .expect(500);
 
       expect(response.body.success).toBe(false);
-      expect(response.body.message).toBe(ERROR_MESSAGES.EMAIL_SEND_FAILED);
+      expect(response.body.error.message).toBe(ERROR_MESSAGES.EMAIL_SEND_FAILED);
     });
   });
 
@@ -228,7 +228,10 @@ describe('Email Verification Routes Integration Tests', () => {
         })
         .expect(200);
 
-      const token = loginResponse.body.data.accessToken;
+      // Extract access token from cookies
+      const cookies = loginResponse.headers['set-cookie'];
+      const accessTokenCookie = cookies.find(cookie => cookie.startsWith('accessToken='));
+      const token = accessTokenCookie.split('=')[1].split(';')[0];
 
       const response = await request(app)
         .get('/api/auth/email-status')
@@ -259,7 +262,10 @@ describe('Email Verification Routes Integration Tests', () => {
         })
         .expect(200);
 
-      const token = loginResponse.body.data.accessToken;
+      // Extract access token from cookies
+      const cookies = loginResponse.headers['set-cookie'];
+      const accessTokenCookie = cookies.find(cookie => cookie.startsWith('accessToken='));
+      const token = accessTokenCookie.split('=')[1].split(';')[0];
 
       const response = await request(app)
         .get('/api/auth/email-status')

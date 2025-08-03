@@ -210,9 +210,13 @@ class UserService {
     return await User.findByIdAndUpdate(
       userId,
       {
-        isEmailVerified: true,
-        emailVerificationToken: undefined,
-        emailVerificationExpires: undefined,
+        $set: {
+          isEmailVerified: true,
+        },
+        $unset: {
+          emailVerificationToken: 1,
+          emailVerificationExpires: 1,
+        },
       },
       { new: true },
     );

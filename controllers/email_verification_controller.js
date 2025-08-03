@@ -2,6 +2,7 @@ import { logger } from '../config/index.js';
 import { AppError, asyncHandler } from '../middleware/index.js';
 import { userService, emailService } from '../services/index.js';
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '../constants/index.js';
+import { User } from '../models/index.js';
 import crypto from 'crypto';
 
 // @desc    Verify email address
@@ -14,17 +15,20 @@ export const verifyEmail = asyncHandler(async (req, res, next) => {
     return next(new AppError(ERROR_MESSAGES.EMAIL_VERIFICATION_TOKEN_INVALID, 400));
   }
 
-  // Find user by verification token
-  const user = await userService.findUserByEmailVerificationToken(token);
+  // First, find user by token without expiration filter to check if token exists
+  const userWithToken = await User.findOne({ emailVerificationToken: token });
 
-  if (!user) {
+  if (!userWithToken) {
     return next(new AppError(ERROR_MESSAGES.EMAIL_VERIFICATION_TOKEN_INVALID, 400));
   }
 
   // Check if token is expired
-  if (user.emailVerificationExpires < new Date()) {
+  if (userWithToken.emailVerificationExpires < new Date()) {
     return next(new AppError(ERROR_MESSAGES.EMAIL_VERIFICATION_TOKEN_EXPIRED, 400));
   }
+
+  // Now use the service method to get the user (this will work since token is not expired)
+  const user = userWithToken;
 
   // Check if email is already verified
   if (user.isEmailVerified) {
