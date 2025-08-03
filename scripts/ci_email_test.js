@@ -70,7 +70,11 @@ async function testEmailInCI() {
 
       // Test mock email functions
       console.log('\n📧 Testing email verification...');
-      await mockEmailService.sendEmailVerification('test@example.com', 'testuser', 'test-token-123');
+      await mockEmailService.sendEmailVerification(
+        'test@example.com',
+        'testuser',
+        'test-token-123',
+      );
 
       console.log('\n🎉 Testing welcome email...');
       await mockEmailService.sendWelcomeEmail('test@example.com', 'testuser');
@@ -90,7 +94,6 @@ async function testEmailInCI() {
       console.log('⚠️ Not in CI environment - real email service would be used');
       console.log('💡 Run with NODE_ENV=test or CI=true to use mock service');
     }
-
   } catch (error) {
     console.error('❌ Email test failed:', error.message);
     return false;
