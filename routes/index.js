@@ -6,7 +6,7 @@
 import express from 'express';
 import authRoutes from './auth_routes.js';
 import userRoutes from './user_routes.js';
-import { env } from '../config/env_config.js';
+import { env } from '../config/index.js';
 import { ERROR_MESSAGES } from '../constants/index.js';
 
 // Create main API router

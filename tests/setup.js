@@ -4,7 +4,7 @@ dotenv.config({ override: false, quiet: true });
 
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
-import { env } from '../config/env_config.js';
+import { env } from '../config/index.js';
 
 let mongoServer;
 

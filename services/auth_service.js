@@ -1,14 +1,14 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import Session from '../models/session_model.js';
-import { env } from '../config/env_config.js';
+import { Session } from '../models/index.js';
+import { env } from '../config/index.js';
 import {
   SUCCESS_MESSAGES,
   ERROR_MESSAGES,
   COOKIE_CONFIG,
   COOKIE_PATHS,
-} from '../constants/messages.js';
-import { setAuthCookies, calculateTokenExpirations } from '../utils/cookie_helper.js';
+} from '../constants/index.js';
+import { setAuthCookies, calculateTokenExpirations } from '../utils/index.js';
 
 class AuthService {
   // Convert JWT time string to milliseconds

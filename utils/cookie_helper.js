@@ -1,5 +1,5 @@
-import { env } from '../config/env_config.js';
-import { COOKIE_NAMES, COOKIE_PATHS, COOKIE_CONFIG } from '../constants/messages.js';
+import { env } from '../config/index.js';
+import { COOKIE_NAMES, COOKIE_PATHS, COOKIE_CONFIG } from '../constants/index.js';
 
 /**
  * Cookie Helper Utility

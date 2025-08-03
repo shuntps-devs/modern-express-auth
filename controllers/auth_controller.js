@@ -1,14 +1,13 @@
-import { asyncHandler, AppError } from '../middleware/error_handler.js';
-import { logger } from '../config/logger_config.js';
-import authService from '../services/auth_service.js';
-import userService from '../services/user_service.js';
-import Session from '../models/session_model.js';
+import { logger } from '../config/index.js';
+import { AppError, asyncHandler } from '../middleware/index.js';
+import { authService, userService } from '../services/index.js';
+import { Session } from '../models/index.js';
 import {
-  SUCCESS_MESSAGES,
   ERROR_MESSAGES,
   LOGGER_MESSAGES,
+  SUCCESS_MESSAGES,
   USER_ROLES,
-} from '../constants/messages.js';
+} from '../constants/index.js';
 
 // @desc    Register user
 // @route   POST /api/auth/register

@@ -1,11 +1,11 @@
-import AuthService from '../../../services/auth_service.js';
-import Session from '../../../models/session_model.js';
+import { authService } from '../../../services/index.js';
+import { Session } from '../../../models/index.js';
 import jwt from 'jsonwebtoken';
-import { env } from '../../../config/env_config.js';
+import { env } from '../../../config/index.js';
 import { DatabaseHelpers, MockHelpers, AssertionHelpers } from '../../helpers/test_helpers.js';
 import { ERROR_MESSAGES } from '../../../constants/index.js';
 
-describe('AuthService', () => {
+describe('authService', () => {
   let testUser;
   let mockReq;
   let mockRes;
@@ -21,36 +21,36 @@ describe('AuthService', () => {
 
   describe('parseJwtTime', () => {
     test('should parse seconds correctly', () => {
-      const result = AuthService.parseJwtTime('30s');
+      const result = authService.parseJwtTime('30s');
       expect(result).toBe(30 * 1000);
     });
 
     test('should parse minutes correctly', () => {
-      const result = AuthService.parseJwtTime('15m');
+      const result = authService.parseJwtTime('15m');
       expect(result).toBe(15 * 60 * 1000);
     });
 
     test('should parse hours correctly', () => {
-      const result = AuthService.parseJwtTime('2h');
+      const result = authService.parseJwtTime('2h');
       expect(result).toBe(2 * 60 * 60 * 1000);
     });
 
     test('should parse days correctly', () => {
-      const result = AuthService.parseJwtTime('7d');
+      const result = authService.parseJwtTime('7d');
       expect(result).toBe(7 * 24 * 60 * 60 * 1000);
     });
 
     test('should throw error for invalid format', () => {
-      expect(() => AuthService.parseJwtTime('invalid')).toThrow(ERROR_MESSAGES.INVALID_TIME_FORMAT);
-      expect(() => AuthService.parseJwtTime('30x')).toThrow(ERROR_MESSAGES.INVALID_TIME_FORMAT);
-      expect(() => AuthService.parseJwtTime('')).toThrow(ERROR_MESSAGES.INVALID_TIME_FORMAT);
+      expect(() => authService.parseJwtTime('invalid')).toThrow(ERROR_MESSAGES.INVALID_TIME_FORMAT);
+      expect(() => authService.parseJwtTime('30x')).toThrow(ERROR_MESSAGES.INVALID_TIME_FORMAT);
+      expect(() => authService.parseJwtTime('')).toThrow(ERROR_MESSAGES.INVALID_TIME_FORMAT);
     });
   });
 
   describe('generateAccessToken', () => {
     test('should generate valid access token', () => {
       const payload = { id: testUser._id };
-      const token = AuthService.generateAccessToken(payload);
+      const token = authService.generateAccessToken(payload);
 
       AssertionHelpers.expectValidJWT(token);
 
@@ -62,8 +62,8 @@ describe('AuthService', () => {
     });
 
     test('should generate different tokens for different payloads', () => {
-      const token1 = AuthService.generateAccessToken({ id: testUser._id });
-      const token2 = AuthService.generateAccessToken({ id: 'different-id' });
+      const token1 = authService.generateAccessToken({ id: testUser._id });
+      const token2 = authService.generateAccessToken({ id: 'different-id' });
 
       expect(token1).not.toBe(token2);
     });
@@ -72,7 +72,7 @@ describe('AuthService', () => {
   describe('generateRefreshToken', () => {
     test('should generate valid refresh token', () => {
       const payload = { id: testUser._id };
-      const token = AuthService.generateRefreshToken(payload);
+      const token = authService.generateRefreshToken(payload);
 
       AssertionHelpers.expectValidJWT(token);
 
@@ -84,7 +84,7 @@ describe('AuthService', () => {
 
   describe('generateRandomToken', () => {
     test('should generate random hex token', () => {
-      const token = AuthService.generateRandomToken();
+      const token = authService.generateRandomToken();
 
       expect(token).toBeDefined();
       expect(typeof token).toBe('string');
@@ -93,8 +93,8 @@ describe('AuthService', () => {
     });
 
     test('should generate different tokens each time', () => {
-      const token1 = AuthService.generateRandomToken();
-      const token2 = AuthService.generateRandomToken();
+      const token1 = authService.generateRandomToken();
+      const token2 = authService.generateRandomToken();
 
       expect(token1).not.toBe(token2);
     });
@@ -103,39 +103,39 @@ describe('AuthService', () => {
   describe('verifyAccessToken', () => {
     test('should verify valid access token', () => {
       const payload = { id: testUser._id };
-      const token = AuthService.generateAccessToken(payload);
+      const token = authService.generateAccessToken(payload);
 
-      const decoded = AuthService.verifyAccessToken(token);
+      const decoded = authService.verifyAccessToken(token);
       expect(decoded.id).toBe(testUser._id.toString());
     });
 
     test('should throw error for invalid token', () => {
-      expect(() => AuthService.verifyAccessToken('invalid-token')).toThrow();
+      expect(() => authService.verifyAccessToken('invalid-token')).toThrow();
     });
 
     test('should throw error for token with wrong secret', () => {
       const wrongToken = jwt.sign({ id: testUser._id }, 'wrong-secret');
-      expect(() => AuthService.verifyAccessToken(wrongToken)).toThrow();
+      expect(() => authService.verifyAccessToken(wrongToken)).toThrow();
     });
   });
 
   describe('verifyRefreshToken', () => {
     test('should verify valid refresh token', () => {
       const payload = { id: testUser._id };
-      const token = AuthService.generateRefreshToken(payload);
+      const token = authService.generateRefreshToken(payload);
 
-      const decoded = AuthService.verifyRefreshToken(token);
+      const decoded = authService.verifyRefreshToken(token);
       expect(decoded.id).toBe(testUser._id.toString());
     });
 
     test('should throw error for invalid refresh token', () => {
-      expect(() => AuthService.verifyRefreshToken('invalid-token')).toThrow();
+      expect(() => authService.verifyRefreshToken('invalid-token')).toThrow();
     });
   });
 
   describe('sendTokenResponse', () => {
     test('should create session and send user response', async () => {
-      await AuthService.sendTokenResponse(testUser, 200, mockRes, mockReq);
+      await authService.sendTokenResponse(testUser, 200, mockRes, mockReq);
 
       // Check response
       AssertionHelpers.expectSuccessResponse(mockRes, 200, {
@@ -156,14 +156,14 @@ describe('AuthService', () => {
     });
 
     test('should set authentication cookies', async () => {
-      await AuthService.sendTokenResponse(testUser, 200, mockRes, mockReq);
+      await authService.sendTokenResponse(testUser, 200, mockRes, mockReq);
 
       // Verify cookies were set (mocked)
       expect(mockRes.cookie).toHaveBeenCalled();
     });
 
     test('should not include sensitive data in response', async () => {
-      await AuthService.sendTokenResponse(testUser, 200, mockRes, mockReq);
+      await authService.sendTokenResponse(testUser, 200, mockRes, mockReq);
 
       const responseCall = mockRes.json.mock.calls[0][0];
       expect(responseCall.user.password).toBeUndefined();
@@ -176,14 +176,14 @@ describe('AuthService', () => {
     test('should validate valid access token and return session', async () => {
       const { user, session } = await DatabaseHelpers.createTestUserWithSession();
 
-      const result = await AuthService.validateAccessToken(session.accessToken);
+      const result = await authService.validateAccessToken(session.accessToken);
 
       expect(result.session._id.toString()).toBe(session._id.toString());
       expect(result.user._id.toString()).toBe(user._id.toString());
     });
 
     test('should throw error for non-existent token', async () => {
-      await expect(AuthService.validateAccessToken('non-existent-token')).rejects.toThrow(
+      await expect(authService.validateAccessToken('non-existent-token')).rejects.toThrow(
         ERROR_MESSAGES.TOKEN_VALIDATION_FAILED,
       );
     });
@@ -191,7 +191,7 @@ describe('AuthService', () => {
     test('should throw error for inactive session', async () => {
       const { session } = await DatabaseHelpers.createTestUserWithSession({}, { isActive: false });
 
-      await expect(AuthService.validateAccessToken(session.accessToken)).rejects.toThrow(
+      await expect(authService.validateAccessToken(session.accessToken)).rejects.toThrow(
         ERROR_MESSAGES.TOKEN_VALIDATION_FAILED,
       );
     });
@@ -209,7 +209,7 @@ describe('AuthService', () => {
         expiresAt: new Date(Date.now() + 1000 * 60 * 60), // Expires in 1 hour
       });
 
-      const result = await AuthService.cleanupExpiredSessions();
+      const result = await authService.cleanupExpiredSessions();
 
       expect(result.deletedCount).toBe(1);
 
@@ -233,7 +233,7 @@ describe('AuthService', () => {
         expiresAt: new Date(Date.now() - 1000),
       });
 
-      const result = await AuthService.cleanupExpiredSessions(testUser._id);
+      const result = await authService.cleanupExpiredSessions(testUser._id);
 
       expect(result.deletedCount).toBe(1);
 
@@ -249,7 +249,7 @@ describe('AuthService', () => {
       await DatabaseHelpers.createTestSession(testUser._id, { isActive: true });
       await DatabaseHelpers.createTestSession(testUser._id, { isActive: true });
 
-      const result = await AuthService.revokeAllUserSessions(testUser._id);
+      const result = await authService.revokeAllUserSessions(testUser._id);
 
       expect(result.modifiedCount).toBe(2);
 
@@ -265,7 +265,7 @@ describe('AuthService', () => {
       const session1 = await DatabaseHelpers.createTestSession(testUser._id, { isActive: true });
       const session2 = await DatabaseHelpers.createTestSession(testUser._id, { isActive: true });
 
-      const result = await AuthService.revokeAllUserSessions(testUser._id, session1._id);
+      const result = await authService.revokeAllUserSessions(testUser._id, session1._id);
 
       expect(result.modifiedCount).toBe(1);
 
@@ -285,7 +285,7 @@ describe('AuthService', () => {
       await DatabaseHelpers.createTestSession(testUser._id, { isActive: true });
       await DatabaseHelpers.createTestSession(testUser._id, { isActive: false });
 
-      const count = await AuthService.getActiveSessionsCount(testUser._id);
+      const count = await authService.getActiveSessionsCount(testUser._id);
 
       expect(count).toBe(2);
     });
@@ -296,7 +296,7 @@ describe('AuthService', () => {
         expiresAt: new Date(Date.now() - 1000), // Expired
       });
 
-      const count = await AuthService.getActiveSessionsCount(testUser._id);
+      const count = await authService.getActiveSessionsCount(testUser._id);
 
       expect(count).toBe(0);
     });

@@ -1,8 +1,8 @@
 import winston from 'winston';
 import path from 'path';
 import fs from 'fs';
-import { env } from './env_config.js';
-import { CONSOLE_MESSAGES } from '../constants/messages.js';
+import { CONSOLE_MESSAGES } from '../constants/index.js';
+import { env } from './index.js';
 
 // Get directory path - compatible with both Node.js and Jest
 const __dirname = `${process.cwd()}/config`;

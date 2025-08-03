@@ -1,8 +1,7 @@
-import { asyncHandler, AppError } from '../middleware/error_handler.js';
-import { SUCCESS_MESSAGES, ERROR_MESSAGES, LOGGER_MESSAGES } from '../constants/messages.js';
-import { logger } from '../config/logger_config.js';
-import userService from '../services/user_service.js';
-import authService from '../services/auth_service.js';
+import { asyncHandler, AppError } from '../middleware/index.js';
+import { SUCCESS_MESSAGES, ERROR_MESSAGES, LOGGER_MESSAGES } from '../constants/index.js';
+import { logger } from '../config/index.js';
+import { userService, authService } from '../services/index.js';
 
 // @desc    Get user profile
 // @route   GET /api/user/profile

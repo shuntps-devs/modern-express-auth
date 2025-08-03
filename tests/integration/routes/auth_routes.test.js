@@ -1,7 +1,6 @@
 import request from 'supertest';
 import app from '../../../app.js';
-import User from '../../../models/user_model.js';
-import Session from '../../../models/session_model.js';
+import { User, Session } from '../../../models/index.js';
 import { TestDataFactory, DatabaseHelpers } from '../../helpers/test_helpers.js';
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../../../constants/index.js';
 

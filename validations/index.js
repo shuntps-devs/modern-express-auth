@@ -4,7 +4,7 @@
  */
 
 import { z } from 'zod';
-import { ERROR_MESSAGES, VALIDATION_TYPES } from '../constants/messages.js';
+import { ERROR_MESSAGES, VALIDATION_TYPES } from '../constants/index.js';
 
 // Re-export validation schemas
 export * from './auth_validation.js';

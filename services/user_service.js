@@ -1,5 +1,4 @@
-import User from '../models/user_model.js';
-import Session from '../models/session_model.js';
+import { User, Session } from '../models/index.js';
 
 class UserService {
   // Find user by email

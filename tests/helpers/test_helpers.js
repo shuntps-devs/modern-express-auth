@@ -1,7 +1,5 @@
-import User from '../../models/user_model.js';
-import Session from '../../models/session_model.js';
-import Profile from '../../models/profile_model.js';
-import AuthService from '../../services/auth_service.js';
+import { User, Session, Profile } from '../../models/index.js';
+import { authService } from '../../services/index.js';
 
 /**
  * Test Data Factory
@@ -94,9 +92,9 @@ export class DatabaseHelpers {
   static async createTestUserWithSession(userData = {}, sessionData = {}) {
     const user = await this.createTestUser(userData);
 
-    // Generate real JWT tokens using AuthService (same payload format as sendTokenResponse)
-    const accessToken = AuthService.generateAccessToken({ id: user._id });
-    const refreshToken = AuthService.generateRefreshToken({ id: user._id });
+    // Generate real JWT tokens using authService (same payload format as sendTokenResponse)
+    const accessToken = authService.generateAccessToken({ id: user._id });
+    const refreshToken = authService.generateRefreshToken({ id: user._id });
 
     // Calculate expiration times using hardcoded test values (same as env defaults)
     const accessTokenExpiryMs = 15 * 60 * 1000; // 15 minutes

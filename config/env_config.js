@@ -5,7 +5,7 @@ import {
   getEnvDisplayMessage,
   getEnvErrorMessage,
   getEnvExampleLine,
-} from '../constants/messages.js';
+} from '../constants/index.js';
 
 // Load environment variables
 dotenv.config();

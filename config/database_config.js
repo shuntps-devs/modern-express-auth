@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
-import { logger } from './logger_config.js';
-import { env } from './env_config.js';
-import { LOGGER_MESSAGES } from '../constants/messages.js';
+import { LOGGER_MESSAGES } from '../constants/index.js';
+import { env, logger } from './index.js';
 
 const connectDB = async () => {
   try {

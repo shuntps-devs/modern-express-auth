@@ -1,3 +1,5 @@
+import { authService } from '../services/index.js';
+import { logger } from '../config/index.js';
 import { asyncHandler, AppError } from './error_handler.js';
 import {
   ERROR_MESSAGES,
@@ -5,10 +7,7 @@ import {
   AUTH_MESSAGES,
   TOKEN_KEYWORDS,
   USER_ROLES,
-} from '../constants/messages.js';
-
-import AuthService from '../services/auth_service.js';
-import { logger } from '../config/logger_config.js';
+} from '../constants/index.js';
 
 // Protect routes - require authentication
 export const protect = asyncHandler(async (req, res, next) => {
@@ -28,7 +27,7 @@ export const protect = asyncHandler(async (req, res, next) => {
 
   try {
     // Validate access token using AuthService
-    const { session, user } = await AuthService.validateAccessToken(accessToken);
+    const { session, user } = await authService.validateAccessToken(accessToken);
 
     // Check if user account is locked
     if (user.isLocked) {
@@ -87,7 +86,7 @@ export const optionalAuth = asyncHandler(async (req, res, next) => {
 
   if (accessToken) {
     try {
-      const { session, user } = await AuthService.validateAccessToken(accessToken);
+      const { session, user } = await authService.validateAccessToken(accessToken);
 
       if (user && user.isActive && !user.isLocked) {
         req.user = user;

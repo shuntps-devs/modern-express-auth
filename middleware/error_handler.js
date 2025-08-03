@@ -1,5 +1,4 @@
-import { env } from '../config/env_config.js';
-import { logger } from '../config/logger_config.js';
+import { env, logger } from '../config/index.js';
 import { ERROR_MESSAGES } from '../constants/index.js';
 
 // Custom error class
