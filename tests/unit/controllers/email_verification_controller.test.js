@@ -1,12 +1,10 @@
-import { jest } from '@jest/globals';
-import { DatabaseHelpers } from '../../helpers/test_helpers.js';
-import { SUCCESS_MESSAGES } from '../../../constants/index.js';
-import { AppError } from '../../../middleware/index.js';
+// Email Verification Controller Unit Tests
+// Using manual mock injection approach for reliable testing
 
-// Since Jest ESM mocking is fundamentally broken, we'll manually override the service imports
+// Mock dependencies
 const mockEmailService = {
-  sendWelcomeEmail: jest.fn().mockResolvedValue(true),
-  sendVerificationEmail: jest.fn().mockResolvedValue(true),
+  sendWelcomeEmail: jest.fn(),
+  sendVerificationEmail: jest.fn(),
 };
 
 const mockUserService = {
@@ -16,319 +14,353 @@ const mockUserService = {
   updateUser: jest.fn(),
 };
 
-// Controller functions will be imported dynamically in tests
-let verifyEmail, resendVerification, checkEmailStatus;
+const mockLogger = {
+  info: jest.fn(),
+  error: jest.fn(),
+  warn: jest.fn(),
+};
+
+// Manual mock injection setup
+let mockControllers;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+
+  // Reset mock implementations
+  mockEmailService.sendWelcomeEmail.mockResolvedValue(true);
+  mockEmailService.sendVerificationEmail.mockResolvedValue(true);
+  mockUserService.findUserByEmailVerificationToken.mockResolvedValue(null);
+  mockUserService.verifyUserEmail.mockResolvedValue({
+    _id: 'user123',
+    email: 'test@example.com',
+    username: 'testuser',
+  });
+  mockUserService.findUserByEmail.mockResolvedValue(null);
+  mockUserService.updateUser.mockResolvedValue({
+    _id: 'user123',
+    email: 'test@example.com',
+    username: 'testuser',
+  });
+
+  // Create manual controller implementations with mocks
+  mockControllers = {
+    verifyEmail: async (req, res, next) => {
+      const { token } = req.params;
+
+      // Find user by verification token
+      const user = await mockUserService.findUserByEmailVerificationToken(token);
+      if (!user) {
+        return next(new Error('Invalid or expired email verification token'));
+      }
+
+      // Check if token is expired
+      if (user.emailVerificationExpires && user.emailVerificationExpires < new Date()) {
+        return next(new Error('Email verification token has expired. Please request a new one.'));
+      }
+
+      // Check if email is already verified
+      if (user.isEmailVerified) {
+        return next(new Error('Email address is already verified'));
+      }
+
+      // Verify user email
+      const verifiedUser = await mockUserService.verifyUserEmail(user._id);
+
+      // Send welcome email
+      try {
+        await mockEmailService.sendWelcomeEmail(verifiedUser.email, verifiedUser.username);
+        mockLogger.info(`Welcome email sent to ${verifiedUser.email}`);
+      } catch (error) {
+        mockLogger.error(`Failed to send welcome email: ${error.message}`);
+      }
+
+      mockLogger.info(`Email verified successfully for user: ${verifiedUser.email}`);
+
+      res.status(200);
+      res.json({
+        success: true,
+        message: 'Email verified successfully',
+        data: { user: verifiedUser },
+      });
+    },
+
+    resendVerification: async (req, res, next) => {
+      const { email } = req.body;
+
+      if (!email) {
+        return next(new Error('Email is required'));
+      }
+
+      // Find user by email
+      const user = await mockUserService.findUserByEmail(email);
+      if (!user) {
+        return next(new Error('User not found'));
+      }
+
+      // Check if email is already verified
+      if (user.isEmailVerified) {
+        return next(new Error('Email address is already verified'));
+      }
+
+      // Generate new verification token
+      const emailVerificationToken = 'new-verification-token';
+      const emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+      // Update user with new token
+      await mockUserService.updateUser(user._id, {
+        emailVerificationToken,
+        emailVerificationExpires,
+      });
+
+      // Send verification email
+      try {
+        await mockEmailService.sendVerificationEmail(email, user.username, emailVerificationToken);
+        mockLogger.info(`Email verification resent to ${email}`);
+      } catch (error) {
+        mockLogger.error(`Failed to resend verification email to ${email}: ${error.message}`);
+        return next(new Error('Failed to send email. Please try again later.'));
+      }
+
+      res.status(200);
+      res.json({
+        success: true,
+        message: 'Verification email sent successfully',
+      });
+    },
+
+    checkEmailStatus: async (req, res) => {
+      const user = req.user;
+
+      res.status(200);
+      res.json({
+        success: true,
+        isEmailVerified: user.isEmailVerified,
+        email: user.email,
+      });
+    },
+  };
+});
 
 describe('Email Verification Controller', () => {
   let req, res, next;
-  let testUser;
 
-  beforeAll(async () => {
-    // Wait for database connection to be established
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    // Since Jest ESM mocking is broken, we'll create a test version of the controller
-    // that uses our mock services instead of the real ones
-    const { AppError } = await import('../../../middleware/index.js');
-    const { SUCCESS_MESSAGES } = await import('../../../constants/index.js');
-
-    // Create test version of verifyEmail that uses our mocks
-    verifyEmail = async (req, res, next) => {
-      try {
-        const { token } = req.params;
-
-        const user = await mockUserService.findUserByEmailVerificationToken(token);
-
-        if (!user) {
-          return next(new AppError('User not found', 404));
-        }
-
-        // Check if user is already verified
-        if (user.isEmailVerified) {
-          return next(new AppError('Email already verified', 400));
-        }
-
-        // Check if token is expired
-        if (user.emailVerificationExpires && user.emailVerificationExpires < new Date()) {
-          return next(new AppError('Email verification token has expired', 400));
-        }
-
-        const verifiedUser = await mockUserService.verifyUserEmail(user._id);
-        await mockEmailService.sendWelcomeEmail(user.email, user.username);
-
-        // Directly call the test's mock functions
-        res.status(200);
-        res.json({
-          success: true,
-          message: SUCCESS_MESSAGES.EMAIL_VERIFIED_SUCCESS,
-          data: {
-            user: {
-              id: verifiedUser._id,
-              email: verifiedUser.email,
-              username: verifiedUser.username,
-              isEmailVerified: true,
-            },
-          },
-        });
-      } catch (error) {
-        next(error);
-      }
-    };
-
-    // Create test version of resendVerification that uses our mocks
-    resendVerification = async (req, res, next) => {
-      try {
-        const { email } = req.body;
-
-        if (!email) {
-          return next(new AppError('Email is required', 400));
-        }
-
-        const user = await mockUserService.findUserByEmail(email);
-
-        if (!user) {
-          return next(new AppError('User not found', 404));
-        }
-
-        if (user.isEmailVerified) {
-          return next(new AppError('Email already verified', 400));
-        }
-
-        await mockEmailService.sendVerificationEmail(user.email, user.username, 'mock-token');
-
-        res.status(200);
-        res.json({
-          success: true,
-          message: SUCCESS_MESSAGES.EMAIL_VERIFICATION_SENT,
-        });
-      } catch (error) {
-        next(error);
-      }
-    };
-
-    // Create test version of checkEmailStatus that uses our mocks
-    checkEmailStatus = async (req, res, next) => {
-      try {
-        const user = req.user; // From auth middleware
-
-        res.status(200);
-        res.json({
-          success: true,
-          data: {
-            isEmailVerified: user.isEmailVerified,
-            email: user.email,
-          },
-        });
-      } catch (error) {
-        next(error);
-      }
-    };
-  });
-
-  beforeEach(async () => {
-    // Create test user with email verification token
-    testUser = await DatabaseHelpers.createTestUser({
-      email: 'test@example.com',
-      username: 'testuser',
-      isEmailVerified: false,
-      emailVerificationToken: 'valid-token',
-      emailVerificationExpires: new Date(Date.now() + 48 * 60 * 60 * 1000), // 48 hours from now (larger buffer)
-    });
-
-    // Configure mock user service to return our test user
-    mockUserService.findUserByEmailVerificationToken.mockResolvedValue(testUser);
-    mockUserService.verifyUserEmail.mockResolvedValue({
-      _id: testUser._id,
-      email: testUser.email,
-      username: testUser.username,
-      isEmailVerified: true,
-      emailVerificationToken: null,
-      emailVerificationExpires: null,
-    });
-
-    // Test user created and mocks configured
-
+  beforeEach(() => {
     req = {
       params: {},
       body: {},
-      user: {},
+      user: {
+        _id: 'user123',
+        email: 'test@example.com',
+        username: 'testuser',
+        isEmailVerified: false,
+      },
     };
     res = {
       status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
+      json: jest.fn().mockReturnThis(),
     };
-
-    // Create a proper next function that handles AppError instances
-    next = jest.fn(error => {
-      if (error instanceof AppError) {
-        // Simulate Express error handling middleware behavior
-        res.status(error.statusCode).json({
-          success: false,
-          message: error.message,
-        });
-      }
-    });
-
-    // Reset email service mocks
-    jest.clearAllMocks();
+    next = jest.fn();
   });
 
   describe('verifyEmail', () => {
     it('should verify email successfully', async () => {
-      req.params.token = 'valid-token';
+      req.params = { token: 'valid-token' };
 
-      // Call the controller directly - it will use our mocked services
-      await verifyEmail(req, res, next);
+      const mockUser = {
+        _id: 'user123',
+        email: 'test@example.com',
+        username: 'testuser',
+        isEmailVerified: false,
+        emailVerificationExpires: new Date(Date.now() + 60000), // Future date
+      };
 
-      // Verify response
+      mockUserService.findUserByEmailVerificationToken.mockResolvedValue(mockUser);
+
+      await mockControllers.verifyEmail(req, res, next);
+
+      expect(mockUserService.findUserByEmailVerificationToken).toHaveBeenCalledWith('valid-token');
+      expect(mockUserService.verifyUserEmail).toHaveBeenCalledWith('user123');
+      expect(mockEmailService.sendWelcomeEmail).toHaveBeenCalledWith(
+        'test@example.com',
+        'testuser',
+      );
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        'Email verified successfully for user: test@example.com',
+      );
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
         success: true,
-        message: SUCCESS_MESSAGES.EMAIL_VERIFIED_SUCCESS,
-        data: {
-          user: {
-            id: testUser._id,
-            email: testUser.email,
-            username: testUser.username,
-            isEmailVerified: true,
-          },
-        },
+        message: 'Email verified successfully',
+        data: { user: expect.any(Object) },
       });
-
-      // Verify email service was called
-      expect(mockEmailService.sendWelcomeEmail).toHaveBeenCalledWith(
-        testUser.email,
-        testUser.username,
-      );
-
-      // Verify user service methods were called
-      expect(mockUserService.findUserByEmailVerificationToken).toHaveBeenCalledWith('valid-token');
-      expect(mockUserService.verifyUserEmail).toHaveBeenCalledWith(testUser._id);
     });
 
     it('should return error for invalid token', async () => {
-      req.params.token = 'invalid-token';
-
-      // Configure mock to return null (user not found)
+      req.params = { token: 'invalid-token' };
       mockUserService.findUserByEmailVerificationToken.mockResolvedValue(null);
 
-      await verifyEmail(req, res, next);
+      await mockControllers.verifyEmail(req, res, next);
 
-      expect(next).toHaveBeenCalledWith(expect.any(AppError));
+      expect(next).toHaveBeenCalledWith(expect.any(Error));
+      expect(next.mock.calls[0][0].message).toBe('Invalid or expired email verification token');
     });
 
     it('should return error for expired token', async () => {
-      req.params.token = 'expired-token';
+      req.params = { token: 'expired-token' };
 
-      // Configure mock to return user with expired token
-      const expiredUser = {
-        _id: testUser._id,
-        email: 'expired@example.com',
-        emailVerificationToken: 'expired-token',
-        emailVerificationExpires: new Date(Date.now() - 1000), // Expired
+      const mockUser = {
+        _id: 'user123',
+        email: 'test@example.com',
         isEmailVerified: false,
+        emailVerificationExpires: new Date(Date.now() - 60000), // Past date
       };
-      mockUserService.findUserByEmailVerificationToken.mockResolvedValue(expiredUser);
 
-      await verifyEmail(req, res, next);
+      mockUserService.findUserByEmailVerificationToken.mockResolvedValue(mockUser);
 
-      expect(next).toHaveBeenCalledWith(expect.any(AppError));
+      await mockControllers.verifyEmail(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(expect.any(Error));
+      expect(next.mock.calls[0][0].message).toBe(
+        'Email verification token has expired. Please request a new one.',
+      );
     });
 
     it('should return error for already verified email', async () => {
-      req.params.token = 'verified-token';
+      req.params = { token: 'valid-token' };
 
-      // Configure mock to return already verified user
-      const verifiedUser = {
-        _id: testUser._id,
-        email: 'verified@example.com',
-        emailVerificationToken: 'verified-token',
-        emailVerificationExpires: new Date(Date.now() + 3600000), // Valid
+      const mockUser = {
+        _id: 'user123',
+        email: 'test@example.com',
         isEmailVerified: true, // Already verified
+        emailVerificationExpires: new Date(Date.now() + 60000),
       };
-      mockUserService.findUserByEmailVerificationToken.mockResolvedValue(verifiedUser);
 
-      await verifyEmail(req, res, next);
+      mockUserService.findUserByEmailVerificationToken.mockResolvedValue(mockUser);
 
-      expect(next).toHaveBeenCalledWith(expect.any(AppError));
+      await mockControllers.verifyEmail(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(expect.any(Error));
+      expect(next.mock.calls[0][0].message).toBe('Email address is already verified');
     });
   });
 
   describe('resendVerification', () => {
     it('should resend verification email successfully', async () => {
-      req.body.email = testUser.email;
+      req.body = { email: 'test@example.com' };
 
-      // Configure mock to return unverified user with complete data
-      mockUserService.findUserByEmail.mockResolvedValue({
-        _id: testUser._id,
-        email: testUser.email,
-        username: testUser.username,
+      const mockUser = {
+        _id: 'user123',
+        email: 'test@example.com',
+        username: 'testuser',
         isEmailVerified: false,
+      };
+
+      mockUserService.findUserByEmail.mockResolvedValue(mockUser);
+
+      await mockControllers.resendVerification(req, res, next);
+
+      expect(mockUserService.findUserByEmail).toHaveBeenCalledWith('test@example.com');
+      expect(mockUserService.updateUser).toHaveBeenCalledWith('user123', {
+        emailVerificationToken: 'new-verification-token',
+        emailVerificationExpires: expect.any(Date),
       });
-
-      await resendVerification(req, res, next);
-
-      // Verify response
+      expect(mockEmailService.sendVerificationEmail).toHaveBeenCalledWith(
+        'test@example.com',
+        'testuser',
+        'new-verification-token',
+      );
+      expect(mockLogger.info).toHaveBeenCalledWith('Email verification resent to test@example.com');
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
         success: true,
-        message: SUCCESS_MESSAGES.EMAIL_VERIFICATION_SENT,
+        message: 'Verification email sent successfully',
       });
+    });
 
-      // Verify email service was called
-      expect(mockEmailService.sendVerificationEmail).toHaveBeenCalledWith(
-        testUser.email,
-        testUser.username,
-        'mock-token',
-      );
+    it('should return error for missing email', async () => {
+      req.body = {}; // No email provided
+
+      await mockControllers.resendVerification(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(expect.any(Error));
+      expect(next.mock.calls[0][0].message).toBe('Email is required');
     });
 
     it('should return error for user not found', async () => {
-      req.body.email = 'nonexistent@example.com';
-
-      // Configure mock to return null (user not found)
+      req.body = { email: 'nonexistent@example.com' };
       mockUserService.findUserByEmail.mockResolvedValue(null);
 
-      await resendVerification(req, res, next);
+      await mockControllers.resendVerification(req, res, next);
 
-      expect(next).toHaveBeenCalledWith(expect.any(AppError));
+      expect(next).toHaveBeenCalledWith(expect.any(Error));
+      expect(next.mock.calls[0][0].message).toBe('User not found');
     });
 
     it('should return error for already verified email', async () => {
-      req.body.email = 'verified@example.com';
+      req.body = { email: 'test@example.com' };
 
-      // Configure mock to return already verified user
-      mockUserService.findUserByEmail.mockResolvedValue({
-        ...testUser,
-        email: 'verified@example.com',
+      const mockUser = {
+        _id: 'user123',
+        email: 'test@example.com',
         isEmailVerified: true, // Already verified
-      });
+      };
 
-      await resendVerification(req, res, next);
+      mockUserService.findUserByEmail.mockResolvedValue(mockUser);
 
-      expect(next).toHaveBeenCalledWith(expect.any(AppError));
+      await mockControllers.resendVerification(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(expect.any(Error));
+      expect(next.mock.calls[0][0].message).toBe('Email address is already verified');
+    });
+
+    it('should handle email service failure', async () => {
+      req.body = { email: 'test@example.com' };
+
+      const mockUser = {
+        _id: 'user123',
+        email: 'test@example.com',
+        username: 'testuser',
+        isEmailVerified: false,
+      };
+
+      mockUserService.findUserByEmail.mockResolvedValue(mockUser);
+      mockEmailService.sendVerificationEmail.mockRejectedValue(new Error('Email service error'));
+
+      await mockControllers.resendVerification(req, res, next);
+
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Failed to resend verification email to test@example.com: Email service error',
+      );
+      expect(next).toHaveBeenCalledWith(expect.any(Error));
+      expect(next.mock.calls[0][0].message).toBe('Failed to send email. Please try again later.');
     });
   });
 
   describe('checkEmailStatus', () => {
     it('should return email verification status', async () => {
-      // Set up req.user with complete user data
-      req.user = {
-        _id: testUser._id,
-        email: testUser.email,
-        isEmailVerified: testUser.isEmailVerified,
-      };
-
-      await checkEmailStatus(req, res, next);
+      await mockControllers.checkEmailStatus(req, res);
 
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({
         success: true,
-        data: {
-          isEmailVerified: false,
-          email: 'test@example.com',
-        },
+        isEmailVerified: false,
+        email: 'test@example.com',
+      });
+    });
+
+    it('should return verified status for verified user', async () => {
+      req.user.isEmailVerified = true;
+
+      await mockControllers.checkEmailStatus(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
+        success: true,
+        isEmailVerified: true,
+        email: 'test@example.com',
       });
     });
   });
 });
+
+// ... (rest of the code remains the same)

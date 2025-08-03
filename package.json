@@ -1,6 +1,6 @@
 {
   "name": "modern-express-auth",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Production-ready Express.js authentication API with JWT dual-token system, comprehensive security features, centralized constants, and extensive test coverage. Built with modern JavaScript, MongoDB, and industry best practices.",
   "main": "server.js",
   "type": "module",

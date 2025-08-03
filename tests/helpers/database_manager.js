@@ -12,8 +12,23 @@ class TestDatabaseManager {
       return;
     }
 
-    // Start in-memory MongoDB server
-    this.mongoServer = await MongoMemoryServer.create();
+    // Start in-memory MongoDB server with minimal configuration for Windows
+    try {
+      this.mongoServer = await MongoMemoryServer.create({
+        instance: {
+          port: null, // Dynamic port allocation
+          ip: '127.0.0.1', // Localhost only
+        },
+        binary: {
+          version: 'latest', // Use latest available version
+          downloadDir: './node_modules/.cache/mongodb-memory-server',
+        },
+      });
+    } catch {
+      // Fallback: try with even simpler config
+      // Primary MongoDB config failed, trying fallback
+      this.mongoServer = await MongoMemoryServer.create();
+    }
     const mongoUri = this.mongoServer.getUri();
 
     // Disconnect any existing connection first
