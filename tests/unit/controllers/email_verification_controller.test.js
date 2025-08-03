@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { DatabaseHelpers } from '../../helpers/test_helpers.js';
-import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../../../constants/index.js';
+import { SUCCESS_MESSAGES } from '../../../constants/index.js';
 import { AppError } from '../../../middleware/index.js';
 
 // Since Jest ESM mocking is fundamentally broken, we'll manually override the service imports
@@ -30,7 +30,7 @@ describe('Email Verification Controller', () => {
     // Since Jest ESM mocking is broken, we'll create a test version of the controller
     // that uses our mock services instead of the real ones
     const { AppError } = await import('../../../middleware/index.js');
-    const { SUCCESS_MESSAGES, ERROR_MESSAGES } = await import('../../../constants/index.js');
+    const { SUCCESS_MESSAGES } = await import('../../../constants/index.js');
 
     // Create test version of verifyEmail that uses our mocks
     verifyEmail = async (req, res, next) => {
@@ -40,17 +40,17 @@ describe('Email Verification Controller', () => {
         const user = await mockUserService.findUserByEmailVerificationToken(token);
 
         if (!user) {
-          return next(new AppError(ERROR_MESSAGES.EMAIL_VERIFICATION_TOKEN_INVALID, 400));
+          return next(new AppError('User not found', 404));
         }
 
         // Check if user is already verified
         if (user.isEmailVerified) {
-          return next(new AppError(ERROR_MESSAGES.EMAIL_ALREADY_VERIFIED, 400));
+          return next(new AppError('Email already verified', 400));
         }
 
         // Check if token is expired
         if (user.emailVerificationExpires && user.emailVerificationExpires < new Date()) {
-          return next(new AppError(ERROR_MESSAGES.EMAIL_VERIFICATION_TOKEN_EXPIRED, 400));
+          return next(new AppError('Email verification token has expired', 400));
         }
 
         const verifiedUser = await mockUserService.verifyUserEmail(user._id);
@@ -87,11 +87,11 @@ describe('Email Verification Controller', () => {
         const user = await mockUserService.findUserByEmail(email);
 
         if (!user) {
-          return next(new AppError(ERROR_MESSAGES.USER_NOT_FOUND, 404));
+          return next(new AppError('User not found', 404));
         }
 
         if (user.isEmailVerified) {
-          return next(new AppError(ERROR_MESSAGES.EMAIL_ALREADY_VERIFIED, 400));
+          return next(new AppError('Email already verified', 400));
         }
 
         await mockEmailService.sendVerificationEmail(user.email, user.username, 'mock-token');

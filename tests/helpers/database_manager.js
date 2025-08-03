@@ -12,33 +12,28 @@ class TestDatabaseManager {
       return;
     }
 
-    try {
-      // Start in-memory MongoDB server
-      this.mongoServer = await MongoMemoryServer.create();
-      const mongoUri = this.mongoServer.getUri();
+    // Start in-memory MongoDB server
+    this.mongoServer = await MongoMemoryServer.create();
+    const mongoUri = this.mongoServer.getUri();
 
-      // Disconnect any existing connection first
-      if (mongoose.connection.readyState !== 0) {
-        await mongoose.disconnect();
-      }
-
-      // Connect to the in-memory database with robust options
-      await mongoose.connect(mongoUri, {
-        maxPoolSize: 10,
-        serverSelectionTimeoutMS: 10000,
-        socketTimeoutMS: 60000,
-        connectTimeoutMS: 10000,
-      });
-
-      // Ensure connection is ready
-      await mongoose.connection.db.admin().ping();
-      this.isConnected = true;
-
-      console.log('Test database connected successfully');
-    } catch (error) {
-      console.error('Failed to connect to test database:', error);
-      throw error;
+    // Disconnect any existing connection first
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.disconnect();
     }
+
+    // Connect to the in-memory database with robust options
+    await mongoose.connect(mongoUri, {
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 60000,
+      connectTimeoutMS: 10000,
+    });
+
+    // Ensure connection is ready
+    await mongoose.connection.db.admin().ping();
+    this.isConnected = true;
+
+    // Test database connected successfully
   }
 
   async clearCollections() {
@@ -46,14 +41,10 @@ class TestDatabaseManager {
       return;
     }
 
-    try {
-      const collections = mongoose.connection.collections;
-      for (const key in collections) {
-        const collection = collections[key];
-        await collection.deleteMany({});
-      }
-    } catch (error) {
-      console.warn('Collection cleanup warning:', error.message);
+    const collections = mongoose.connection.collections;
+    for (const key in collections) {
+      const collection = collections[key];
+      await collection.deleteMany({});
     }
   }
 
@@ -76,9 +67,9 @@ class TestDatabaseManager {
       }
 
       this.isConnected = false;
-      console.log('Test database disconnected successfully');
-    } catch (error) {
-      console.warn('Database cleanup warning:', error.message);
+      // Test database disconnected successfully
+    } catch {
+      // Database cleanup warning
     }
   }
 

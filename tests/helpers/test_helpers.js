@@ -147,7 +147,7 @@ export async function connectTestDB() {
   try {
     // Check if already connected (from tests/setup.js)
     if (process.env.MONGODB_URI && process.env.MONGODB_URI.includes('memory')) {
-      console.log('Test database already connected via setup.js');
+      // Test database already connected via setup.js
       return;
     }
 
@@ -161,45 +161,35 @@ export async function connectTestDB() {
     // Connect to the test database only if not already connected
     await connectDB();
 
-    console.log('Connected to test database');
+    // Connected to test database
   } catch (error) {
-    console.error('Failed to connect to test database:', error);
+    // Failed to connect to test database
     // Don't throw if already connected
     if (!error.message.includes('active connection')) {
       throw error;
     }
-    console.log('Database already connected, continuing...');
+    // Database already connected, continuing...
   }
 }
 
 export async function clearTestDB() {
-  try {
-    // Clear all collections
-    await User.deleteMany({});
-    await Session.deleteMany({});
-    await Profile.deleteMany({});
-    console.log('Test database cleared');
-  } catch (error) {
-    console.error('Failed to clear test database:', error);
-    throw error;
-  }
+  // Clear all collections
+  await User.deleteMany({});
+  await Session.deleteMany({});
+  await Profile.deleteMany({});
+  // Test database cleared
 }
 
 export async function closeTestDB() {
-  try {
-    // Disconnect from database
-    await disconnectDB();
+  // Disconnect from database
+  await disconnectDB();
 
-    // Stop the in-memory MongoDB server
-    if (mongoServer) {
-      await mongoServer.stop();
-    }
-
-    console.log('Disconnected from test database');
-  } catch (error) {
-    console.error('Failed to close test database:', error);
-    throw error;
+  // Stop the in-memory MongoDB server
+  if (mongoServer) {
+    await mongoServer.stop();
   }
+
+  // Disconnected from test database
 }
 
 /**
