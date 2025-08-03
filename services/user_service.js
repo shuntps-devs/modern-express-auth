@@ -197,6 +197,37 @@ class UserService {
     const isValidPassword = await user.comparePassword(password);
     return isValidPassword ? user : null;
   }
+
+  // Email verification methods
+  async findUserByEmailVerificationToken(token) {
+    return await User.findOne({
+      emailVerificationToken: token,
+      emailVerificationExpires: { $gt: new Date() },
+    });
+  }
+
+  async verifyUserEmail(userId) {
+    return await User.findByIdAndUpdate(
+      userId,
+      {
+        isEmailVerified: true,
+        emailVerificationToken: undefined,
+        emailVerificationExpires: undefined,
+      },
+      { new: true },
+    );
+  }
+
+  async updateEmailVerificationToken(userId, tokenData) {
+    return await User.findByIdAndUpdate(
+      userId,
+      {
+        emailVerificationToken: tokenData.emailVerificationToken,
+        emailVerificationExpires: tokenData.emailVerificationExpires,
+      },
+      { new: true },
+    );
+  }
 }
 
 export default new UserService();

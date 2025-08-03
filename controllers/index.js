@@ -20,6 +20,11 @@ export {
   cleanupSessions,
 } from './auth_controller.js';
 
+// Export controller functions
+export * from './auth_controller.js';
+export * from './user_controller.js';
+export * from './email_verification_controller.js';
+
 // User Controller
 export {
   getProfile,

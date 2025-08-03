@@ -20,6 +20,9 @@ import {
   revokeSession,
   revokeAllSessions,
   cleanupSessions,
+  verifyEmail,
+  resendVerification,
+  checkEmailStatus,
 } from '../controllers/index.js';
 
 const router = express.Router();
@@ -94,5 +97,21 @@ router.get('/verify', readOnlyLimiter, protect, verifyToken);
 // @route   GET /api/auth/status
 // @access  Public (with optional auth)
 router.get('/status', readOnlyLimiter, optionalAuth, getAuthStatus);
+
+// Email Verification Routes
+// @desc    Verify email address
+// @route   GET /api/auth/verify-email/:token
+// @access  Public
+router.get('/verify-email/:token', verifyEmail);
+
+// @desc    Resend email verification
+// @route   POST /api/auth/resend-verification
+// @access  Public
+router.post('/resend-verification', authLimiter, resendVerification);
+
+// @desc    Check email verification status
+// @route   GET /api/auth/email-status
+// @access  Private
+router.get('/email-status', readOnlyLimiter, protect, checkEmailStatus);
 
 export default router;

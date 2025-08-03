@@ -1,6 +1,6 @@
 import { logger } from '../config/index.js';
 import { AppError, asyncHandler } from '../middleware/index.js';
-import { authService, userService } from '../services/index.js';
+import { userService, authService, emailService } from '../services/index.js';
 import { Session } from '../models/index.js';
 import {
   ERROR_MESSAGES,
@@ -8,6 +8,7 @@ import {
   SUCCESS_MESSAGES,
   USER_ROLES,
 } from '../constants/index.js';
+import crypto from 'crypto';
 
 // @desc    Register user
 // @route   POST /api/auth/register
@@ -27,12 +28,28 @@ export const register = asyncHandler(async (req, res, next) => {
     }
   }
 
-  // Create user
+  // Generate email verification token
+  const emailVerificationToken = crypto.randomBytes(32).toString('hex');
+  const emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+  // Create user with email verification fields
   const user = await userService.createUser({
     username,
     email,
     password,
+    isEmailVerified: false,
+    emailVerificationToken,
+    emailVerificationExpires,
   });
+
+  // Send verification email
+  try {
+    await emailService.sendEmailVerification(email, username, emailVerificationToken);
+    logger.info(`Email verification sent to ${user.email}`);
+  } catch (error) {
+    logger.error(`Failed to send verification email to ${user.email}: ${error.message}`);
+    // Continue with registration even if email fails
+  }
 
   logger.info(`${LOGGER_MESSAGES.NEW_USER_REGISTERED} ${user.email}`);
 

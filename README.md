@@ -24,6 +24,7 @@ A **production-ready** Express.js authentication API with comprehensive security
 ### 🔒 Authentication & Security
 
 - **JWT Authentication** with dual-token system (15min access, 7-day refresh)
+- **Email Verification** with Resend integration and beautiful HTML templates
 - **Session Management** with IP tracking and device fingerprinting
 - **Account Security** with login attempt limiting and automatic lockout
 - **Password Security** with bcrypt hashing (12 rounds) and strength validation

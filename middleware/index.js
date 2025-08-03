@@ -6,6 +6,12 @@
 // Authentication Middleware
 export { protect, authorize, optionalAuth, checkOwnership } from './auth_middleware.js';
 
+// Export all middleware
+export * from './auth_middleware.js';
+export * from './error_handler.js';
+export * from './rate_limiter.js';
+export * from './email_verification_middleware.js';
+
 // Error Handling Middleware
 export { AppError, asyncHandler, errorHandler } from './error_handler.js';
 

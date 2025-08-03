@@ -10,7 +10,8 @@
 
 export const SUCCESS_MESSAGES = {
   // Authentication
-  REGISTRATION_SUCCESS: 'User registered successfully. Please log in to continue.',
+  REGISTRATION_SUCCESS:
+    'User registered successfully. Please check your email to verify your account.',
   LOGIN_SUCCESS: 'User logged in successfully',
   LOGOUT_SUCCESS: 'Logged out successfully',
   LOGOUT_ALL_SUCCESS: 'Logged out from all devices successfully',
@@ -19,6 +20,11 @@ export const SUCCESS_MESSAGES = {
   SESSION_REVOKED_SUCCESS: 'Session revoked successfully',
   SESSIONS_CLEANUP_SUCCESS: count => `Cleaned up ${count} expired sessions`,
   SESSIONS_REVOKE_SUCCESS: count => `Revoked ${count} user sessions`,
+
+  // Email Verification
+  EMAIL_VERIFICATION_SENT: 'Verification email sent successfully. Please check your inbox.',
+  EMAIL_VERIFIED_SUCCESS: 'Email verified successfully. Your account is now active.',
+  WELCOME_EMAIL_SENT: 'Welcome email sent successfully',
 
   // User Management
   PROFILE_UPDATE_SUCCESS: 'Profile updated successfully',
@@ -46,6 +52,15 @@ export const ERROR_MESSAGES = {
   REFRESH_TOKEN_REQUIRED: 'Refresh token required',
   TOKEN_REFRESH_FAILED: 'Token refresh failed',
   CURRENT_PASSWORD_INCORRECT: 'Current password is incorrect',
+
+  // Email Verification Errors
+  EMAIL_NOT_VERIFIED: 'Please verify your email address before accessing this resource',
+  EMAIL_VERIFICATION_TOKEN_INVALID: 'Invalid or expired email verification token',
+  EMAIL_VERIFICATION_TOKEN_EXPIRED:
+    'Email verification token has expired. Please request a new one.',
+  EMAIL_ALREADY_VERIFIED: 'Email address is already verified',
+  EMAIL_SEND_FAILED: 'Failed to send email. Please try again later.',
+  EMAIL_VERIFICATION_REQUIRED: 'Email verification is required to complete this action',
 
   // User Errors
   USER_NOT_FOUND: 'User not found',

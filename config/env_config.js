@@ -32,6 +32,11 @@ class EnvConfig {
         description: 'Secret key for session management',
         example: 'your-super-secret-session-key-here',
       },
+      {
+        key: 'RESEND_API_KEY',
+        description: 'Resend API key for email sending',
+        example: 're_xxxxxxxxxxxxxxxxxxxxxxxxxx',
+      },
     ];
 
     this.optionalEnvs = [
@@ -70,6 +75,24 @@ class EnvConfig {
         description: 'Session expiration time',
         defaultValue: '30d',
         example: '30d',
+      },
+      {
+        key: 'FROM_EMAIL',
+        description: 'Email address for sending emails',
+        defaultValue: 'onboarding@resend.dev',
+        example: 'onboarding@resend.dev',
+      },
+      {
+        key: 'APP_NAME',
+        description: 'Application name for emails',
+        defaultValue: 'Express Auth API',
+        example: 'Express Auth API',
+      },
+      {
+        key: 'FRONTEND_URL',
+        description: 'Frontend URL for email links',
+        defaultValue: 'http://localhost:3000',
+        example: 'http://localhost:3000',
       },
       {
         key: 'RATE_LIMIT_WINDOW_MS',
