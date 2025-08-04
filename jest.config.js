@@ -15,11 +15,11 @@ export default {
     '^.+\\.js$': 'babel-jest',
   },
 
-  // Test file patterns - temporarily exclude integration tests due to MongoDB Windows issues
+  // Test patterns - unit tests only (integration tests blocked by MongoMemoryServer)
   testMatch: [
     '**/tests/unit/**/*.test.js',
     '**/tests/unit/**/*.spec.js',
-    // TODO: Re-enable integration tests once MongoDB Windows lockfile issue is resolved
+    // Integration tests disabled - MongoMemoryServer.create() blocks indefinitely
     // '**/tests/integration/**/*.test.js',
     // '**/tests/integration/**/*.spec.js',
   ],
@@ -39,8 +39,7 @@ export default {
     '!**/coverage/**',
   ],
 
-  // Coverage thresholds - adjusted to current project state
-  // TODO: Gradually increase these thresholds as more tests are added
+  // Coverage thresholds (v1.1.0) - stable baseline for CI reliability
   coverageThreshold: {
     global: {
       branches: 42,
@@ -53,7 +52,7 @@ export default {
   // Coverage reporters
   coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
 
-  // Setup files - use unit-specific setup for unit tests only
+  // Test setup configuration
   setupFilesAfterEnv: ['<rootDir>/tests/unit-setup.js'],
 
   // Test timeout
