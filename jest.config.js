@@ -2,14 +2,6 @@ export default {
   // Test environment
   testEnvironment: 'node',
 
-  // Module type
-  preset: null,
-  globals: {
-    'ts-jest': {
-      useESM: true,
-    },
-  },
-
   // Transform configuration for ES modules
   transform: {
     '^.+\\.js$': 'babel-jest',

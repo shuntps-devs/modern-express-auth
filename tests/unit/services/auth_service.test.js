@@ -145,7 +145,7 @@ describe('authService', () => {
 
   describe('sendTokenResponse', () => {
     test('should create session and send user response', async () => {
-      // Note: This method involves database operations that are better tested in integration tests
+
       // For unit testing, we'll test the core functionality that doesn't require DB
 
       // Test that the method exists and can be called
@@ -162,7 +162,7 @@ describe('authService', () => {
     });
   });
 
-  // Note: Database-dependent methods are simplified for unit testing
+
   // These would typically be tested in integration tests with real DB
   describe('token validation and session management', () => {
     test('should handle token validation logic', () => {

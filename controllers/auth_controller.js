@@ -3,12 +3,8 @@ import { logger } from '../config/index.js';
 import { AppError, asyncHandler } from '../middleware/index.js';
 import { userService, authService, emailService } from '../services/index.js';
 import { Session } from '../models/index.js';
-import {
-  ERROR_MESSAGES,
-  LOGGER_MESSAGES,
-  SUCCESS_MESSAGES,
-  USER_ROLES,
-} from '../constants/index.js';
+import { ERROR_MESSAGES, LOGGER_MESSAGES, SUCCESS_MESSAGES } from '../constants/index.js';
+import { sendSuccessResponse, sendUserResponse, validateAdminRole } from '../utils/index.js';
 
 // @desc    Register user
 // @route   POST /api/auth/register
@@ -53,10 +49,7 @@ export const register = asyncHandler(async (req, res, next) => {
 
   logger.info(`${LOGGER_MESSAGES.NEW_USER_REGISTERED} ${user.email}`);
 
-  res.status(201).json({
-    success: true,
-    message: SUCCESS_MESSAGES.REGISTRATION_SUCCESS,
-  });
+  return sendSuccessResponse(res, 201, SUCCESS_MESSAGES.REGISTRATION_SUCCESS);
 });
 
 // @desc    Login user
@@ -104,10 +97,7 @@ export const logout = asyncHandler(async (req, res) => {
 
   logger.info(`${LOGGER_MESSAGES.USER_LOGGED_OUT} ${req.user.email}`);
 
-  res.status(200).json({
-    success: true,
-    message: SUCCESS_MESSAGES.LOGOUT_SUCCESS,
-  });
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.LOGOUT_SUCCESS);
 });
 
 // @desc    Logout from all devices
@@ -122,10 +112,7 @@ export const logoutAll = asyncHandler(async (req, res) => {
 
   logger.info(`${LOGGER_MESSAGES.USER_LOGGED_OUT_ALL_DEVICES} ${req.user.email}`);
 
-  res.status(200).json({
-    success: true,
-    message: SUCCESS_MESSAGES.LOGOUT_ALL_SUCCESS,
-  });
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.LOGOUT_ALL_SUCCESS);
 });
 
 // @desc    Get current logged in user
@@ -134,10 +121,7 @@ export const logoutAll = asyncHandler(async (req, res) => {
 export const getMe = asyncHandler(async (req, res) => {
   const user = userService.formatUserResponse(req.user);
 
-  res.status(200).json({
-    success: true,
-    user,
-  });
+  return sendUserResponse(res, SUCCESS_MESSAGES.USER_PROFILE_RETRIEVED, user);
 });
 
 // @desc    Change password
@@ -161,10 +145,7 @@ export const changePassword = asyncHandler(async (req, res, next) => {
 
   logger.info(`${LOGGER_MESSAGES.PASSWORD_CHANGED} ${user.email}`);
 
-  res.status(200).json({
-    success: true,
-    message: SUCCESS_MESSAGES.PASSWORD_UPDATE_SUCCESS,
-  });
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.PASSWORD_CHANGE_SUCCESS);
 });
 
 // @desc    Get user sessions
@@ -218,8 +199,7 @@ export const verifyToken = asyncHandler(async (req, res) => {
   // If we reach here, the token is valid (middleware already validated it)
   const user = userService.formatUserResponse(req.user);
 
-  res.status(200).json({
-    success: true,
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.TOKEN_VERIFIED, {
     valid: true,
     user,
     session: {
@@ -236,8 +216,7 @@ export const verifyToken = asyncHandler(async (req, res) => {
 export const getAuthStatus = asyncHandler(async (req, res) => {
   const isAuthenticated = !!req.user;
 
-  res.status(200).json({
-    success: true,
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.AUTH_STATUS_RETRIEVED, {
     isAuthenticated,
     user: isAuthenticated ? userService.formatUserResponse(req.user) : null,
   });
@@ -313,8 +292,10 @@ export const revokeAllSessions = asyncHandler(async (req, res, next) => {
 // @access  Private (Admin only)
 export const cleanupSessions = asyncHandler(async (req, res, next) => {
   // Check if user is admin
-  if (req.user.role !== USER_ROLES.ADMIN) {
-    return next(new AppError(ERROR_MESSAGES.ADMIN_ROLE_REQUIRED, 403));
+  try {
+    validateAdminRole(req.user);
+  } catch (error) {
+    return next(error);
   }
 
   try {
@@ -360,8 +341,10 @@ export const getSecurityStatus = asyncHandler(async (req, res, next) => {
 // @access  Private (Admin only)
 export const resetLoginAttempts = asyncHandler(async (req, res, next) => {
   // Check if user is admin
-  if (req.user.role !== USER_ROLES.ADMIN) {
-    return next(new AppError(ERROR_MESSAGES.ADMIN_ROLE_REQUIRED, 403));
+  try {
+    validateAdminRole(req.user);
+  } catch (error) {
+    return next(error);
   }
 
   const { userId } = req.params;
@@ -385,19 +368,19 @@ export const resetLoginAttempts = asyncHandler(async (req, res, next) => {
 // @desc    Check email verification status
 // @route   GET /api/auth/email-status
 // @access  Private
-export const checkEmailStatus = asyncHandler(async (req, res) => {
+export const checkEmailStatus = asyncHandler(async (req, res, next) => {
   const user = await userService.findUserById(req.user._id);
 
-  res.status(200).json({
-    success: true,
-    data: {
-      isEmailVerified: user.isEmailVerified,
-      email: user.email,
-      emailVerificationExpires: user.emailVerificationExpires,
-      canResendVerification: user.emailVerificationExpires
-        ? new Date() > user.emailVerificationExpires
-        : true,
-    },
-    message: 'Email verification status retrieved successfully',
+  if (!user) {
+    return next(new AppError(ERROR_MESSAGES.USER_NOT_FOUND, 404));
+  }
+
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.EMAIL_STATUS_RETRIEVED, {
+    isEmailVerified: user.isEmailVerified,
+    email: user.email,
+    emailVerificationExpires: user.emailVerificationExpires,
+    canResendVerification: user.emailVerificationExpires
+      ? new Date() > user.emailVerificationExpires
+      : true,
   });
 });

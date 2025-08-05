@@ -95,10 +95,9 @@ router.post('/refresh', authLimiter, refreshToken);
 // @access  Public (with optional auth)
 router.get('/status', readOnlyLimiter, optionalAuth, getAuthStatus);
 
-// TODO: Email Verification Routes - Functions not implemented yet
-// // @desc    Verify token
-// // @route   GET /api/auth/verify
-// // @access  Private
+// @desc    Verify token
+// @route   GET /api/auth/verify
+// @access  Private
 router.get('/verify', readOnlyLimiter, protect, verifyToken);
 
 // // @desc    Verify email address

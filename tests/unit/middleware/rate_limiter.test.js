@@ -1,5 +1,3 @@
-// Note: RATE_LIMIT_TYPES and RATE_LIMIT_DESCRIPTIONS are used in middleware but not defined
-// Using string literals for testing
 
 // Mock modules with inline factories
 jest.mock('../../../config/index.js', () => ({

@@ -29,10 +29,8 @@ if (env.NODE_ENV === 'development') {
       fs.truncateSync(combinedLogPath, 0);
     }
 
-    // eslint-disable-next-line no-console
     console.log(CONSOLE_MESSAGES.DEV_MODE_LOGS_CLEARED);
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.warn(CONSOLE_MESSAGES.LOG_FILES_CLEAR_WARNING, error.message);
   }
 }

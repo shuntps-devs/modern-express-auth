@@ -51,6 +51,21 @@ export const SUCCESS_MESSAGES = {
   PROFILE_UPDATED: 'Profile updated successfully',
   AVATAR_UPLOADED: 'Avatar uploaded successfully',
   AVATAR_REMOVED: 'Avatar removed successfully',
+
+  // User Management Success
+  USER_PROFILE_RETRIEVED: 'User profile retrieved successfully',
+  USER_RETRIEVED: 'User retrieved successfully',
+  USERS_RETRIEVED: 'Users retrieved successfully',
+  USER_STATISTICS_RETRIEVED: 'User statistics retrieved successfully',
+
+  // Email Verification Success
+  EMAIL_STATUS_RETRIEVED: 'Email verification status retrieved successfully',
+
+  // Token Verification Success
+  TOKEN_VERIFIED: 'Token verified successfully',
+
+  // Authentication Status Success
+  AUTH_STATUS_RETRIEVED: 'Authentication status retrieved successfully',
 };
 
 // ============================================================================

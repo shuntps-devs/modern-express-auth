@@ -2,6 +2,7 @@ import { asyncHandler, AppError } from '../middleware/index.js';
 import { SUCCESS_MESSAGES, ERROR_MESSAGES, LOGGER_MESSAGES } from '../constants/index.js';
 import { logger } from '../config/index.js';
 import { userService, authService } from '../services/index.js';
+import { sendSuccessResponse, sendUserResponse, sendPaginatedResponse } from '../utils/index.js';
 
 // @desc    Get user profile
 // @route   GET /api/user/profile
@@ -9,10 +10,7 @@ import { userService, authService } from '../services/index.js';
 export const getProfile = asyncHandler(async (req, res) => {
   const user = userService.formatUserResponse(req.user, true); // include additional details
 
-  res.status(200).json({
-    success: true,
-    user,
-  });
+  return sendUserResponse(res, SUCCESS_MESSAGES.USER_PROFILE_RETRIEVED, user);
 });
 
 // @desc    Update user profile
@@ -48,11 +46,7 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
 
   const userResponse = userService.formatUserResponse(updatedUser, true);
 
-  res.status(200).json({
-    success: true,
-    message: SUCCESS_MESSAGES.PROFILE_UPDATE_SUCCESS,
-    user: userResponse,
-  });
+  return sendUserResponse(res, SUCCESS_MESSAGES.PROFILE_UPDATE_SUCCESS, userResponse);
 });
 
 // @desc    Delete user account
@@ -70,10 +64,7 @@ export const deleteAccount = asyncHandler(async (req, res) => {
 
   logger.info(`${LOGGER_MESSAGES.USER_ACCOUNT_DEACTIVATED} ${req.user.email}`);
 
-  res.status(200).json({
-    success: true,
-    message: SUCCESS_MESSAGES.ACCOUNT_DEACTIVATED_SUCCESS,
-  });
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.ACCOUNT_DEACTIVATED_SUCCESS);
 });
 
 // Admin Controllers
@@ -91,11 +82,12 @@ export const getAllUsers = asyncHandler(async (req, res) => {
 
   const result = await userService.getAllUsers(page, limit, filters);
 
-  res.status(200).json({
-    success: true,
-    users: result.users,
-    pagination: result.pagination,
-  });
+  return sendPaginatedResponse(
+    res,
+    SUCCESS_MESSAGES.USERS_RETRIEVED,
+    result.users,
+    result.pagination,
+  );
 });
 
 // @desc    Get single user (Admin)
@@ -108,10 +100,11 @@ export const getUserById = asyncHandler(async (req, res, next) => {
     return next(new AppError(ERROR_MESSAGES.USER_NOT_FOUND, 404));
   }
 
-  res.status(200).json({
-    success: true,
-    user: userService.formatUserResponse(user, true),
-  });
+  return sendUserResponse(
+    res,
+    SUCCESS_MESSAGES.USER_RETRIEVED,
+    userService.formatUserResponse(user, true),
+  );
 });
 
 // @desc    Update user (Admin)
@@ -135,11 +128,11 @@ export const updateUser = asyncHandler(async (req, res, next) => {
 
   logger.info(`${LOGGER_MESSAGES.USER_UPDATED_BY_ADMIN} ${updatedUser.email} by ${req.user.email}`);
 
-  res.status(200).json({
-    success: true,
-    message: SUCCESS_MESSAGES.USER_UPDATE_SUCCESS,
-    user: userService.formatUserResponse(updatedUser, true),
-  });
+  return sendUserResponse(
+    res,
+    SUCCESS_MESSAGES.USER_UPDATE_SUCCESS,
+    userService.formatUserResponse(updatedUser, true),
+  );
 });
 
 // @desc    Delete user (Admin)
@@ -162,10 +155,7 @@ export const deleteUser = asyncHandler(async (req, res, next) => {
 
   logger.info(`${LOGGER_MESSAGES.USER_DELETED_BY_ADMIN} ${user.email} by ${req.user.email}`);
 
-  res.status(200).json({
-    success: true,
-    message: SUCCESS_MESSAGES.USER_DELETE_SUCCESS,
-  });
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.USER_DELETE_SUCCESS);
 });
 
 // @desc    Get user statistics (Admin)
@@ -174,8 +164,5 @@ export const deleteUser = asyncHandler(async (req, res, next) => {
 export const getUserStats = asyncHandler(async (req, res) => {
   const stats = await userService.getUserStatistics();
 
-  res.status(200).json({
-    success: true,
-    stats,
-  });
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.USER_STATISTICS_RETRIEVED, { stats });
 });

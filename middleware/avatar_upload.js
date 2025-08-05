@@ -6,10 +6,10 @@
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs/promises';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Use process.cwd() for Jest compatibility
+// In production, this will resolve to the project root
+const __dirname = process.cwd();
 
 // Allowed image MIME types
 const ALLOWED_MIME_TYPES = [

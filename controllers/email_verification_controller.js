@@ -4,6 +4,7 @@ import { userService, emailService } from '../services/index.js';
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '../constants/index.js';
 import { User } from '../models/index.js';
 import crypto from 'crypto';
+import { sendSuccessResponse } from '../utils/index.js';
 
 // @desc    Verify email address
 // @route   GET /api/auth/verify-email/:token
@@ -49,10 +50,7 @@ export const verifyEmail = asyncHandler(async (req, res, next) => {
 
   logger.info(`Email verified successfully for user: ${user.email}`);
 
-  res.status(200).json({
-    success: true,
-    message: SUCCESS_MESSAGES.EMAIL_VERIFIED_SUCCESS,
-  });
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.EMAIL_VERIFIED_SUCCESS);
 });
 
 // @desc    Resend email verification
@@ -96,10 +94,7 @@ export const resendVerification = asyncHandler(async (req, res, next) => {
     return next(new AppError(ERROR_MESSAGES.EMAIL_SEND_FAILED, 500));
   }
 
-  res.status(200).json({
-    success: true,
-    message: SUCCESS_MESSAGES.EMAIL_VERIFICATION_SENT,
-  });
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.EMAIL_VERIFICATION_SENT);
 });
 
 // @desc    Check email verification status
@@ -108,11 +103,8 @@ export const resendVerification = asyncHandler(async (req, res, next) => {
 export const checkEmailStatus = asyncHandler(async (req, res, _next) => {
   const user = req.user;
 
-  res.status(200).json({
-    success: true,
-    data: {
-      isEmailVerified: user.isEmailVerified,
-      email: user.email,
-    },
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.EMAIL_STATUS_RETRIEVED, {
+    isEmailVerified: user.isEmailVerified,
+    email: user.email,
   });
 });

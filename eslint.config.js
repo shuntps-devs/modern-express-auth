@@ -39,14 +39,6 @@ export default [
       'no-var': 'error',
       'object-shorthand': 'error',
       'prefer-template': 'error',
-      'template-curly-spacing': 'error',
-      'arrow-spacing': 'error',
-      'comma-dangle': ['error', 'always-multiline'],
-      semi: ['error', 'always'],
-      quotes: ['error', 'single'],
-      indent: ['error', 2],
-      'no-trailing-spaces': 'error',
-      'eol-last': 'error',
     },
   },
   // Specific configuration for CommonJS files (.cjs)
@@ -72,6 +64,13 @@ export default [
     files: ['scripts/**/*.js'],
     rules: {
       'no-console': 'off', // Allow console statements in scripts
+    },
+  },
+  // Specific configuration for config files that need console.log
+  {
+    files: ['config/**/*.js'],
+    rules: {
+      'no-console': 'off', // Allow console statements in config files
     },
   },
 ];

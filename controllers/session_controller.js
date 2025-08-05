@@ -8,6 +8,10 @@ import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../constants/index.js';
 import { formatSessionResponse, getSessionSecurityLevel } from '../utils/index.js';
 import { asyncHandler } from '../middleware/index.js';
 import { AppError } from '../middleware/index.js';
+import {
+  sendSuccessResponse,
+  sendSessionResponse,
+} from '../utils/index.js';
 
 /**
  * Get current user's active sessions with device and location info
@@ -23,14 +27,7 @@ export const getActiveSessions = asyncHandler(async (req, res) => {
     securityLevel: getSessionSecurityLevel(session),
   }));
 
-  res.status(200).json({
-    success: true,
-    message: SUCCESS_MESSAGES.USER_SESSIONS_RETRIEVED,
-    data: {
-      sessions: enrichedSessions,
-      total: enrichedSessions.length,
-    },
-  });
+  return sendSessionResponse(res, SUCCESS_MESSAGES.USER_SESSIONS_RETRIEVED, enrichedSessions);
 });
 
 /**
@@ -54,12 +51,8 @@ export const getSessionDetails = asyncHandler(async (req, res, next) => {
     isCurrentSession: session._id.toString() === req.sessionId,
   };
 
-  res.status(200).json({
-    success: true,
-    message: SUCCESS_MESSAGES.SESSION_RETRIEVED,
-    data: {
-      session: sessionDetails,
-    },
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.SESSION_RETRIEVED, {
+    session: sessionDetails,
   });
 });
 
@@ -102,11 +95,7 @@ export const getDeviceStats = asyncHandler(async (req, res) => {
     },
   );
 
-  res.status(200).json({
-    success: true,
-    message: SUCCESS_MESSAGES.DEVICE_STATS_RETRIEVED,
-    data: deviceStats,
-  });
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.DEVICE_STATS_RETRIEVED, deviceStats);
 });
 
 /**
@@ -142,11 +131,7 @@ export const getLocationStats = asyncHandler(async (req, res) => {
     },
   );
 
-  res.status(200).json({
-    success: true,
-    message: SUCCESS_MESSAGES.LOCATION_STATS_RETRIEVED,
-    data: locationStats,
-  });
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.LOCATION_STATS_RETRIEVED, locationStats);
 });
 
 /**
@@ -192,11 +177,7 @@ export const getSecurityOverview = asyncHandler(async (req, res) => {
     },
   );
 
-  res.status(200).json({
-    success: true,
-    message: SUCCESS_MESSAGES.SECURITY_OVERVIEW_RETRIEVED,
-    data: securityOverview,
-  });
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.SECURITY_OVERVIEW_RETRIEVED, securityOverview);
 });
 
 /**
@@ -219,10 +200,7 @@ export const terminateSession = asyncHandler(async (req, res, next) => {
     return next(new AppError(ERROR_MESSAGES.SESSION_NOT_FOUND, 404));
   }
 
-  res.status(200).json({
-    success: true,
-    message: SUCCESS_MESSAGES.SESSION_TERMINATED,
-  });
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.SESSION_TERMINATED);
 });
 
 /**
@@ -236,11 +214,7 @@ export const terminateOtherSessions = asyncHandler(async (req, res) => {
 
   const terminatedCount = await authService.terminateOtherSessions(userId, currentSessionId);
 
-  res.status(200).json({
-    success: true,
-    message: SUCCESS_MESSAGES.OTHER_SESSIONS_TERMINATED,
-    data: {
-      terminatedSessions: terminatedCount,
-    },
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.OTHER_SESSIONS_TERMINATED, {
+    terminatedSessions: terminatedCount,
   });
 });

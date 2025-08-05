@@ -7,7 +7,8 @@ import { userService } from '../services/index.js';
 import { getAvatarUrl, removeAvatarFile } from '../middleware/index.js';
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../constants/index.js';
 import { asyncHandler } from '../middleware/index.js';
-import { validateProfileUpdate } from '../validations/index.js';
+import { Profile } from '../models/index.js';
+import { sendSuccessResponse, sendErrorResponse } from '../utils/index.js';
 
 /**
  * Get user profile
@@ -20,22 +21,15 @@ export const getProfile = asyncHandler(async (req, res) => {
   const profile = await userService.getUserProfile(userId);
 
   if (!profile) {
-    return res.status(404).json({
-      success: false,
-      message: ERROR_MESSAGES.PROFILE_NOT_FOUND,
-    });
+    return sendErrorResponse(res, 404, ERROR_MESSAGES.PROFILE_NOT_FOUND);
   }
 
   // Format profile response to ensure bio and avatar are properly exposed
   const formattedProfile = userService.formatProfileResponse(profile);
 
-  res.status(200).json({
-    success: true,
-    message: SUCCESS_MESSAGES.PROFILE_RETRIEVED,
-    data: {
-      profile: formattedProfile,
-      user: profile.userId, // Include populated user data
-    },
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.PROFILE_RETRIEVED, {
+    profile: formattedProfile,
+    user: profile.userId, // Include populated user data
   });
 });
 
@@ -49,10 +43,7 @@ export const uploadAvatar = asyncHandler(async (req, res) => {
 
   // File is available from multer middleware
   if (!req.file) {
-    return res.status(400).json({
-      success: false,
-      message: ERROR_MESSAGES.AVATAR_UPLOAD_REQUIRED,
-    });
+    return sendErrorResponse(res, 400, ERROR_MESSAGES.AVATAR_UPLOAD_REQUIRED);
   }
 
   const avatarData = {
@@ -62,17 +53,13 @@ export const uploadAvatar = asyncHandler(async (req, res) => {
 
   const updatedProfile = await userService.updateUserAvatar(userId, avatarData);
 
-  res.status(200).json({
-    success: true,
-    message: SUCCESS_MESSAGES.AVATAR_UPLOADED,
-    data: {
-      profile: updatedProfile,
-      avatar: {
-        url: avatarData.url,
-        filename: avatarData.filename,
-        size: req.file.size,
-        mimetype: req.file.mimetype,
-      },
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.AVATAR_UPLOADED, {
+    profile: updatedProfile,
+    avatar: {
+      url: avatarData.url,
+      filename: avatarData.filename,
+      size: req.file.size,
+      mimetype: req.file.mimetype,
     },
   });
 });
@@ -89,10 +76,7 @@ export const removeAvatar = asyncHandler(async (req, res) => {
   const currentProfile = await userService.getUserProfile(userId);
 
   if (!currentProfile || !currentProfile.avatar?.filename) {
-    return res.status(404).json({
-      success: false,
-      message: ERROR_MESSAGES.AVATAR_NOT_FOUND,
-    });
+    return sendErrorResponse(res, 404, ERROR_MESSAGES.AVATAR_NOT_FOUND);
   }
 
   // Remove avatar file from filesystem
@@ -101,12 +85,8 @@ export const removeAvatar = asyncHandler(async (req, res) => {
   // Remove avatar from database
   const updatedProfile = await userService.removeUserAvatar(userId);
 
-  res.status(200).json({
-    success: true,
-    message: SUCCESS_MESSAGES.AVATAR_REMOVED,
-    data: {
-      profile: updatedProfile,
-    },
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.AVATAR_REMOVED, {
+    profile: updatedProfile,
   });
 });
 
@@ -117,28 +97,14 @@ export const removeAvatar = asyncHandler(async (req, res) => {
  */
 export const updateProfile = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  const updates = req.body;
+  const validatedData = req.body; // Data is already validated by middleware
 
-  // Validate profile data using Zod schema
-  let validatedData;
-  try {
-    validatedData = validateProfileUpdate(updates);
-
-    if (Object.keys(validatedData).length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: ERROR_MESSAGES.NO_VALID_UPDATES,
-      });
-    }
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+  // Check if there are valid updates
+  if (Object.keys(validatedData).length === 0) {
+    return sendErrorResponse(res, 400, ERROR_MESSAGES.NO_VALID_UPDATES);
   }
 
   // Update profile
-  const { Profile } = await import('../models/index.js');
   const updatedProfile = await Profile.findOneAndUpdate(
     { userId },
     { $set: validatedData },
@@ -148,13 +114,9 @@ export const updateProfile = asyncHandler(async (req, res) => {
   // Format profile response to ensure bio and avatar are properly exposed
   const formattedProfile = userService.formatProfileResponse(updatedProfile);
 
-  res.status(200).json({
-    success: true,
-    message: SUCCESS_MESSAGES.PROFILE_UPDATED,
-    data: {
-      profile: formattedProfile,
-      user: updatedProfile.userId, // Include populated user data
-    },
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.PROFILE_UPDATED, {
+    profile: formattedProfile,
+    user: updatedProfile.userId, // Include populated user data
   });
 });
 

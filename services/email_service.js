@@ -12,6 +12,21 @@ class EmailService {
   }
 
   /**
+   * Get common email styles
+   * @returns {string} - CSS styles for email templates
+   */
+  getEmailStyles() {
+    return `
+      body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+      .header { background: #007bff; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+      .content { background: #f8f9fa; padding: 30px; border-radius: 0 0 8px 8px; }
+      .button { display: inline-block; padding: 12px 24px; background: #28a745; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; }
+      .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+      .code-block { background: #e9ecef; padding: 10px; border-radius: 4px; word-break: break-all; }
+    `;
+  }
+
+  /**
    * Send email verification email
    * @param {string} email - User email
    * @param {string} username - User username
@@ -110,28 +125,23 @@ class EmailService {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Verify Your Email</title>
-        <style>
-          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: #007bff; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-          .content { background: #f8f9fa; padding: 30px; border-radius: 0 0 8px 8px; }
-          .button { display: inline-block; background: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
-          .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
-        </style>
+        <style>${this.getEmailStyles()}</style>
       </head>
       <body>
         <div class="header">
-          <h1>${this.appName}</h1>
+          <h1>Verify Your Email Address</h1>
         </div>
         <div class="content">
-          <h2>Welcome ${username}!</h2>
-          <p>Thank you for signing up with ${this.appName}. To complete your registration, please verify your email address by clicking the button below:</p>
+          <h2>Hello ${username}!</h2>
           
-          <div style="text-align: center;">
+          <p>Thank you for creating an account with ${this.appName}. To complete your registration, please verify your email address by clicking the button below:</p>
+          
+          <p style="text-align: center; margin: 30px 0;">
             <a href="${verificationUrl}" class="button">Verify Email Address</a>
-          </div>
+          </p>
           
           <p>If the button doesn't work, you can also copy and paste this link into your browser:</p>
-          <p style="word-break: break-all; background: #e9ecef; padding: 10px; border-radius: 4px;">${verificationUrl}</p>
+          <p class="code-block">${verificationUrl}</p>
           
           <p><strong>This link will expire in 24 hours.</strong></p>
           
@@ -158,15 +168,10 @@ class EmailService {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Welcome!</title>
-        <style>
-          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: #28a745; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
-          .content { background: #f8f9fa; padding: 30px; border-radius: 0 0 8px 8px; }
-          .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
-        </style>
+        <style>${this.getEmailStyles()}</style>
       </head>
       <body>
-        <div class="header">
+        <div class="header" style="background: #28a745;">
           <h1>🎉 Welcome to ${this.appName}!</h1>
         </div>
         <div class="content">

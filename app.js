@@ -20,7 +20,6 @@ const __dirname = process.cwd();
 const app = express();
 
 // Security middleware
-/* eslint-disable quotes */
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -33,7 +32,6 @@ app.use(
     },
   }),
 );
-/* eslint-enable quotes */
 
 // CORS configuration
 app.use(

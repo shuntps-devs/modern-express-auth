@@ -13,7 +13,7 @@ dotenv.config({ override: false, quiet: true });
 import { testDbManager } from './helpers/database_manager.js';
 import { env } from '../config/index.js';
 
-// Note: Email service mocking is handled in individual test files to avoid conflicts
+
 
 // Setup before all tests
 beforeAll(async () => {
@@ -39,12 +39,4 @@ afterAll(async () => {
 // Global test timeout
 jest.setTimeout(30000);
 
-// Mock console methods in test environment (temporarily disabled for debugging)
-// global.console = {
-//   ...console,
-//   log: jest.fn(),
-//   debug: jest.fn(),
-//   info: jest.fn(),
-//   warn: jest.fn(),
-//   error: jest.fn(),
-// };
+

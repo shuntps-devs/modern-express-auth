@@ -1,50 +1,78 @@
-import { User, Session } from '../models/index.js';
+import { User, Session, Profile } from '../models/index.js';
 
 class UserService {
   // Find user by email
   async findUserByEmail(email, includePassword = false) {
-    const query = User.findOne({ email });
-    if (includePassword) {
-      query.select('+password');
+    try {
+      const query = User.findOne({ email });
+      if (includePassword) {
+        query.select('+password');
+      }
+      return await query;
+    } catch (error) {
+      throw new Error(`Failed to find user by email: ${error.message}`);
     }
-    return await query;
   }
 
   // Find user by username
   async findUserByUsername(username) {
-    return await User.findOne({ username });
+    try {
+      return await User.findOne({ username });
+    } catch (error) {
+      throw new Error(`Failed to find user by username: ${error.message}`);
+    }
   }
 
   // Find user by email or username
   async findUserByEmailOrUsername(email, username) {
-    return await User.findOne({
-      $or: [{ email }, { username }],
-    });
+    try {
+      return await User.findOne({
+        $or: [{ email }, { username }],
+      });
+    } catch (error) {
+      throw new Error(`Failed to find user by email or username: ${error.message}`);
+    }
   }
 
   // Find user by ID
   async findUserById(id, includePassword = false) {
-    const query = User.findById(id);
-    if (includePassword) {
-      query.select('+password');
+    try {
+      const query = User.findById(id);
+      if (includePassword) {
+        query.select('+password');
+      }
+      return await query;
+    } catch (error) {
+      throw new Error(`Failed to find user by ID: ${error.message}`);
     }
-    return await query;
   }
 
   // Find user by session
   async findUserBySession(sessionId) {
-    const session = await Session.findOne({
-      _id: sessionId,
-      isActive: true,
-      expiresAt: { $gt: new Date() },
-    }).populate('userId');
+    try {
+      if (!sessionId) {
+        return null;
+      }
+      
+      const session = await Session.findOne({
+        _id: sessionId,
+        isActive: true,
+        expiresAt: { $gt: new Date() },
+      }).populate('userId');
 
-    return session ? session.userId : null;
+      return session ? session.userId : null;
+    } catch (error) {
+      throw new Error(`Failed to find user by session: ${error.message}`);
+    }
   }
 
   // Create new user
   async createUser(userData) {
-    return await User.create(userData);
+    try {
+      return await User.create(userData);
+    } catch (error) {
+      throw new Error(`Failed to create user: ${error.message}`);
+    }
   }
 
   // Update user
@@ -64,9 +92,16 @@ class UserService {
 
   // Update user password
   async updateUserPassword(userId, newPassword) {
-    const user = await User.findById(userId);
-    user.password = newPassword;
-    return await user.save();
+    try {
+      const user = await User.findById(userId);
+      if (!user) {
+        throw new Error('User not found');
+      }
+      user.password = newPassword;
+      return await user.save();
+    } catch (error) {
+      throw new Error(`Failed to update user password: ${error.message}`);
+    }
   }
 
   // Deactivate user (soft delete)
@@ -252,8 +287,6 @@ class UserService {
   // Avatar management methods
   async updateUserAvatar(userId, avatarData) {
     try {
-      const { Profile } = await import('../models/index.js');
-
       // Update or create profile with new avatar
       const profile = await Profile.findOneAndUpdate(
         { userId },
@@ -279,8 +312,6 @@ class UserService {
 
   async getUserProfile(userId) {
     try {
-      const { Profile } = await import('../models/index.js');
-
       const profile = await Profile.findOne({ userId }).populate(
         'userId',
         'username email role isActive isEmailVerified avatar',
@@ -294,8 +325,6 @@ class UserService {
 
   async removeUserAvatar(userId) {
     try {
-      const { Profile } = await import('../models/index.js');
-
       const profile = await Profile.findOneAndUpdate(
         { userId },
         {

@@ -5,6 +5,50 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.4] - 2025-01-05
+
+### 🏗️ Code Quality & Architecture Refactoring
+
+#### ✨ Added
+
+- **Centralized Response Helper System** - New `utils/response_helper.js` with standardized functions:
+  - `sendSuccessResponse()` - Consistent success response formatting
+  - `sendUserResponse()` - Standardized user data responses
+  - `sendSessionResponse()` - Unified session response patterns
+  - `sendPaginatedResponse()` - Consistent pagination formatting
+  - `sendErrorResponse()` - Centralized error response handling
+- **Admin Validation Utility** - New `utils/admin_helper.js` with shared validation:
+  - `validateAdminRole()` - Centralized admin role checking
+  - `requireAdminRole()` - Middleware function for admin validation
+- **New Success Message Constants** - Added to `constants/messages.js`:
+  - `TOKEN_VERIFIED` - Token verification success message
+  - `AUTH_STATUS_RETRIEVED` - Authentication status message
+
+#### 🔄 Changed
+
+- **All Controllers Refactored** - Complete response pattern standardization:
+  - `ProfileController` - All methods use centralized response helpers
+  - `AuthController` - Standardized responses, admin validation utility
+  - `SessionController` - Consistent response formatting
+  - `UserController` - Centralized response patterns
+  - `EmailVerificationController` - Unified response handling
+- **Message Centralization** - All hardcoded success strings moved to constants
+- **Admin Validation** - Replaced manual role checks with shared utility
+- **Jest Compatibility** - Fixed `import.meta.url` issues in `avatar_upload.js`
+
+#### 🐛 Fixed
+
+- **Test Suite Compatibility** - Resolved Jest ESM parsing errors
+- **Import Optimization** - Removed unused imports (`USER_ROLES` in AuthController)
+- **Code Duplication** - Eliminated repeated admin validation patterns
+
+#### 📈 Improved
+
+- **Code Maintainability** - Consistent patterns across all controllers
+- **Response Consistency** - Standardized JSON response formats
+- **Developer Experience** - Cleaner, more readable controller code
+- **Test Reliability** - All 276 tests passing with 16/16 test suites
+
 ## [1.1.3] - 2025-01-05
 
 ### 🎨 Profile & Avatar Management System

@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { Session } from '../models/index.js';
+import { Session, User } from '../models/index.js';
 import { env } from '../config/index.js';
 import {
   SUCCESS_MESSAGES,
@@ -315,7 +315,6 @@ class AuthService {
   async login(email, password) {
     try {
       // Find user with password
-      const { User } = await import('../models/index.js');
       const user = await User.findOne({ email }).select('+password');
 
       if (!user) {
@@ -359,7 +358,6 @@ class AuthService {
   // Get user security status (login attempts, lock status, last login)
   async getUserSecurityStatus(userId) {
     try {
-      const { User } = await import('../models/index.js');
       const user = await User.findById(userId).select('loginAttempts lockUntil lastLogin isActive');
 
       if (!user) {
@@ -401,7 +399,6 @@ class AuthService {
   // Reset user login attempts (admin function)
   async resetUserLoginAttempts(userId) {
     try {
-      const { User } = await import('../models/index.js');
       const user = await User.findById(userId);
 
       if (!user) {
