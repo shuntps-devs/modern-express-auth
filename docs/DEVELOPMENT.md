@@ -159,13 +159,13 @@ npm run ci
 
 #### Test Coverage Status
 
-| Test Suite | Tests | Status | Coverage Area |
-|------------|-------|--------|--------------|
-| Middleware | 77 | ✅ 100% | Auth, Error Handler, Rate Limiter, Email Verification |
-| Controllers | 48 | ✅ 100% | Auth, User, Email Verification |
-| Services | 24 | ✅ 100% | Auth Service, User Service |
-| Validations | 30 | ✅ 100% | Zod Schema Validation |
-| **Total** | **179** | **✅ 100%** | **28.8% Global, 97%+ Middleware** |
+| Test Suite  | Tests   | Status      | Coverage Area                                         |
+| ----------- | ------- | ----------- | ----------------------------------------------------- |
+| Middleware  | 77      | ✅ 100%     | Auth, Error Handler, Rate Limiter, Email Verification |
+| Controllers | 48      | ✅ 100%     | Auth, User, Email Verification                        |
+| Services    | 24      | ✅ 100%     | Auth Service, User Service                            |
+| Validations | 30      | ✅ 100%     | Zod Schema Validation                                 |
+| **Total**   | **179** | **✅ 100%** | **28.8% Global, 97%+ Middleware**                     |
 
 #### Development Testing Workflow
 

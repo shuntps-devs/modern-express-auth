@@ -8,22 +8,25 @@ export {
   register,
   login,
   logout,
-  logoutAll,
-  getMe,
-  changePassword,
   refreshToken,
-  verifyToken,
-  getAuthStatus,
-  getUserSessions,
-  revokeSession,
-  revokeAllSessions,
-  cleanupSessions,
+  forgotPassword,
+  resetPassword,
+  verifyEmail,
+  resendVerification,
+  getSecurityStatus,
+  resetLoginAttempts,
 } from './auth_controller.js';
 
-// Export controller functions
-export * from './auth_controller.js';
-export * from './user_controller.js';
-export * from './email_verification_controller.js';
+// Session Controller
+export {
+  getActiveSessions,
+  getSessionDetails,
+  getDeviceStats,
+  getLocationStats,
+  getSecurityOverview,
+  terminateSession,
+  terminateOtherSessions,
+} from './session_controller.js';
 
 // User Controller
 export {

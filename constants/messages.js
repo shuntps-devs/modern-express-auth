@@ -35,6 +35,16 @@ export const SUCCESS_MESSAGES = {
   // Session Management
   SESSIONS_RETRIEVED_SUCCESS: 'Sessions retrieved successfully',
   USER_SESSIONS_REVOKED_SUCCESS: count => `Revoked ${count} user sessions`,
+  SESSION_RETRIEVED_SUCCESS: 'Session details retrieved successfully',
+  SESSION_TERMINATED_SUCCESS: 'Session terminated successfully',
+  OTHER_SESSIONS_TERMINATED_SUCCESS: 'All other sessions terminated successfully',
+
+  // Security Status
+  SECURITY_STATUS_RETRIEVED_SUCCESS: 'Security status retrieved successfully',
+  LOGIN_ATTEMPTS_RESET_SUCCESS: 'Login attempts reset successfully',
+  DEVICE_STATS_RETRIEVED_SUCCESS: 'Device statistics retrieved successfully',
+  LOCATION_STATS_RETRIEVED_SUCCESS: 'Location statistics retrieved successfully',
+  SECURITY_OVERVIEW_RETRIEVED_SUCCESS: 'Security overview retrieved successfully',
 };
 
 // ============================================================================
@@ -129,6 +139,15 @@ export const ERROR_MESSAGES = {
   FAILED_TO_REVOKE_SESSION: 'Failed to revoke session',
   FAILED_TO_REVOKE_SESSIONS: 'Failed to revoke sessions',
   FAILED_TO_CLEANUP_SESSIONS: 'Failed to cleanup sessions',
+
+  // Security Status Errors
+  FAILED_TO_RETRIEVE_SECURITY_STATUS: 'Failed to retrieve security status',
+  FAILED_TO_RESET_LOGIN_ATTEMPTS: 'Failed to reset login attempts',
+
+  // Session Management Errors
+  SESSION_NOT_FOUND: 'Session not found',
+  CANNOT_TERMINATE_CURRENT_SESSION: 'Cannot terminate current session',
+  SESSION_TERMINATION_FAILED: 'Failed to terminate session',
 };
 
 // ============================================================================

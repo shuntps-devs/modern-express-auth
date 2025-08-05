@@ -59,7 +59,7 @@ jest.mock('../../../constants/messages.js', () => ({
 
 // Mock express-rate-limit with proper default export
 jest.mock('express-rate-limit', () => {
-  const mockImplementation = (options) => {
+  const mockImplementation = options => {
     const middleware = jest.fn((req, res, next) => {
       // Simulate rate limit behavior
       if (options.skip && options.skip(req)) {

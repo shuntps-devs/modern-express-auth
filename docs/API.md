@@ -313,12 +313,242 @@ Different endpoints have different rate limits:
 - **Password Reset**: 3 requests per hour
 - **Profile Updates**: 10 requests per hour
 
+### Session Management Routes (`/api/sessions`)
+
+🔐 **Authentication Required**: All session endpoints require valid authentication.
+
+#### GET `/api/sessions/active`
+
+Retrieve all active sessions for the authenticated user with enriched device and location information.
+
+**Response (200):**
+
+```json
+{
+  "success": true,
+  "message": "Active sessions retrieved successfully",
+  "data": {
+    "sessions": [
+      {
+        "_id": "507f1f77bcf86cd799439011",
+        "ipAddress": "192.168.1.100",
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "deviceInfo": {
+          "browser": "Chrome",
+          "os": "Windows",
+          "device": "Desktop"
+        },
+        "location": {
+          "country": "US",
+          "city": "New York",
+          "region": "NY"
+        },
+        "createdAt": "2024-01-15T10:30:00.000Z",
+        "lastActivity": "2024-01-15T14:45:00.000Z",
+        "expiresAt": "2024-01-22T10:30:00.000Z",
+        "securityLevel": "medium",
+        "isCurrent": true
+      }
+    ],
+    "total": 3
+  }
+}
+```
+
+#### GET `/api/sessions/:sessionId`
+
+Get detailed information about a specific session.
+
+**Parameters:**
+
+- `sessionId` (string): The session ID to retrieve
+
+**Response (200):**
+
+```json
+{
+  "success": true,
+  "message": "Session details retrieved successfully",
+  "data": {
+    "session": {
+      "_id": "507f1f77bcf86cd799439011",
+      "ipAddress": "192.168.1.100",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      "deviceInfo": {
+        "browser": "Chrome",
+        "os": "Windows",
+        "device": "Desktop"
+      },
+      "location": {
+        "country": "US",
+        "city": "New York",
+        "region": "NY"
+      },
+      "createdAt": "2024-01-15T10:30:00.000Z",
+      "lastActivity": "2024-01-15T14:45:00.000Z",
+      "expiresAt": "2024-01-22T10:30:00.000Z",
+      "securityLevel": "medium",
+      "isCurrent": true
+    }
+  }
+}
+```
+
+#### GET `/api/sessions/stats/devices`
+
+Get device statistics for user sessions.
+
+**Response (200):**
+
+```json
+{
+  "success": true,
+  "message": "Device statistics retrieved successfully",
+  "data": {
+    "deviceStats": {
+      "browsers": {
+        "Chrome": 5,
+        "Firefox": 2,
+        "Safari": 1
+      },
+      "operatingSystems": {
+        "Windows": 4,
+        "macOS": 2,
+        "Android": 2
+      },
+      "deviceTypes": {
+        "Desktop": 6,
+        "Mobile": 2
+      }
+    },
+    "totalSessions": 8
+  }
+}
+```
+
+#### GET `/api/sessions/stats/locations`
+
+Get location statistics for user sessions.
+
+**Response (200):**
+
+```json
+{
+  "success": true,
+  "message": "Location statistics retrieved successfully",
+  "data": {
+    "locationStats": {
+      "countries": {
+        "US": 5,
+        "CA": 2,
+        "UK": 1
+      },
+      "cities": {
+        "New York": 3,
+        "Toronto": 2,
+        "London": 1,
+        "Los Angeles": 2
+      },
+      "regions": {
+        "NY": 3,
+        "ON": 2,
+        "England": 1,
+        "CA": 2
+      }
+    },
+    "totalSessions": 8
+  }
+}
+```
+
+#### GET `/api/sessions/security-overview`
+
+Get security overview of user sessions.
+
+**Response (200):**
+
+```json
+{
+  "success": true,
+  "message": "Security overview retrieved successfully",
+  "data": {
+    "securityOverview": {
+      "totalActiveSessions": 3,
+      "suspiciousActivity": {
+        "multipleLocations": true,
+        "unusualDevices": false,
+        "recentLoginAttempts": 2
+      },
+      "securityLevels": {
+        "high": 1,
+        "medium": 2,
+        "low": 0
+      },
+      "recommendations": [
+        "Consider terminating sessions from unfamiliar locations",
+        "Enable two-factor authentication for enhanced security"
+      ]
+    }
+  }
+}
+```
+
+#### DELETE `/api/sessions/:sessionId`
+
+Terminate a specific session.
+
+**Parameters:**
+
+- `sessionId` (string): The session ID to terminate
+
+**Response (200):**
+
+```json
+{
+  "success": true,
+  "message": "Session terminated successfully",
+  "data": {
+    "terminatedSession": {
+      "_id": "507f1f77bcf86cd799439011",
+      "terminatedAt": "2024-01-15T15:00:00.000Z"
+    }
+  }
+}
+```
+
+**Error (400):**
+
+```json
+{
+  "success": false,
+  "message": "Cannot terminate current session"
+}
+```
+
+#### DELETE `/api/sessions/terminate-others`
+
+Terminate all other sessions except the current one.
+
+**Response (200):**
+
+```json
+{
+  "success": true,
+  "message": "Other sessions terminated successfully",
+  "data": {
+    "terminatedSessions": 2
+  }
+}
+```
+
 ## 🔒 Security Features
 
 - JWT tokens with secure storage
 - Password hashing with bcrypt
 - Account lockout after failed attempts
 - IP-based session validation
+- Device and location tracking
+- Session security level assessment
 - CORS protection
 - Helmet security headers
 - Rate limiting

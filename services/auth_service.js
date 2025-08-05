@@ -8,7 +8,11 @@ import {
   COOKIE_CONFIG,
   COOKIE_PATHS,
 } from '../constants/index.js';
-import { setAuthCookies, calculateTokenExpirations } from '../utils/index.js';
+import {
+  setAuthCookies,
+  calculateTokenExpirations,
+  createEnrichedSessionData,
+} from '../utils/index.js';
 
 class AuthService {
   // Convert JWT time string to milliseconds
@@ -74,19 +78,20 @@ class AuthService {
     const sessionExpiryMs = this.parseJwtTime(env.SESSION_EXPIRES_IN);
     const sessionExpiresAt = new Date(Date.now() + sessionExpiryMs);
 
-    // Get client info
-    const ipAddress = req.ip || req.connection.remoteAddress;
-    const userAgent = req.get('User-Agent') || 'Unknown';
+    // Get enriched client info with device detection and location
+    const enrichedSessionData = createEnrichedSessionData(req);
 
-    // Create session with tokens
+    // Create session with tokens and enriched data
     const session = await Session.create({
       userId: user._id,
       accessToken,
       refreshToken,
       accessTokenExpiresAt,
       refreshTokenExpiresAt,
-      ipAddress,
-      userAgent,
+      ipAddress: enrichedSessionData.ipAddress,
+      userAgent: enrichedSessionData.userAgent,
+      deviceInfo: enrichedSessionData.deviceInfo,
+      location: enrichedSessionData.location,
       isActive: true,
       expiresAt: sessionExpiresAt,
     });
@@ -305,6 +310,115 @@ class AuthService {
     }
   }
 
+  // Login method with enhanced security tracking
+  async login(email, password) {
+    try {
+      // Find user with password
+      const { User } = await import('../models/index.js');
+      const user = await User.findOne({ email }).select('+password');
+
+      if (!user) {
+        throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
+      }
+
+      // Check if account is locked
+      if (user.isLocked) {
+        throw new Error(ERROR_MESSAGES.ACCOUNT_LOCKED);
+      }
+
+      // Check if user is active
+      if (!user.isActive) {
+        throw new Error(ERROR_MESSAGES.ACCOUNT_INACTIVE);
+      }
+
+      // Verify password
+      const isMatch = await user.comparePassword(password);
+
+      if (!isMatch) {
+        // Increment login attempts
+        await user.incLoginAttempts();
+        throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
+      }
+
+      // Reset login attempts on successful login
+      if (user.loginAttempts > 0) {
+        await user.resetLoginAttempts();
+      }
+
+      // Update last login timestamp
+      user.lastLogin = new Date();
+      await user.save();
+
+      return user;
+    } catch (error) {
+      throw new Error(`Login failed: ${error.message}`);
+    }
+  }
+
+  // Get user security status (login attempts, lock status, last login)
+  async getUserSecurityStatus(userId) {
+    try {
+      const { User } = await import('../models/index.js');
+      const user = await User.findById(userId).select('loginAttempts lockUntil lastLogin isActive');
+
+      if (!user) {
+        throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
+      }
+
+      return {
+        loginAttempts: user.loginAttempts || 0,
+        isLocked: user.isLocked,
+        lockUntil: user.lockUntil,
+        lastLogin: user.lastLogin,
+        isActive: user.isActive,
+        securityLevel: this.calculateSecurityLevel(user),
+      };
+    } catch (error) {
+      throw new Error(`Failed to get security status: ${error.message}`);
+    }
+  }
+
+  // Calculate security level based on user activity
+  calculateSecurityLevel(user) {
+    let level = 'good';
+
+    if (user.loginAttempts > 0) {
+      level = 'warning';
+    }
+
+    if (user.loginAttempts >= 3) {
+      level = 'danger';
+    }
+
+    if (user.isLocked) {
+      level = 'locked';
+    }
+
+    return level;
+  }
+
+  // Reset user login attempts (admin function)
+  async resetUserLoginAttempts(userId) {
+    try {
+      const { User } = await import('../models/index.js');
+      const user = await User.findById(userId);
+
+      if (!user) {
+        throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
+      }
+
+      await user.resetLoginAttempts();
+
+      return {
+        success: true,
+        message: SUCCESS_MESSAGES.LOGIN_ATTEMPTS_RESET_SUCCESS,
+        userId: user._id,
+      };
+    } catch (error) {
+      throw new Error(`Failed to reset login attempts: ${error.message}`);
+    }
+  }
+
   // D) Session cleanup and management methods
   async cleanupExpiredSessions(userId = null) {
     try {
@@ -377,12 +491,78 @@ class AuthService {
         _id: session._id,
         ipAddress: session.ipAddress,
         userAgent: session.userAgent,
+        deviceInfo: session.deviceInfo || {
+          browser: 'Unknown',
+          os: 'Unknown',
+          device: 'Unknown',
+        },
+        location: session.location || {
+          country: 'Unknown',
+          city: 'Unknown',
+          region: 'Unknown',
+        },
         createdAt: session.createdAt,
         lastActivity: session.lastActivity,
         expiresAt: session.expiresAt,
       }));
     } catch (error) {
       throw new Error(`${ERROR_MESSAGES.USER_SESSIONS_RETRIEVAL_FAILED} ${error.message}`);
+    }
+  }
+
+  // Get session by ID for specific user
+  async getSessionById(sessionId, userId) {
+    try {
+      const session = await Session.findOne({
+        _id: sessionId,
+        userId,
+        isActive: true,
+        expiresAt: { $gt: new Date() },
+      });
+      return session;
+    } catch (error) {
+      throw new Error(`${ERROR_MESSAGES.SESSION_NOT_FOUND} ${error.message}`);
+    }
+  }
+
+  // Terminate a specific session
+  async terminateSession(sessionId, userId) {
+    try {
+      const result = await Session.findOneAndUpdate(
+        {
+          _id: sessionId,
+          userId,
+          isActive: true,
+        },
+        {
+          isActive: false,
+          lastActivity: new Date(),
+        },
+        { new: true },
+      );
+      return result;
+    } catch (error) {
+      throw new Error(`${ERROR_MESSAGES.SESSION_TERMINATION_FAILED} ${error.message}`);
+    }
+  }
+
+  // Terminate all other sessions except current one
+  async terminateOtherSessions(userId, currentSessionId) {
+    try {
+      const result = await Session.updateMany(
+        {
+          userId,
+          _id: { $ne: currentSessionId },
+          isActive: true,
+        },
+        {
+          isActive: false,
+          lastActivity: new Date(),
+        },
+      );
+      return result.modifiedCount;
+    } catch (error) {
+      throw new Error(`${ERROR_MESSAGES.SESSION_TERMINATION_FAILED} ${error.message}`);
     }
   }
 

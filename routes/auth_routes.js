@@ -23,6 +23,8 @@ import {
   verifyEmail,
   resendVerification,
   checkEmailStatus,
+  getSecurityStatus,
+  resetLoginAttempts,
 } from '../controllers/index.js';
 
 const router = express.Router();
@@ -113,5 +115,16 @@ router.post('/resend-verification', authLimiter, resendVerification);
 // @route   GET /api/auth/email-status
 // @access  Private
 router.get('/email-status', readOnlyLimiter, protect, checkEmailStatus);
+
+// Security Status Routes
+// @desc    Get user security status (login attempts, lock status, last login)
+// @route   GET /api/auth/security-status
+// @access  Private
+router.get('/security-status', readOnlyLimiter, protect, getSecurityStatus);
+
+// @desc    Reset user login attempts (Admin only)
+// @route   POST /api/auth/reset-login-attempts/:userId
+// @access  Private (Admin)
+router.post('/reset-login-attempts/:userId', authLimiter, protect, resetLoginAttempts);
 
 export default router;

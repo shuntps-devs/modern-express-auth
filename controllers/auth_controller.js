@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { logger } from '../config/index.js';
 import { AppError, asyncHandler } from '../middleware/index.js';
 import { userService, authService, emailService } from '../services/index.js';
@@ -8,7 +9,6 @@ import {
   SUCCESS_MESSAGES,
   USER_ROLES,
 } from '../constants/index.js';
-import crypto from 'crypto';
 
 // @desc    Register user
 // @route   POST /api/auth/register
@@ -65,41 +65,28 @@ export const register = asyncHandler(async (req, res, next) => {
 export const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
-  // Check for user
-  const user = await userService.findUserByEmail(email, true); // include password
+  try {
+    // Use enhanced login method from auth service
+    const user = await authService.login(email, password);
 
-  if (!user) {
-    return next(new AppError(ERROR_MESSAGES.INVALID_CREDENTIALS, 401));
-  }
+    logger.info(`${LOGGER_MESSAGES.USER_LOGGED_IN} ${user.email} from IP: ${req.ip}`);
 
-  // Check if account is locked
-  if (user.isLocked) {
-    return next(new AppError(ERROR_MESSAGES.ACCOUNT_LOCKED, 423));
-  }
-
-  // Check if user is active
-  if (!user.isActive) {
-    return next(new AppError(ERROR_MESSAGES.ACCOUNT_DEACTIVATED, 401));
-  }
-
-  // Check if password matches
-  const isMatch = await user.comparePassword(password);
-
-  if (!isMatch) {
-    // Increment login attempts
-    await user.incLoginAttempts();
+    await authService.sendTokenResponse(user, 200, res, req);
+  } catch (error) {
+    // Log failed login attempt with IP
     logger.warn(`${LOGGER_MESSAGES.FAILED_LOGIN_ATTEMPT} ${email} from IP: ${req.ip}`);
+
+    // Handle specific error types
+    if (error.message.includes('Account locked')) {
+      return next(new AppError(ERROR_MESSAGES.ACCOUNT_LOCKED, 423));
+    }
+    if (error.message.includes('Account inactive')) {
+      return next(new AppError(ERROR_MESSAGES.ACCOUNT_INACTIVE, 403));
+    }
+
+    // Default to invalid credentials for security
     return next(new AppError(ERROR_MESSAGES.INVALID_CREDENTIALS, 401));
   }
-
-  // Reset login attempts on successful login
-  if (user.loginAttempts > 0) {
-    await user.resetLoginAttempts();
-  }
-
-  logger.info(`${LOGGER_MESSAGES.USER_LOGGED_IN} ${user.email} from IP: ${req.ip}`);
-
-  await authService.sendTokenResponse(user, 200, res, req);
 });
 
 // @desc    Logout user
@@ -345,5 +332,52 @@ export const cleanupSessions = asyncHandler(async (req, res, next) => {
   } catch (error) {
     logger.error(LOGGER_MESSAGES.FAILED_TO_CLEANUP_SESSIONS, error.message);
     return next(new AppError(ERROR_MESSAGES.FAILED_TO_CLEANUP_SESSIONS, 500));
+  }
+});
+
+// ===== USER SECURITY STATUS ENDPOINTS =====
+
+// @desc    Get user security status (login attempts, lock status, last login)
+// @route   GET /api/auth/security-status
+// @access  Private
+export const getSecurityStatus = asyncHandler(async (req, res, next) => {
+  try {
+    const securityStatus = await authService.getUserSecurityStatus(req.user._id);
+
+    res.status(200).json({
+      success: true,
+      data: securityStatus,
+      message: SUCCESS_MESSAGES.SECURITY_STATUS_RETRIEVED_SUCCESS,
+    });
+  } catch (error) {
+    logger.error(`Failed to get security status for user ${req.user._id}: ${error.message}`);
+    return next(new AppError(ERROR_MESSAGES.FAILED_TO_RETRIEVE_SECURITY_STATUS, 500));
+  }
+});
+
+// @desc    Reset user login attempts (Admin only)
+// @route   POST /api/auth/reset-login-attempts/:userId
+// @access  Private (Admin only)
+export const resetLoginAttempts = asyncHandler(async (req, res, next) => {
+  // Check if user is admin
+  if (req.user.role !== USER_ROLES.ADMIN) {
+    return next(new AppError(ERROR_MESSAGES.ADMIN_ROLE_REQUIRED, 403));
+  }
+
+  const { userId } = req.params;
+
+  try {
+    const result = await authService.resetUserLoginAttempts(userId);
+
+    logger.info(`Admin ${req.user.email} reset login attempts for user ${userId}`);
+
+    res.status(200).json({
+      success: true,
+      message: result.message,
+      userId: result.userId,
+    });
+  } catch (error) {
+    logger.error(`Failed to reset login attempts for user ${userId}: ${error.message}`);
+    return next(new AppError(ERROR_MESSAGES.FAILED_TO_RESET_LOGIN_ATTEMPTS, 500));
   }
 });

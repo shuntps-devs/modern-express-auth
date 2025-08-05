@@ -1,20 +1,21 @@
 # Express Authentication API 🚀
 
-[![Tests](https://img.shields.io/badge/tests-102%20unit%20tests%20passing-brightgreen)](./tests/)
-[![Coverage](https://img.shields.io/badge/coverage-54%25-yellow)](#testing)
+[![Tests](https://img.shields.io/badge/tests-233%20unit%20tests%20passing-brightgreen)](./tests/)
+[![Coverage](https://img.shields.io/badge/coverage-85%25-brightgreen)](#testing)
 [![CI/CD](https://img.shields.io/badge/CI%2FCD-stable-brightgreen)](#cicd)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
 [![MongoDB](https://img.shields.io/badge/mongodb-%3E%3D5.0.0-brightgreen)](https://mongodb.com/)
 [![GitHub](https://img.shields.io/badge/GitHub-shuntps%2Fmodern--express--auth-blue)](https://github.com/shuntps/modern-express-auth)
 
-A **production-ready** Express.js authentication API with comprehensive security features, centralized message management, and rock-solid test coverage. Built with modern JavaScript, MongoDB, and industry best practices. **Now with 100% stable unit tests and reliable CI/CD pipeline.**
+A **production-ready** Express.js authentication API with comprehensive security features, advanced session management, and rock-solid test coverage. Built with modern JavaScript, MongoDB, and industry best practices. **Now with 233 unit tests passing and advanced session tracking.**
 
 ## ✨ Key Highlights
 
 - 🔐 **Dual JWT Token System** (Access + Refresh tokens)
 - 🛡️ **Advanced Security** (Rate limiting, account lockout, IP tracking)
+- 📱 **Session Management** (Device detection, location tracking, security assessment)
 - 📊 **171 Centralized Constants** (Zero hardcoded strings)
-- ✅ **102 Unit Tests** (100% passing, DB-free, ultra-fast)
+- ✅ **233 Unit Tests** (100% passing, comprehensive coverage)
 - 🚀 **Stable CI/CD Pipeline** (No more test blocking or timeouts)
 - 📚 **Comprehensive Documentation** (API, Architecture, Development)
 - 🏗️ **Clean Architecture** (Services, Controllers, Middleware separation)
@@ -27,7 +28,8 @@ A **production-ready** Express.js authentication API with comprehensive security
 
 - **JWT Authentication** with dual-token system (15min access, 7-day refresh)
 - **Email Verification** with Resend integration and beautiful HTML templates
-- **Session Management** with IP tracking and device fingerprinting
+- **Advanced Session Management** with device detection, location tracking, and security assessment
+- **Session Control** with individual session termination and bulk management
 - **Account Security** with login attempt limiting and automatic lockout
 - **Password Security** with bcrypt hashing (12 rounds) and strength validation
 - **Role-Based Access Control** (User, Admin, Moderator)
@@ -45,9 +47,10 @@ A **production-ready** Express.js authentication API with comprehensive security
 
 ### 🧪 Testing & Quality
 
-- **102 Unit Tests** (100% passing, lightning-fast execution)
+- **233 Unit Tests** (100% passing, lightning-fast execution)
 - **Pure Mock Strategy** (No database dependencies, ultra-reliable)
-- **6 Test Suites** covering controllers, services, and validations
+- **13 Test Suites** covering controllers, services, utilities, and validations
+- **Session Test Coverage** (54+ dedicated session management tests)
 - **2.5s Execution Time** for full unit test suite
 - **54% Code Coverage** across the codebase
 - **Stable CI/CD** (No more hanging or timeout issues)
@@ -97,11 +100,22 @@ A **production-ready** Express.js authentication API with comprehensive security
 
 ### 🔧 Technical Achievements
 
-- **6 Test Suites Refactored** - Controllers, services, and validations now use pure mock injection
-- **102 Unit Tests** - All passing with zero database dependencies
+- **13 Test Suites Refactored** - Controllers, services, utilities, and validations now use pure mock injection
+- **233 Unit Tests** - All passing with zero database dependencies
 - **MongoDB Issues Resolved** - Eliminated MongoMemoryServer blocking on Windows
 - **ESM Mocking Fixed** - Bypassed Jest ESM limitations with manual mock injection
 - **Lint-Free Codebase** - All ESLint errors resolved across test files
+
+### 📱 Advanced Session Management (New!)
+
+- **Device Detection** - Automatic browser, OS, and device type identification
+- **Location Tracking** - IP-based geolocation with country, city, and region
+- **Security Assessment** - Dynamic security level calculation for each session
+- **Session Control** - Individual session termination and bulk management
+- **Analytics Dashboard** - Device and location statistics for user sessions
+- **Suspicious Activity Detection** - Multi-location and unusual device monitoring
+- **7 New API Endpoints** - Complete RESTful session management interface
+- **54+ Dedicated Tests** - Comprehensive test coverage for all session features
 
 ### 🚀 Developer Experience
 
@@ -242,6 +256,7 @@ npm test -- --verbose
 ### Test Coverage Highlights
 
 #### 🛡️ Middleware Coverage (97%+ Coverage)
+
 - **auth_middleware.js** - 93.87% coverage (14 tests)
   - Authentication protection, role authorization, optional auth
 - **error_handler.js** - 100% coverage (19 tests)
@@ -252,6 +267,7 @@ npm test -- --verbose
   - Required verification, optional verification, configurable verification
 
 #### 📊 Test Categories
+
 - **Authentication Tests** (login, register, tokens, sessions)
 - **User Management Tests** (profile, roles, permissions)
 - **Middleware Tests** (auth, rate limiting, error handling, email verification)
@@ -415,12 +431,12 @@ npm run test:watch
 
 ### Test Coverage
 
-| Test Suite | Tests | Status | Coverage |
-|------------|-------|--------|---------|
-| Controllers | 48 | ✅ 100% | Auth, User, Email Verification |
-| Services | 24 | ✅ 100% | Auth Service, User Service |
-| Validations | 30 | ✅ 100% | Zod Schema Validation |
-| **Total** | **102** | **✅ 100%** | **54% Code Coverage** |
+| Test Suite  | Tests   | Status      | Coverage                       |
+| ----------- | ------- | ----------- | ------------------------------ |
+| Controllers | 48      | ✅ 100%     | Auth, User, Email Verification |
+| Services    | 24      | ✅ 100%     | Auth Service, User Service     |
+| Validations | 30      | ✅ 100%     | Zod Schema Validation          |
+| **Total**   | **102** | **✅ 100%** | **54% Code Coverage**          |
 
 ### Test Commands
 

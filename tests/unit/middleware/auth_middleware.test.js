@@ -23,13 +23,18 @@ jest.mock('../../../middleware/error_handler.js', () => ({
       this.isOperational = true;
     }
   },
-  asyncHandler: (fn) => (req, res, next) => {
+  asyncHandler: fn => (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
   },
 }));
 
 // Import the middleware and mocked modules after mocking
-import { protect, authorize, optionalAuth, checkOwnership } from '../../../middleware/auth_middleware.js';
+import {
+  protect,
+  authorize,
+  optionalAuth,
+  checkOwnership,
+} from '../../../middleware/auth_middleware.js';
 import { authService } from '../../../services/index.js';
 import { logger } from '../../../config/index.js';
 
