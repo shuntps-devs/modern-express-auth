@@ -16,10 +16,13 @@ export {
   COOKIE_PATHS,
   COOKIE_CONFIG,
   VALIDATION_TYPES,
+  RATE_LIMIT_TYPES,
+  RATE_LIMIT_DESCRIPTIONS,
   getEnvDisplayMessage,
   getEnvErrorMessage,
   getEnvExampleLine,
   getValidationMessage,
   getErrorMessage,
   getSuccessMessage,
+  getAuthRateLimitWarning,
 } from './messages.js';

@@ -11,6 +11,7 @@ export * from './auth_middleware.js';
 export * from './error_handler.js';
 export * from './rate_limiter.js';
 export * from './email_verification_middleware.js';
+export * from './avatar_upload.js';
 
 // Error Handling Middleware
 export { AppError, asyncHandler, errorHandler } from './error_handler.js';
@@ -20,6 +21,7 @@ export {
   apiLimiter,
   authLimiter,
   passwordResetLimiter,
+  avatarUploadLimiter,
   profileLimiter,
   readOnlyLimiter,
   adminLimiter,

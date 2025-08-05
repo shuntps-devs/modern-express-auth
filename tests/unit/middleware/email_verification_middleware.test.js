@@ -16,7 +16,7 @@ jest.mock('../../../constants/index.js', () => ({
   },
 }));
 
-// Import after mocks
+// Import directly to avoid barrel export initialization issues
 import {
   requireEmailVerification,
   optionalEmailVerification,

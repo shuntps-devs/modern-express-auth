@@ -9,7 +9,7 @@ import {
   createEnrichedSessionData,
   formatSessionResponse,
   getSessionSecurityLevel,
-} from '../../../utils/session_utils.js';
+} from '../../../utils/index.js';
 
 describe('Session Utils', () => {
   describe('parseDeviceInfo', () => {

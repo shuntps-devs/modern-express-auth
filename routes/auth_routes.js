@@ -14,17 +14,17 @@ import {
   getMe,
   changePassword,
   refreshToken,
-  verifyToken,
   getAuthStatus,
   getUserSessions,
   revokeSession,
   revokeAllSessions,
   cleanupSessions,
+  getSecurityStatus,
+  resetLoginAttempts,
+  verifyToken,
   verifyEmail,
   resendVerification,
   checkEmailStatus,
-  getSecurityStatus,
-  resetLoginAttempts,
 } from '../controllers/index.js';
 
 const router = express.Router();
@@ -90,30 +90,30 @@ router.post('/cleanup', authLimiter, protect, cleanupSessions);
 // @access  Public
 router.post('/refresh', authLimiter, refreshToken);
 
-// @desc    Verify access token validity
-// @route   GET /api/auth/verify
-// @access  Private
-router.get('/verify', readOnlyLimiter, protect, verifyToken);
-
 // @desc    Check authentication status
 // @route   GET /api/auth/status
 // @access  Public (with optional auth)
 router.get('/status', readOnlyLimiter, optionalAuth, getAuthStatus);
 
-// Email Verification Routes
-// @desc    Verify email address
-// @route   GET /api/auth/verify-email/:token
-// @access  Public
+// TODO: Email Verification Routes - Functions not implemented yet
+// // @desc    Verify token
+// // @route   GET /api/auth/verify
+// // @access  Private
+router.get('/verify', readOnlyLimiter, protect, verifyToken);
+
+// // @desc    Verify email address
+// // @route   GET /api/auth/verify-email/:token
+// // @access  Public
 router.get('/verify-email/:token', verifyEmail);
 
-// @desc    Resend email verification
-// @route   POST /api/auth/resend-verification
-// @access  Public
+// // @desc    Resend email verification
+// // @route   POST /api/auth/resend-verification
+// // @access  Public
 router.post('/resend-verification', authLimiter, resendVerification);
 
-// @desc    Check email verification status
-// @route   GET /api/auth/email-status
-// @access  Private
+// // @desc    Check email verification status
+// // @route   GET /api/auth/email-status
+// // @access  Private
 router.get('/email-status', readOnlyLimiter, protect, checkEmailStatus);
 
 // Security Status Routes

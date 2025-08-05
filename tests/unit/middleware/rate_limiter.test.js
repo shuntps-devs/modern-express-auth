@@ -88,7 +88,7 @@ jest.mock('express-rate-limit', () => {
   };
 });
 
-// Import after mocks
+// Import directly to avoid barrel export initialization issues
 import {
   apiLimiter,
   authLimiter,

@@ -14,12 +14,6 @@ export const updateProfileSchema = z.object({
     .email(VALIDATION_MESSAGES.EMAIL_INVALID)
     .transform(val => val.toLowerCase())
     .optional(),
-
-  bio: z
-    .string()
-    .max(500, VALIDATION_MESSAGES.BIO_MAX_LENGTH)
-    .transform(val => val.trim())
-    .optional(),
 });
 
 // Admin update user validation schema

@@ -45,6 +45,12 @@ export const SUCCESS_MESSAGES = {
   DEVICE_STATS_RETRIEVED_SUCCESS: 'Device statistics retrieved successfully',
   LOCATION_STATS_RETRIEVED_SUCCESS: 'Location statistics retrieved successfully',
   SECURITY_OVERVIEW_RETRIEVED_SUCCESS: 'Security overview retrieved successfully',
+
+  // Profile and Avatar Success
+  PROFILE_RETRIEVED: 'Profile retrieved successfully',
+  PROFILE_UPDATED: 'Profile updated successfully',
+  AVATAR_UPLOADED: 'Avatar uploaded successfully',
+  AVATAR_REMOVED: 'Avatar removed successfully',
 };
 
 // ============================================================================
@@ -108,6 +114,7 @@ export const ERROR_MESSAGES = {
   RATE_LIMIT_AUTH: 'Too many authentication attempts from this IP, please try again later.',
   RATE_LIMIT_PASSWORD_RESET:
     'Too many password reset attempts from this IP, please try again later.',
+  RATE_LIMIT_AVATAR_UPLOAD: 'Too many avatar upload attempts from this IP, please try again later.',
   RATE_LIMIT_PROFILE_UPDATE:
     'Too many profile update attempts from this IP, please try again later.',
   RATE_LIMIT_ADMIN: 'Too many admin requests from this IP, please try again later.',
@@ -148,6 +155,12 @@ export const ERROR_MESSAGES = {
   SESSION_NOT_FOUND: 'Session not found',
   CANNOT_TERMINATE_CURRENT_SESSION: 'Cannot terminate current session',
   SESSION_TERMINATION_FAILED: 'Failed to terminate session',
+
+  // Profile and Avatar Errors
+  PROFILE_NOT_FOUND: 'Profile not found',
+  AVATAR_UPLOAD_REQUIRED: 'Avatar file is required',
+  AVATAR_NOT_FOUND: 'No avatar found to remove',
+  NO_VALID_UPDATES: 'No valid fields provided for update',
 };
 
 // ============================================================================
@@ -201,6 +214,11 @@ export const VALIDATION_MESSAGES = {
   // Search Validation
   SEARCH_TERM_REQUIRED: 'Search term must not be empty',
   SEARCH_TERM_MAX_LENGTH: 'Search term cannot exceed 100 characters',
+
+  // Profile Validation
+  BIO_TOO_LONG: 'Bio cannot exceed 500 characters',
+  INVALID_BIO: 'Bio contains invalid content',
+  INVALID_PROFILE_DATA: 'Invalid profile data provided',
 };
 
 // ============================================================================
@@ -287,6 +305,7 @@ export const LOGGER_MESSAGES = {
   // Rate Limiter
   RATE_LIMIT_EXCEEDED_IP: 'Rate limit exceeded for IP:',
   PASSWORD_RESET_RATE_LIMIT_EXCEEDED_IP: 'Password reset rate limit exceeded for IP:',
+  AVATAR_UPLOAD_RATE_LIMIT_EXCEEDED_IP: 'Avatar upload rate limit exceeded for IP:',
   PROFILE_UPDATE_RATE_LIMIT_EXCEEDED_IP: 'Profile update rate limit exceeded for IP:',
   READ_ONLY_RATE_LIMIT_EXCEEDED_IP: 'Read-only rate limit exceeded for IP:',
   ADMIN_RATE_LIMIT_EXCEEDED_IP: 'Admin rate limit exceeded for IP:',
@@ -353,6 +372,7 @@ export const RATE_LIMIT_TYPES = {
   GENERAL: 'RATE_LIMIT_EXCEEDED',
   AUTH: 'AUTH_RATE_LIMIT_EXCEEDED',
   PASSWORD_RESET: 'PASSWORD_RESET_RATE_LIMIT_EXCEEDED',
+  AVATAR_UPLOAD: 'AVATAR_UPLOAD_RATE_LIMIT_EXCEEDED',
   PROFILE: 'PROFILE_RATE_LIMIT_EXCEEDED',
   READ: 'READ_RATE_LIMIT_EXCEEDED',
   ADMIN: 'ADMIN_RATE_LIMIT_EXCEEDED',
@@ -364,6 +384,7 @@ export const RATE_LIMIT_DESCRIPTIONS = {
   GENERAL: 'General API endpoints',
   AUTH: 'Authentication endpoints (login, register)',
   PASSWORD_RESET: 'Password reset endpoints',
+  AVATAR_UPLOAD: 'Avatar upload endpoints',
   PROFILE: 'Profile update endpoints',
   READ: 'Read-only endpoints (GET requests)',
   ADMIN: 'Admin endpoints',

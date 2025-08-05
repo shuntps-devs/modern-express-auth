@@ -50,6 +50,9 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
+// Static file serving for uploads (avatars)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Mount all API routes through centralized router (with rate limiting integrated)
 app.use('/api', apiRouter);
 

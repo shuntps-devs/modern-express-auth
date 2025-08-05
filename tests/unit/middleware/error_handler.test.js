@@ -10,7 +10,7 @@ jest.mock('../../../config/index.js', () => ({
   },
 }));
 
-// Import after mocks
+// Import directly to avoid barrel export initialization issues
 import { AppError, asyncHandler, errorHandler } from '../../../middleware/error_handler.js';
 import { logger, env } from '../../../config/index.js';
 

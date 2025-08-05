@@ -7,7 +7,7 @@ import {
   RATE_LIMIT_TYPES,
   RATE_LIMIT_DESCRIPTIONS,
   getAuthRateLimitWarning,
-} from '../constants/messages.js';
+} from '../constants/index.js';
 
 /**
  * Centralized Rate Limiting Configuration
@@ -78,6 +78,36 @@ export const authLimiter = rateLimit({
       method: req.method,
     });
     return shouldSkip;
+  },
+});
+
+// Strict rate limiter for avatar upload endpoints
+export const avatarUploadLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10, // Limit each IP to 10 avatar uploads per hour
+  message: {
+    success: false,
+    error: {
+      message: ERROR_MESSAGES.RATE_LIMIT_AVATAR_UPLOAD,
+      type: RATE_LIMIT_TYPES.AVATAR_UPLOAD,
+      retryAfter: 3600, // 1 hour in seconds
+    },
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res, next, options) => {
+    logger.warn(`${LOGGER_MESSAGES.AVATAR_UPLOAD_RATE_LIMIT_EXCEEDED_IP} ${req.ip}`, {
+      ip: req.ip,
+      userAgent: req.get('User-Agent'),
+      endpoint: req.originalUrl,
+      method: req.method,
+      userId: req.user?.id || 'anonymous',
+    });
+    res.status(options.statusCode).json(options.message);
+  },
+  skip: _req => {
+    // Skip rate limiting in test environment
+    return env.isTest;
   },
 });
 

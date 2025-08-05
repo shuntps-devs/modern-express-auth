@@ -9,6 +9,7 @@ import { ERROR_MESSAGES, VALIDATION_TYPES } from '../constants/index.js';
 // Re-export validation schemas
 export * from './auth_validation.js';
 export * from './user_validation.js';
+export * from './profile_validation.js';
 
 // Validation middleware factory
 export const validate = schema => {

@@ -114,6 +114,7 @@ class AuthService {
       role: user.role,
       isActive: user.isActive,
       isEmailVerified: user.isEmailVerified,
+      avatar: user.avatar || null,
     };
 
     res.status(statusCode).json({

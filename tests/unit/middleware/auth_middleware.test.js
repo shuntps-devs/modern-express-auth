@@ -28,7 +28,7 @@ jest.mock('../../../middleware/error_handler.js', () => ({
   },
 }));
 
-// Import the middleware and mocked modules after mocking
+// Import the middleware directly to avoid rate limiter initialization issues
 import {
   protect,
   authorize,

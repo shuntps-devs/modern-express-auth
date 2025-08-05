@@ -381,3 +381,23 @@ export const resetLoginAttempts = asyncHandler(async (req, res, next) => {
     return next(new AppError(ERROR_MESSAGES.FAILED_TO_RESET_LOGIN_ATTEMPTS, 500));
   }
 });
+
+// @desc    Check email verification status
+// @route   GET /api/auth/email-status
+// @access  Private
+export const checkEmailStatus = asyncHandler(async (req, res) => {
+  const user = await userService.findUserById(req.user._id);
+
+  res.status(200).json({
+    success: true,
+    data: {
+      isEmailVerified: user.isEmailVerified,
+      email: user.email,
+      emailVerificationExpires: user.emailVerificationExpires,
+      canResendVerification: user.emailVerificationExpires
+        ? new Date() > user.emailVerificationExpires
+        : true,
+    },
+    message: 'Email verification status retrieved successfully',
+  });
+});

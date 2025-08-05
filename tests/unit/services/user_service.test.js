@@ -35,6 +35,7 @@ describe('userService', () => {
         role: testUser.role,
         isActive: testUser.isActive,
         isEmailVerified: testUser.isEmailVerified,
+        avatar: null, // Avatar field added to user response
         createdAt: testUser.createdAt,
       });
 

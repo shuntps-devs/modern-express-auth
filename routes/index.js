@@ -7,6 +7,7 @@ import express from 'express';
 import authRoutes from './auth_routes.js';
 import userRoutes from './user_routes.js';
 import sessionRoutes from './session_routes.js';
+import profileRoutes from './profile_routes.js';
 import { env } from '../config/index.js';
 import { ERROR_MESSAGES } from '../constants/index.js';
 
@@ -17,6 +18,7 @@ const apiRouter = express.Router();
 apiRouter.use('/auth', authRoutes);
 apiRouter.use('/users', userRoutes);
 apiRouter.use('/sessions', sessionRoutes);
+apiRouter.use('/profile', profileRoutes);
 
 // Health check endpoint
 apiRouter.get('/health', (req, res) => {

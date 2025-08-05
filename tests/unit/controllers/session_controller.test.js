@@ -4,8 +4,7 @@
  */
 
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../../../constants/index.js';
-import { AppError } from '../../../middleware/error_handler.js';
-import { asyncHandler } from '../../../middleware/index.js';
+import { AppError, asyncHandler } from '../../../middleware/error_handler.js';
 
 // Mock dependencies
 const mockAuthService = {

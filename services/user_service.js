@@ -166,6 +166,7 @@ class UserService {
       role: user.role,
       isActive: user.isActive,
       isEmailVerified: user.isEmailVerified,
+      avatar: user.avatar || null,
       createdAt: user.createdAt,
     };
 
@@ -178,6 +179,21 @@ class UserService {
     }
 
     return baseResponse;
+  }
+
+  // Format profile response (include bio and avatar)
+  formatProfileResponse(profile) {
+    if (!profile) return null;
+
+    return {
+      _id: profile._id,
+      userId: profile.userId,
+      bio: profile.bio || null,
+      avatar: profile.avatar || null,
+      preferences: profile.preferences || {},
+      createdAt: profile.createdAt,
+      updatedAt: profile.updatedAt,
+    };
   }
 
   // Check if user exists
@@ -231,6 +247,71 @@ class UserService {
       },
       { new: true },
     );
+  }
+
+  // Avatar management methods
+  async updateUserAvatar(userId, avatarData) {
+    try {
+      const { Profile } = await import('../models/index.js');
+
+      // Update or create profile with new avatar
+      const profile = await Profile.findOneAndUpdate(
+        { userId },
+        {
+          $set: {
+            'avatar.url': avatarData.url,
+            'avatar.filename': avatarData.filename,
+            'avatar.uploadedAt': new Date(),
+          },
+        },
+        {
+          new: true,
+          upsert: true, // Create profile if it doesn't exist
+          runValidators: true,
+        },
+      ).populate('userId', 'username email avatar');
+
+      return profile;
+    } catch (error) {
+      throw new Error(`Failed to update user avatar: ${error.message}`);
+    }
+  }
+
+  async getUserProfile(userId) {
+    try {
+      const { Profile } = await import('../models/index.js');
+
+      const profile = await Profile.findOne({ userId }).populate(
+        'userId',
+        'username email role isActive isEmailVerified avatar',
+      );
+
+      return profile;
+    } catch (error) {
+      throw new Error(`Failed to get user profile: ${error.message}`);
+    }
+  }
+
+  async removeUserAvatar(userId) {
+    try {
+      const { Profile } = await import('../models/index.js');
+
+      const profile = await Profile.findOneAndUpdate(
+        { userId },
+        {
+          $unset: {
+            'avatar.url': 1,
+            'avatar.filename': 1,
+            'avatar.uploadedAt': 1,
+          },
+        },
+        { new: true },
+      ).populate('userId', 'username email avatar');
+
+      return profile;
+    } catch (error) {
+      throw new Error(`Failed to remove user avatar: ${error.message}`);
+    }
   }
 }
 

@@ -17,6 +17,7 @@ const profileSchema = new mongoose.Schema(
     bio: {
       type: String,
       trim: true,
+      default: '',
     },
     preferences: {
       twoFactorAuth: {

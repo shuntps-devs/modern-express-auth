@@ -8,13 +8,19 @@ export {
   register,
   login,
   logout,
+  logoutAll,
+  getMe,
+  changePassword,
+  getUserSessions,
   refreshToken,
-  forgotPassword,
-  resetPassword,
-  verifyEmail,
-  resendVerification,
+  getAuthStatus,
+  revokeSession,
+  revokeAllSessions,
+  cleanupSessions,
   getSecurityStatus,
   resetLoginAttempts,
+  verifyToken,
+  checkEmailStatus,
 } from './auth_controller.js';
 
 // Session Controller
@@ -39,5 +45,16 @@ export {
   deleteUser,
   getUserStats,
 } from './user_controller.js';
+
+// Profile Controller
+export {
+  getProfile as getProfileController,
+  updateProfile as updateProfileController,
+  uploadAvatar as uploadAvatarController,
+  removeAvatar,
+} from './profile_controller.js';
+
+// Email Verification Controller
+export { verifyEmail, resendVerification } from './email_verification_controller.js';
 
 // Individual function exports are available above - no default exports needed

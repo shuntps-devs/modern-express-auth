@@ -7,7 +7,7 @@ import { authService } from '../services/index.js';
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../constants/index.js';
 import { formatSessionResponse, getSessionSecurityLevel } from '../utils/index.js';
 import { asyncHandler } from '../middleware/index.js';
-import { AppError } from '../middleware/error_handler.js';
+import { AppError } from '../middleware/index.js';
 
 /**
  * Get current user's active sessions with device and location info

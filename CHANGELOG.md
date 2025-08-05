@@ -5,6 +5,65 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.3] - 2025-01-05
+
+### 🎨 Profile & Avatar Management System
+
+#### ✨ Added
+
+- **Secure Avatar Upload System** - Complete file upload solution with Multer middleware
+  - Support for multiple image formats (JPEG, PNG, WebP, GIF)
+  - 5MB file size limit with comprehensive validation
+  - User-isolated storage (`uploads/avatars/{userId}/`)
+  - Automatic old avatar cleanup on replacement
+  - Secure filename generation and path traversal prevention
+- **4 New Profile API Endpoints** - Full profile management interface:
+  - `GET /api/profile` - Get user profile with avatar and bio
+  - `PATCH /api/profile` - Update profile bio with Zod validation
+  - `PATCH /api/profile/avatar` - Upload/update user avatar
+  - `DELETE /api/profile/avatar` - Remove user avatar
+- **Bio Field Integration** - Complete profile bio management
+  - Zod schema validation (500 character limit, trimmed, optional)
+  - Exposed in all relevant API responses (login, profile, user queries)
+  - Empty by default, fully editable by authenticated users
+- **Enhanced API Responses** - Avatar and bio fields now included in:
+  - `POST /api/auth/login` - User response includes avatar URL
+  - `GET /api/profile` - Complete profile data with bio and avatar
+  - `GET /api/user/profile` - User data with avatar information
+  - All user-related endpoints consistently expose profile data
+
+#### 🔒 Security Enhancements
+
+- **Rate Limiting for Avatar Uploads** - Prevents abuse and DoS attacks
+- **File Type Validation** - Strict MIME type checking for image uploads
+- **Authentication Requirements** - All profile endpoints require valid JWT tokens
+- **Email Verification Enforcement** - Profile modifications require verified email
+- **Path Traversal Protection** - Secure file handling and storage isolation
+
+#### 🧪 Testing & Quality
+
+- **100% Unit Test Coverage** - All 276 tests passing (16/16 suites)
+- **Comprehensive Avatar Tests** - 30+ tests across controllers, middleware, and services
+- **Profile Validation Tests** - Complete Zod schema validation testing
+- **Import Standardization** - All barrel exports properly configured
+- **Zero Lint Errors** - Clean, maintainable codebase
+
+#### 🛠️ Technical Improvements
+
+- **Zod Validation Layer** - Replaced Mongoose validation with Zod schemas
+- **Barrel Export Optimization** - Consistent import patterns across codebase
+- **Service Layer Enhancement** - New `formatProfileResponse` method for consistent API responses
+- **Constants Centralization** - All validation messages and types properly exported
+- **Test Infrastructure** - Resolved barrel export initialization issues in test environment
+
+#### 🐛 Bug Fixes
+
+- Fixed barrel export initialization issues in middleware tests
+- Resolved missing rate limiter constants in barrel exports
+- Corrected user service test expectations for avatar field
+- Removed legacy/duplicated bio validation from user validation schema
+- Fixed profile validation to only include actual Profile model fields
+
 ## [1.1.2] - 2025-01-05
 
 ### 🚀 Major Feature Release - Advanced Session Management

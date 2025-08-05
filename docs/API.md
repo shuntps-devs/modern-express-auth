@@ -257,6 +257,165 @@ Revoke specific session.
 
 **Headers:** `Authorization: Bearer <access_token>`
 
+### Profile Routes (`/api/profile`)
+
+🔐 **Authentication Required**: All profile endpoints require valid authentication and email verification.
+
+#### GET `/api/profile`
+
+Get user profile with avatar and bio information.
+
+**Headers:** `Authorization: Bearer <access_token>`
+
+**Response (200):**
+
+```json
+{
+  "success": true,
+  "message": "Profile retrieved successfully",
+  "data": {
+    "profile": {
+      "bio": "Software developer passionate about clean code and innovation.",
+      "avatar": "http://localhost:3000/uploads/avatars/507f1f77bcf86cd799439011/avatar-1641234567890.jpg",
+      "user": {
+        "id": "507f1f77bcf86cd799439011",
+        "username": "johndoe",
+        "email": "john@example.com",
+        "role": "user",
+        "isActive": true,
+        "isEmailVerified": true,
+        "createdAt": "2024-01-01T00:00:00.000Z",
+        "lastLogin": "2024-01-15T10:30:00.000Z"
+      }
+    }
+  }
+}
+```
+
+#### PATCH `/api/profile`
+
+Update user profile bio.
+
+**Headers:** `Authorization: Bearer <access_token>`
+
+**Request Body:**
+
+```json
+{
+  "bio": "Updated bio text - passionate full-stack developer with 5+ years experience."
+}
+```
+
+**Response (200):**
+
+```json
+{
+  "success": true,
+  "message": "Profile updated successfully",
+  "data": {
+    "profile": {
+      "bio": "Updated bio text - passionate full-stack developer with 5+ years experience.",
+      "avatar": "http://localhost:3000/uploads/avatars/507f1f77bcf86cd799439011/avatar-1641234567890.jpg",
+      "user": {
+        "id": "507f1f77bcf86cd799439011",
+        "username": "johndoe",
+        "email": "john@example.com"
+      }
+    }
+  }
+}
+```
+
+**Validation Rules:**
+
+- `bio`: Optional string, max 500 characters, automatically trimmed
+- Empty bio is allowed and will be stored as empty string
+
+#### PATCH `/api/profile/avatar`
+
+Upload or update user avatar image.
+
+**Headers:**
+
+- `Authorization: Bearer <access_token>`
+- `Content-Type: multipart/form-data`
+
+**Request Body (Form Data):**
+
+- `avatar`: Image file (JPEG, PNG, WebP, GIF)
+
+**File Requirements:**
+
+- **Max Size**: 5MB
+- **Formats**: JPEG, PNG, WebP, GIF
+- **MIME Types**: image/jpeg, image/png, image/webp, image/gif
+
+**Response (200):**
+
+```json
+{
+  "success": true,
+  "message": "Avatar uploaded successfully",
+  "data": {
+    "avatar": {
+      "url": "http://localhost:3000/uploads/avatars/507f1f77bcf86cd799439011/avatar-1641234567890.jpg",
+      "filename": "avatar-1641234567890.jpg",
+      "size": 245760,
+      "uploadedAt": "2024-01-15T15:30:00.000Z"
+    }
+  }
+}
+```
+
+**Error (400) - File Too Large:**
+
+```json
+{
+  "success": false,
+  "message": "File size exceeds the maximum limit of 5MB",
+  "error": "FILE_TOO_LARGE"
+}
+```
+
+**Error (400) - Invalid File Type:**
+
+```json
+{
+  "success": false,
+  "message": "Invalid file type. Only JPEG, PNG, WebP, and GIF images are allowed",
+  "error": "INVALID_FILE_TYPE"
+}
+```
+
+#### DELETE `/api/profile/avatar`
+
+Remove user avatar image.
+
+**Headers:** `Authorization: Bearer <access_token>`
+
+**Response (200):**
+
+```json
+{
+  "success": true,
+  "message": "Avatar removed successfully",
+  "data": {
+    "removed": true,
+    "previousAvatar": "avatar-1641234567890.jpg"
+  }
+}
+```
+
+**Error (404) - No Avatar:**
+
+```json
+{
+  "success": false,
+  "message": "No avatar found to remove",
+  "error": "AVATAR_NOT_FOUND"
+}
+```
+
 ### Admin Routes (`/api/admin`)
 
 **Note:** Requires `admin` role.
