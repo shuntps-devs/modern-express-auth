@@ -1,18 +1,8 @@
 import dotenv from 'dotenv';
-import {
-  CONSOLE_MESSAGES,
-  getEnvDisplayMessage,
-  getEnvErrorMessage,
-  getEnvExampleLine,
-} from '../constants/index.js';
+import { getEnvErrorMessage, getEnvDisplayMessage, getEnvExampleLine } from '../constants/index.js';
 
-// Load environment variables
 dotenv.config();
 
-/**
- * Environment Configuration with Validation
- * Centralizes all environment variables and validates their presence
- */
 class EnvConfig {
   constructor() {
     this.requiredEnvs = [
@@ -147,18 +137,13 @@ class EnvConfig {
     this.setDefaults();
   }
 
-  /**
-   * Validate required environment variables
-   */
   validate() {
-    // Skip strict validation in test environment
     if (process.env.NODE_ENV === 'test') {
       return;
     }
 
     const missingEnvs = [];
 
-    // Check required environment variables
     this.requiredEnvs.forEach(env => {
       if (!process.env[env.key] || process.env[env.key].trim() === '') {
         missingEnvs.push(env);
@@ -166,7 +151,7 @@ class EnvConfig {
     });
 
     if (missingEnvs.length > 0) {
-      console.error(CONSOLE_MESSAGES.ENV_MISSING_TITLE);
+      console.error('🚨 MISSING REQUIRED ENVIRONMENT VARIABLES');
       console.error('═'.repeat(70));
 
       for (const env of missingEnvs) {
@@ -175,12 +160,12 @@ class EnvConfig {
       }
 
       console.error('═'.repeat(70));
-      console.error(CONSOLE_MESSAGES.ENV_HOW_TO_FIX);
-      console.error(CONSOLE_MESSAGES.ENV_STEP_1);
-      console.error(CONSOLE_MESSAGES.ENV_STEP_2);
-      console.error(CONSOLE_MESSAGES.ENV_STEP_3);
+      console.error('🔧 HOW TO FIX:');
+      console.error('1. Create a .env file in your project root');
+      console.error('2. Copy the variables from .env.example');
+      console.error('3. Fill in the actual values for your environment');
       console.error('');
-      console.error(CONSOLE_MESSAGES.ENV_EXAMPLE_FILE);
+      console.error('📄 Example .env file content:');
       console.error('─'.repeat(30));
 
       for (const env of missingEnvs) {
@@ -188,9 +173,8 @@ class EnvConfig {
       }
 
       console.error('─'.repeat(30));
-      console.error(CONSOLE_MESSAGES.ENV_CANNOT_START);
+      console.error('❌ Cannot start application without required environment variables');
 
-      // Log the error with console since logger creates circular dependency
       console.error('Application startup failed: Missing required environment variables:', {
         missingEnvs: missingEnvs.map(env => env.key),
       });
@@ -198,44 +182,32 @@ class EnvConfig {
       process.exit(1);
     }
 
-    // Validate specific environment variable formats
     this.validateSpecificEnvs();
   }
 
-  /**
-   * Validate specific environment variable formats
-   */
   validateSpecificEnvs() {
     const errors = [];
 
-    // Validate MongoDB URI format
     if (process.env.MONGODB_URI && !process.env.MONGODB_URI.startsWith('mongodb')) {
       errors.push('MONGODB_URI must start with "mongodb://" or "mongodb+srv://"');
     }
-
-    // Validate JWT_SECRET length
     if (process.env.JWT_SECRET && process.env.JWT_SECRET.length < 32) {
       errors.push('JWT_SECRET should be at least 32 characters long for security');
     }
-
-    // Validate SESSION_SECRET length
     if (process.env.SESSION_SECRET && process.env.SESSION_SECRET.length < 32) {
       errors.push('SESSION_SECRET should be at least 32 characters long for security');
     }
-
-    // Validate PORT is a number
     if (process.env.PORT && isNaN(parseInt(process.env.PORT))) {
       errors.push('PORT must be a valid number');
     }
 
-    // Validate NODE_ENV values
     const validNodeEnvs = ['development', 'production', 'test'];
     if (process.env.NODE_ENV && !validNodeEnvs.includes(process.env.NODE_ENV)) {
       errors.push(`NODE_ENV must be one of: ${validNodeEnvs.join(', ')}`);
     }
 
     if (errors.length > 0) {
-      console.error(CONSOLE_MESSAGES.ENV_VALIDATION_ERRORS_TITLE);
+      console.error('🚨 ENVIRONMENT VARIABLE VALIDATION ERRORS');
       console.error('═'.repeat(70));
 
       for (const error of errors) {
@@ -243,18 +215,14 @@ class EnvConfig {
       }
 
       console.error('═'.repeat(70));
-      console.error(CONSOLE_MESSAGES.ENV_CANNOT_START);
+      console.error('❌ Cannot start application without required environment variables');
 
-      // Log the error with console since logger creates circular dependency
       console.error('Application startup failed: Invalid environment variable values:', { errors });
 
       process.exit(1);
     }
   }
 
-  /**
-   * Set default values for optional environment variables
-   */
   setDefaults() {
     this.optionalEnvs.forEach(env => {
       if (!process.env[env.key]) {
@@ -263,58 +231,43 @@ class EnvConfig {
     });
   }
 
-  /**
-   * Get all environment configuration
-   */
   getConfig() {
     return {
-      // Server Configuration
       PORT: parseInt(process.env.PORT),
       NODE_ENV: process.env.NODE_ENV,
 
-      // Database Configuration
       MONGODB_URI: process.env.MONGODB_URI,
 
-      // JWT Configuration
       JWT_SECRET: process.env.JWT_SECRET,
       JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
       JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
       JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN,
 
-      // Session Configuration
       SESSION_SECRET: process.env.SESSION_SECRET,
       SESSION_EXPIRES_IN: process.env.SESSION_EXPIRES_IN,
 
-      // Security Configuration
       BCRYPT_SALT_ROUNDS: parseInt(process.env.BCRYPT_SALT_ROUNDS),
       MAX_LOGIN_ATTEMPTS: parseInt(process.env.MAX_LOGIN_ATTEMPTS),
       LOCK_TIME: parseInt(process.env.LOCK_TIME),
 
-      // Rate Limiting Configuration
       RATE_LIMIT_WINDOW_MS: parseInt(process.env.RATE_LIMIT_WINDOW_MS),
       RATE_LIMIT_MAX_REQUESTS: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS),
 
-      // Logging Configuration
       LOG_LEVEL: process.env.LOG_LEVEL,
       LOG_FILE: process.env.LOG_FILE,
 
-      // CORS Configuration
       CORS_ORIGIN: process.env.CORS_ORIGIN.split(',').map(origin => origin.trim()),
 
-      // Development flags
       isDevelopment: process.env.NODE_ENV === 'development',
       isProduction: process.env.NODE_ENV === 'production',
       isTest: process.env.NODE_ENV === 'test',
     };
   }
 
-  /**
-   * Display configuration summary (safe for logging)
-   */
   displayConfig() {
     const config = this.getConfig();
 
-    console.log(CONSOLE_MESSAGES.ENV_CONFIG_LOADED);
+    console.log('⚙️  Environment Configuration Loaded');
     console.log('═'.repeat(50));
     console.log(getEnvDisplayMessage('🌍 Environment', config.NODE_ENV));
     console.log(getEnvDisplayMessage('🚀 Port', config.PORT));
@@ -330,29 +283,18 @@ class EnvConfig {
     console.log('═'.repeat(50));
 
     if (config.NODE_ENV === 'development') {
-      console.log(CONSOLE_MESSAGES.DEV_MODE_DETAILED_LOGGING);
+      console.log('🔍 Development mode: Detailed logging enabled');
     }
 
     console.log('');
   }
 }
 
-// Create and export the configuration instance
 const envConfigInstance = new EnvConfig();
 
-// Set default values for optional environment variables
-envConfigInstance.setDefaults();
-
-// Export unified env object with all configuration
 export const env = {
-  // Configuration values
   ...envConfigInstance.getConfig(),
-
-  // Utility methods
   displayConfig: () => envConfigInstance.displayConfig(),
-  getConfig: () => envConfigInstance.getConfig(),
 };
 
-// Legacy exports for backward compatibility (can be removed later)
-export const config = envConfigInstance.getConfig();
 export default envConfigInstance;

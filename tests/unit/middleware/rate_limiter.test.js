@@ -1,4 +1,3 @@
-
 // Mock modules with inline factories
 jest.mock('../../../config/index.js', () => ({
   env: {
@@ -21,20 +20,7 @@ jest.mock('../../../constants/messages.js', () => ({
     RATE_LIMIT_PROFILE_UPDATE: 'Too many profile update attempts',
     RATE_LIMIT_ADMIN: 'Too many admin requests',
   },
-  CONSOLE_MESSAGES: {
-    AUTH_RATE_LIMITER_TRIGGERED: 'Auth rate limiter triggered',
-    AUTH_RATE_LIMITER_SKIP_CHECK: 'Auth rate limiter skip check',
-    REQUEST_LABEL: 'Request',
-    NODE_ENV_LABEL: 'Node environment',
-  },
-  LOGGER_MESSAGES: {
-    RATE_LIMIT_EXCEEDED_IP: 'Rate limit exceeded for IP:',
-    PASSWORD_RESET_RATE_LIMIT_EXCEEDED_IP: 'Password reset rate limit exceeded for IP:',
-    PROFILE_UPDATE_RATE_LIMIT_EXCEEDED_IP: 'Profile update rate limit exceeded for IP:',
-    READ_ONLY_RATE_LIMIT_EXCEEDED_IP: 'Read-only rate limit exceeded for IP:',
-    ADMIN_RATE_LIMIT_EXCEEDED_IP: 'Admin rate limit exceeded for IP:',
-    CUSTOM_RATE_LIMIT_EXCEEDED_IP: 'Custom rate limit exceeded for IP:',
-  },
+
   RATE_LIMIT_TYPES: {
     GENERAL: 'general',
     AUTH: 'auth',

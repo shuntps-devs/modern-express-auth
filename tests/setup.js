@@ -13,8 +13,6 @@ dotenv.config({ override: false, quiet: true });
 import { testDbManager } from './helpers/database_manager.js';
 import { env } from '../config/index.js';
 
-
-
 // Setup before all tests
 beforeAll(async () => {
   // Connect to test database using dedicated manager
@@ -38,5 +36,3 @@ afterAll(async () => {
 
 // Global test timeout
 jest.setTimeout(30000);
-
-

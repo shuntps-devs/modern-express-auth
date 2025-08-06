@@ -1,13 +1,7 @@
 import { authService } from '../services/index.js';
 import { logger } from '../config/index.js';
 import { asyncHandler, AppError } from './error_handler.js';
-import {
-  ERROR_MESSAGES,
-  LOGGER_MESSAGES,
-  AUTH_MESSAGES,
-  TOKEN_KEYWORDS,
-  USER_ROLES,
-} from '../constants/index.js';
+import { ERROR_MESSAGES, AUTH_MESSAGES, TOKEN_KEYWORDS, USER_ROLES } from '../constants/index.js';
 
 // Protect routes - require authentication
 export const protect = asyncHandler(async (req, res, next) => {
@@ -43,7 +37,7 @@ export const protect = asyncHandler(async (req, res, next) => {
     const currentIP = req.ip || req.connection.remoteAddress;
     if (session.ipAddress !== currentIP) {
       logger.warn(
-        `${LOGGER_MESSAGES.SESSION_IP_MISMATCH} ${user._id}: expected ${session.ipAddress}, got ${currentIP}`,
+        `Session IP mismatch for user ${user._id}: expected ${session.ipAddress}, got ${currentIP}`,
       );
       // Log warning but don't block (user might be on different network)
     }
@@ -53,7 +47,7 @@ export const protect = asyncHandler(async (req, res, next) => {
     req.session = session;
     next();
   } catch (error) {
-    logger.error(LOGGER_MESSAGES.ACCESS_TOKEN_VALIDATION_FAILED, error.message);
+    logger.error('Access token validation failed:', error.message);
 
     // Check if it's an expired token error
     if (error.message.includes(TOKEN_KEYWORDS.EXPIRED)) {
@@ -94,7 +88,7 @@ export const optionalAuth = asyncHandler(async (req, res, next) => {
       }
     } catch (error) {
       // Token is invalid, but we don't fail - just continue without user
-      logger.debug(LOGGER_MESSAGES.OPTIONAL_AUTH_FAILED, error.message);
+      logger.debug('Optional auth failed:', error.message);
     }
   }
 

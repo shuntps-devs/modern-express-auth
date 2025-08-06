@@ -53,7 +53,7 @@ class UserService {
       if (!sessionId) {
         return null;
       }
-      
+
       const session = await Session.findOne({
         _id: sessionId,
         isActive: true,

@@ -1,8 +1,13 @@
-import { asyncHandler, AppError } from '../middleware/index.js';
-import { SUCCESS_MESSAGES, ERROR_MESSAGES, LOGGER_MESSAGES } from '../constants/index.js';
+import { asyncHandler } from '../middleware/index.js';
+import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../constants/index.js';
 import { logger } from '../config/index.js';
 import { userService, authService } from '../services/index.js';
-import { sendSuccessResponse, sendUserResponse, sendPaginatedResponse } from '../utils/index.js';
+import {
+  sendSuccessResponse,
+  sendErrorResponse,
+  sendUserResponse,
+  sendPaginatedResponse,
+} from '../utils/index.js';
 
 // @desc    Get user profile
 // @route   GET /api/user/profile
@@ -16,14 +21,14 @@ export const getProfile = asyncHandler(async (req, res) => {
 // @desc    Update user profile
 // @route   PUT /api/user/profile
 // @access  Private
-export const updateProfile = asyncHandler(async (req, res, next) => {
+export const updateProfile = asyncHandler(async (req, res) => {
   const { username, email, bio } = req.body;
 
   // Check if username is already taken (if provided and different from current)
   if (username && username !== req.user.username) {
     const existingUser = await userService.findUserByUsername(username);
     if (existingUser) {
-      return next(new AppError(ERROR_MESSAGES.USERNAME_TAKEN, 400));
+      return sendErrorResponse(res, 400, ERROR_MESSAGES.USERNAME_TAKEN);
     }
   }
 
@@ -31,7 +36,7 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
   if (email && email !== req.user.email) {
     const existingUser = await userService.findUserByEmail(email);
     if (existingUser) {
-      return next(new AppError(ERROR_MESSAGES.EMAIL_TAKEN, 400));
+      return sendErrorResponse(res, 400, ERROR_MESSAGES.EMAIL_TAKEN);
     }
   }
 
@@ -42,7 +47,7 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
     ...(bio && { bio }),
   });
 
-  logger.info(`${LOGGER_MESSAGES.PROFILE_UPDATED} ${updatedUser.email}`);
+  logger.info(`Profile updated for user: ${updatedUser.email}`);
 
   const userResponse = userService.formatUserResponse(updatedUser, true);
 
@@ -62,7 +67,7 @@ export const deleteAccount = asyncHandler(async (req, res) => {
   // Clear cookies
   authService.clearAuthCookies(res);
 
-  logger.info(`${LOGGER_MESSAGES.USER_ACCOUNT_DEACTIVATED} ${req.user.email}`);
+  logger.info(`User account deactivated: ${req.user.email}`);
 
   return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.ACCOUNT_DEACTIVATED_SUCCESS);
 });
@@ -93,11 +98,11 @@ export const getAllUsers = asyncHandler(async (req, res) => {
 // @desc    Get single user (Admin)
 // @route   GET /api/user/admin/users/:id
 // @access  Private/Admin
-export const getUserById = asyncHandler(async (req, res, next) => {
+export const getUserById = asyncHandler(async (req, res) => {
   const user = await userService.findUserById(req.params.id);
 
   if (!user) {
-    return next(new AppError(ERROR_MESSAGES.USER_NOT_FOUND, 404));
+    return sendErrorResponse(res, 404, ERROR_MESSAGES.USER_NOT_FOUND);
   }
 
   return sendUserResponse(
@@ -110,13 +115,13 @@ export const getUserById = asyncHandler(async (req, res, next) => {
 // @desc    Update user (Admin)
 // @route   PUT /api/user/admin/users/:id
 // @access  Private/Admin
-export const updateUser = asyncHandler(async (req, res, next) => {
+export const updateUser = asyncHandler(async (req, res) => {
   const { role, isActive, isEmailVerified } = req.body;
 
   const user = await userService.findUserById(req.params.id);
 
   if (!user) {
-    return next(new AppError(ERROR_MESSAGES.USER_NOT_FOUND, 404));
+    return sendErrorResponse(res, 404, ERROR_MESSAGES.USER_NOT_FOUND);
   }
 
   // Update user
@@ -126,7 +131,7 @@ export const updateUser = asyncHandler(async (req, res, next) => {
     ...(isEmailVerified !== undefined && { isEmailVerified }),
   });
 
-  logger.info(`${LOGGER_MESSAGES.USER_UPDATED_BY_ADMIN} ${updatedUser.email} by ${req.user.email}`);
+  logger.info(`User updated by admin: ${updatedUser.email} by ${req.user.email}`);
 
   return sendUserResponse(
     res,
@@ -138,22 +143,22 @@ export const updateUser = asyncHandler(async (req, res, next) => {
 // @desc    Delete user (Admin)
 // @route   DELETE /api/user/admin/users/:id
 // @access  Private/Admin
-export const deleteUser = asyncHandler(async (req, res, next) => {
+export const deleteUser = asyncHandler(async (req, res) => {
   const user = await userService.findUserById(req.params.id);
 
   if (!user) {
-    return next(new AppError(ERROR_MESSAGES.USER_NOT_FOUND, 404));
+    return sendErrorResponse(res, 404, ERROR_MESSAGES.USER_NOT_FOUND);
   }
 
   // Prevent admin from deleting themselves
   if (user._id.toString() === req.user._id.toString()) {
-    return next(new AppError(ERROR_MESSAGES.CANNOT_DELETE_OWN_ACCOUNT, 400));
+    return sendErrorResponse(res, 400, ERROR_MESSAGES.CANNOT_DELETE_OWN_ACCOUNT);
   }
 
   // Soft delete - deactivate user
   await userService.deactivateUser(req.params.id);
 
-  logger.info(`${LOGGER_MESSAGES.USER_DELETED_BY_ADMIN} ${user.email} by ${req.user.email}`);
+  logger.info(`User deleted by admin: ${user.email} by ${req.user.email}`);
 
   return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.USER_DELETE_SUCCESS);
 });

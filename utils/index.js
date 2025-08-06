@@ -3,7 +3,15 @@
  * Centralizes all utility exports for easy importing
  */
 
-export { setCookie, clearCookie, getCookieOptions } from './cookie_helper.js';
+export {
+  createCookieOptions,
+  createAccessTokenCookieOptions,
+  createRefreshTokenCookieOptions,
+  createSessionCookieOptions,
+  calculateTokenExpirations,
+  setAuthCookies,
+  clearAuthCookies,
+} from './cookie_helper.js';
 export {
   parseDeviceInfo,
   getLocationFromIP,
@@ -18,7 +26,4 @@ export {
   sendUserResponse,
   sendSessionResponse,
 } from './response_helper.js';
-export {
-  validateAdminRole,
-  requireAdminRole,
-} from './admin_helper.js';
+export { validateAdminRole, requireAdminRole } from './admin_helper.js';

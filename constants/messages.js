@@ -1,9 +1,3 @@
-/**
- * Centralized message constants for the Express Auth API
- * This file contains all success, error, and validation messages
- * to ensure consistency across the application and tests.
- */
-
 // ============================================================================
 // SUCCESS MESSAGES
 // ============================================================================
@@ -272,91 +266,6 @@ export const getSuccessMessage = (key, ...args) => {
 };
 
 // Console and Logger Messages
-export const CONSOLE_MESSAGES = {
-  // Rate Limiter
-  AUTH_RATE_LIMITER_TRIGGERED: '🚨 AUTH RATE LIMITER TRIGGERED!',
-  AUTH_RATE_LIMITER_SKIP_CHECK: '🔍 AUTH RATE LIMITER SKIP CHECK:',
-
-  // Environment Config
-  ENV_CONFIG_LOADED: '\n✅ Environment Configuration Loaded Successfully',
-  ENV_MISSING_TITLE: '\n🚨 MISSING REQUIRED ENVIRONMENT VARIABLES 🚨',
-  ENV_VALIDATION_ERRORS_TITLE: '\n🚨 ENVIRONMENT VALIDATION ERRORS 🚨',
-  ENV_HOW_TO_FIX: '📝 How to fix:',
-  ENV_STEP_1: '1. Create a .env file in your project root',
-  ENV_STEP_2: '2. Add the missing environment variables',
-  ENV_STEP_3: '3. You can copy .env.example as a starting point',
-  ENV_EXAMPLE_FILE: 'Example .env file:',
-  ENV_CANNOT_START: '\n💀 Application cannot start without these variables.\n',
-  DEV_MODE_LOGS_CLEARED: '🧹 Development mode: Log files cleared for fresh start',
-  DEV_MODE_DETAILED_LOGGING: '🔧 Development mode: Detailed logging enabled',
-  LOG_FILES_CLEAR_WARNING: '⚠️  Could not clear log files:',
-
-  // Server Messages
-  REQUEST_LABEL: 'Request:',
-  NODE_ENV_LABEL: 'NODE_ENV:',
-};
-
-export const LOGGER_MESSAGES = {
-  // Database
-  DATABASE_CONNECTION_SUCCESS: '✅ MongoDB Connected:',
-
-  // Server
-  HTTP_SERVER_CLOSED: 'HTTP server closed',
-  DATABASE_CONNECTION_CLOSED: 'Database connection closed',
-  UNCAUGHT_EXCEPTION: 'Uncaught Exception:',
-  UNHANDLED_REJECTION_AT: 'Unhandled Rejection at:',
-  UNHANDLED_REJECTION_REASON: 'reason:',
-  FAILED_TO_START_SERVER: 'Failed to start server:',
-  SERVER_RUNNING: '🚀 Server running on port',
-  API_AVAILABLE: '📡 API available at:',
-  HEALTH_CHECK: '🏥 Health check:',
-  GRACEFUL_SHUTDOWN: 'received, shutting down gracefully',
-
-  // Auth Middleware
-  ACCESS_TOKEN_VALIDATION_FAILED: 'Access token validation failed:',
-  OPTIONAL_AUTH_FAILED: 'Optional auth failed:',
-  SESSION_IP_MISMATCH: 'Session IP mismatch for user',
-
-  // Rate Limiter
-  RATE_LIMIT_EXCEEDED_IP: 'Rate limit exceeded for IP:',
-  PASSWORD_RESET_RATE_LIMIT_EXCEEDED_IP: 'Password reset rate limit exceeded for IP:',
-  AVATAR_UPLOAD_RATE_LIMIT_EXCEEDED_IP: 'Avatar upload rate limit exceeded for IP:',
-  PROFILE_UPDATE_RATE_LIMIT_EXCEEDED_IP: 'Profile update rate limit exceeded for IP:',
-  READ_ONLY_RATE_LIMIT_EXCEEDED_IP: 'Read-only rate limit exceeded for IP:',
-  ADMIN_RATE_LIMIT_EXCEEDED_IP: 'Admin rate limit exceeded for IP:',
-  CUSTOM_RATE_LIMIT_EXCEEDED_IP: 'Custom rate limit exceeded for IP:',
-
-  // Auth Controller
-  TOKEN_REFRESH_FAILED: 'Token refresh failed:',
-  FAILED_TO_GET_USER_SESSIONS: 'Failed to get user sessions:',
-  FAILED_TO_REVOKE_SESSION: 'Failed to revoke session:',
-  FAILED_TO_REVOKE_ALL_SESSIONS: 'Failed to revoke all sessions:',
-  FAILED_TO_CLEANUP_SESSIONS: 'Failed to cleanup sessions:',
-
-  // Auth Controller - Success Messages
-  NEW_USER_REGISTERED: 'New user registered:',
-  USER_LOGGED_IN: 'User logged in:',
-  USER_LOGGED_OUT: 'User logged out:',
-  USER_LOGGED_OUT_ALL_DEVICES: 'User logged out from all devices:',
-  PASSWORD_CHANGED: 'Password changed for user:',
-  SESSION_REVOKED: 'Session revoked for user:',
-  ALL_SESSIONS_REVOKED: 'All sessions revoked for user:',
-  SESSION_CLEANUP_COMPLETED: 'Session cleanup completed:',
-
-  // Auth Controller - Warning Messages
-  FAILED_LOGIN_ATTEMPT: 'Failed login attempt for user:',
-
-  // User Controller - Success Messages
-  PROFILE_UPDATED: 'Profile updated for user:',
-  USER_ACCOUNT_DEACTIVATED: 'User account deactivated:',
-  USER_UPDATED_BY_ADMIN: 'User updated by admin:',
-  USER_DELETED_BY_ADMIN: 'User deleted by admin:',
-
-  // Database
-  DATABASE_CONNECTION_ERROR: '❌ Database connection error:',
-  MONGOOSE_CONNECTION_ERROR: 'Mongoose connection error:',
-  MONGOOSE_DISCONNECTED: 'Mongoose disconnected from MongoDB',
-};
 
 // Validation Constants
 export const VALIDATION_TYPES = {

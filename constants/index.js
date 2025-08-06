@@ -1,14 +1,7 @@
-/**
- * Constants module exports
- * Centralized export point for all application constants
- */
-
 export {
-  LOGGER_MESSAGES,
   SUCCESS_MESSAGES,
   ERROR_MESSAGES,
   VALIDATION_MESSAGES,
-  CONSOLE_MESSAGES,
   AUTH_MESSAGES,
   USER_ROLES,
   TOKEN_KEYWORDS,

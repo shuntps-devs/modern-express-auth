@@ -145,7 +145,6 @@ describe('authService', () => {
 
   describe('sendTokenResponse', () => {
     test('should create session and send user response', async () => {
-
       // For unit testing, we'll test the core functionality that doesn't require DB
 
       // Test that the method exists and can be called
@@ -161,7 +160,6 @@ describe('authService', () => {
       AssertionHelpers.expectValidJWT(refreshToken);
     });
   });
-
 
   // These would typically be tested in integration tests with real DB
   describe('token validation and session management', () => {

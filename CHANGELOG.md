@@ -5,6 +5,54 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.5] - 2025-08-06
+
+### 🧹 Code Optimization & Documentation Cleanup
+
+#### ✨ Added
+
+- **User Preference Integration** - Code style preferences for clean, concise code without unnecessary comments
+- **Comprehensive Documentation Audit** - Complete review and correction of all documentation files
+- **Accurate Statistics** - Real-time verification of test counts, constants, and performance metrics
+
+#### 🔄 Changed
+
+- **Configuration Files Optimized** - All config files (`env_config.js`, `database_config.js`, `logger_config.js`, `index.js`) cleaned and optimized:
+  - Removed verbose comments and unnecessary documentation
+  - Simplified export structures and logic
+  - Optimized MongoDB connection options (removed deprecated `bufferMaxEntries`)
+  - Streamlined logger configuration and file cleanup logic
+- **Auth Controller Modernized** - Code optimization with modern JavaScript patterns:
+  - Optional chaining for refresh token extraction
+  - Simplified conditional logic for email verification
+  - Removed inline comments while preserving `@desc` documentation
+- **Documentation Accuracy** - All documentation files updated with correct statistics:
+  - **276 tests** in **16 suites** (3.9s execution time)
+  - **177 centralized constants** (accurate count)
+  - Fixed broken file references in `docs/README.md`
+  - Reorganized documentation structure for better navigation
+
+#### 🐛 Fixed
+
+- **MongoDB Connection** - Removed deprecated `bufferMaxEntries` option causing startup errors
+- **Utils Barrel Exports** - Fixed incorrect cookie helper function exports
+- **Documentation Inconsistencies** - Corrected all statistical mismatches across README, CHANGELOG, and docs
+- **File References** - Removed references to non-existent documentation files
+
+#### 📈 Improved
+
+- **Code Cleanliness** - Consistent application of user preference for minimal comments
+- **Architecture Consistency** - Verified optimal usage of `formatUserResponse` across controllers
+- **Documentation Quality** - Professional, accurate, and well-organized documentation structure
+- **Maintainability** - Cleaner codebase with optimized imports and simplified logic
+
+#### 🎯 Technical Achievements
+
+- **Zero Redundancy** - Eliminated all duplicate or contradictory information in documentation
+- **Performance Optimization** - Streamlined configuration loading and database connection
+- **Code Modernization** - Applied latest JavaScript patterns and best practices
+- **Documentation Excellence** - Production-ready documentation with verified accuracy
+
 ## [1.1.4] - 2025-01-05
 
 ### 🏗️ Code Quality & Architecture Refactoring

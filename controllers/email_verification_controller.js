@@ -1,31 +1,31 @@
 import { logger } from '../config/index.js';
-import { AppError, asyncHandler } from '../middleware/index.js';
+import { asyncHandler } from '../middleware/index.js';
 import { userService, emailService } from '../services/index.js';
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '../constants/index.js';
 import { User } from '../models/index.js';
 import crypto from 'crypto';
-import { sendSuccessResponse } from '../utils/index.js';
+import { sendSuccessResponse, sendErrorResponse } from '../utils/index.js';
 
 // @desc    Verify email address
 // @route   GET /api/auth/verify-email/:token
 // @access  Public
-export const verifyEmail = asyncHandler(async (req, res, next) => {
+export const verifyEmail = asyncHandler(async (req, res) => {
   const { token } = req.params;
 
   if (!token) {
-    return next(new AppError(ERROR_MESSAGES.EMAIL_VERIFICATION_TOKEN_INVALID, 400));
+    return sendErrorResponse(res, 400, ERROR_MESSAGES.EMAIL_VERIFICATION_TOKEN_INVALID);
   }
 
   // First, find user by token without expiration filter to check if token exists
   const userWithToken = await User.findOne({ emailVerificationToken: token });
 
   if (!userWithToken) {
-    return next(new AppError(ERROR_MESSAGES.EMAIL_VERIFICATION_TOKEN_INVALID, 400));
+    return sendErrorResponse(res, 400, ERROR_MESSAGES.EMAIL_VERIFICATION_TOKEN_INVALID);
   }
 
   // Check if token is expired
   if (userWithToken.emailVerificationExpires < new Date()) {
-    return next(new AppError(ERROR_MESSAGES.EMAIL_VERIFICATION_TOKEN_EXPIRED, 400));
+    return sendErrorResponse(res, 400, ERROR_MESSAGES.EMAIL_VERIFICATION_TOKEN_EXPIRED);
   }
 
   // Now use the service method to get the user (this will work since token is not expired)
@@ -33,7 +33,7 @@ export const verifyEmail = asyncHandler(async (req, res, next) => {
 
   // Check if email is already verified
   if (user.isEmailVerified) {
-    return next(new AppError(ERROR_MESSAGES.EMAIL_ALREADY_VERIFIED, 400));
+    return sendErrorResponse(res, 400, ERROR_MESSAGES.EMAIL_ALREADY_VERIFIED);
   }
 
   // Update user verification status
@@ -56,23 +56,23 @@ export const verifyEmail = asyncHandler(async (req, res, next) => {
 // @desc    Resend email verification
 // @route   POST /api/auth/resend-verification
 // @access  Public
-export const resendVerification = asyncHandler(async (req, res, next) => {
+export const resendVerification = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
   if (!email) {
-    return next(new AppError('Email is required', 400));
+    return sendErrorResponse(res, 400, ERROR_MESSAGES.EMAIL_REQUIRED);
   }
 
   // Find user by email
   const user = await userService.findUserByEmail(email);
 
   if (!user) {
-    return next(new AppError(ERROR_MESSAGES.USER_NOT_FOUND, 404));
+    return sendErrorResponse(res, 404, ERROR_MESSAGES.USER_NOT_FOUND);
   }
 
   // Check if email is already verified
   if (user.isEmailVerified) {
-    return next(new AppError(ERROR_MESSAGES.EMAIL_ALREADY_VERIFIED, 400));
+    return sendErrorResponse(res, 400, ERROR_MESSAGES.EMAIL_ALREADY_VERIFIED);
   }
 
   // Generate new verification token
@@ -86,13 +86,8 @@ export const resendVerification = asyncHandler(async (req, res, next) => {
   });
 
   // Send verification email
-  try {
-    await emailService.sendEmailVerification(email, user.username, emailVerificationToken);
-    logger.info(`Email verification resent to ${user.email}`);
-  } catch (error) {
-    logger.error(`Failed to resend verification email to ${user.email}: ${error.message}`);
-    return next(new AppError(ERROR_MESSAGES.EMAIL_SEND_FAILED, 500));
-  }
+  await emailService.sendEmailVerification(email, user.username, emailVerificationToken);
+  logger.info(`Email verification resent to ${user.email}`);
 
   return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.EMAIL_VERIFICATION_SENT);
 });

@@ -5,13 +5,13 @@
 
 import { authService } from '../services/index.js';
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../constants/index.js';
-import { formatSessionResponse, getSessionSecurityLevel } from '../utils/index.js';
-import { asyncHandler } from '../middleware/index.js';
-import { AppError } from '../middleware/index.js';
 import {
-  sendSuccessResponse,
-  sendSessionResponse,
+  formatSessionResponse,
+  getSessionSecurityLevel,
+  sendErrorResponse,
 } from '../utils/index.js';
+import { asyncHandler } from '../middleware/index.js';
+import { sendSuccessResponse, sendSessionResponse } from '../utils/index.js';
 
 /**
  * Get current user's active sessions with device and location info
@@ -35,14 +35,14 @@ export const getActiveSessions = asyncHandler(async (req, res) => {
  * @route GET /api/sessions/:sessionId
  * @access Private
  */
-export const getSessionDetails = asyncHandler(async (req, res, next) => {
+export const getSessionDetails = asyncHandler(async (req, res) => {
   const { sessionId } = req.params;
   const userId = req.user.id;
 
   const session = await authService.getSessionById(sessionId, userId);
 
   if (!session) {
-    return next(new AppError(ERROR_MESSAGES.SESSION_NOT_FOUND, 404));
+    return sendErrorResponse(res, 404, ERROR_MESSAGES.SESSION_NOT_FOUND);
   }
 
   const sessionDetails = {
@@ -177,7 +177,12 @@ export const getSecurityOverview = asyncHandler(async (req, res) => {
     },
   );
 
-  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.SECURITY_OVERVIEW_RETRIEVED, securityOverview);
+  return sendSuccessResponse(
+    res,
+    200,
+    SUCCESS_MESSAGES.SECURITY_OVERVIEW_RETRIEVED,
+    securityOverview,
+  );
 });
 
 /**
@@ -185,19 +190,19 @@ export const getSecurityOverview = asyncHandler(async (req, res) => {
  * @route DELETE /api/sessions/:sessionId
  * @access Private
  */
-export const terminateSession = asyncHandler(async (req, res, next) => {
+export const terminateSession = asyncHandler(async (req, res) => {
   const { sessionId } = req.params;
   const userId = req.user.id;
 
   // Prevent terminating current session
   if (sessionId === req.sessionId) {
-    return next(new AppError(ERROR_MESSAGES.CANNOT_TERMINATE_CURRENT_SESSION, 400));
+    return sendErrorResponse(res, 400, ERROR_MESSAGES.CANNOT_TERMINATE_CURRENT_SESSION);
   }
 
   const result = await authService.terminateSession(sessionId, userId);
 
   if (!result) {
-    return next(new AppError(ERROR_MESSAGES.SESSION_NOT_FOUND, 404));
+    return sendErrorResponse(res, 404, ERROR_MESSAGES.SESSION_NOT_FOUND);
   }
 
   return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.SESSION_TERMINATED);
