@@ -9,18 +9,21 @@ Welcome to the comprehensive documentation for the Modern Express Authentication
 ## 📚 Documentation Structure
 
 ### Core Documentation
+
 - **[API.md](./API.md)** - Complete API endpoints documentation
 - **[DEVELOPMENT.md](./DEVELOPMENT.md)** - Development setup and guidelines
 - **[CONSTANTS.md](./CONSTANTS.md)** - Centralized constants documentation
 - **[CI-CD.md](./CI-CD.md)** - CI/CD pipeline and testing
 
 ### Feature Documentation
+
 - **[SESSION_MANAGEMENT.md](./SESSION_MANAGEMENT.md)** - Advanced session management
 - **[SESSION_QUICK_START.md](./SESSION_QUICK_START.md)** - Quick session setup guide
 - **[AVATAR_UPLOAD.md](./AVATAR_UPLOAD.md)** - Avatar upload system
 - **[EMAIL_VERIFICATION.md](./EMAIL_VERIFICATION.md)** - Email verification system
 
 ### Email Integration
+
 - **[QUICK_START_RESEND.md](./QUICK_START_RESEND.md)** - Resend quick start
 - **[RESEND_SETUP_GUIDE.md](./RESEND_SETUP_GUIDE.md)** - Complete Resend setup
 
