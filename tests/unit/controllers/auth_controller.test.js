@@ -169,7 +169,7 @@ beforeEach(() => {
       });
     },
 
-    getUserSessions: async (req, res, next) => {
+    getSessions: async (req, res, next) => {
       try {
         const sessions = await mockAuthService.getUserActiveSessions(req.user.id);
         const activeCount = await mockAuthService.getActiveSessionsCount(req.user.id);
@@ -461,13 +461,13 @@ describe('Auth Controller', () => {
     });
   });
 
-  describe('getUserSessions', () => {
+  describe('getSessions', () => {
     it('should get user sessions successfully', async () => {
       const mockSessions = [{ _id: 'session1' }, { _id: 'session2' }];
       mockAuthService.getUserActiveSessions.mockResolvedValue(mockSessions);
       mockAuthService.getActiveSessionsCount.mockResolvedValue(2);
 
-      await mockControllers.getUserSessions(req, res, next);
+      await mockControllers.getSessions(req, res, next);
 
       expect(mockAuthService.getUserActiveSessions).toHaveBeenCalledWith('user123');
       expect(mockAuthService.getActiveSessionsCount).toHaveBeenCalledWith('user123');
@@ -483,7 +483,7 @@ describe('Auth Controller', () => {
     it('should handle error when getting sessions', async () => {
       mockAuthService.getUserActiveSessions.mockRejectedValue(new Error('Database error'));
 
-      await mockControllers.getUserSessions(req, res, next);
+      await mockControllers.getSessions(req, res, next);
 
       expect(mockLogger.error).toHaveBeenCalledWith('Failed to get user sessions: Database error');
       expect(next).toHaveBeenCalledWith(expect.any(Error));

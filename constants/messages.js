@@ -55,6 +55,15 @@ export const SUCCESS_MESSAGES = {
   // Email Verification Success
   EMAIL_STATUS_RETRIEVED: 'Email verification status retrieved successfully',
 
+  // Session Management Success
+  USER_SESSIONS_RETRIEVED: 'User sessions retrieved successfully',
+  SESSION_RETRIEVED: 'Session details retrieved successfully',
+  SESSION_TERMINATED: 'Session terminated successfully',
+  OTHER_SESSIONS_TERMINATED: 'Other sessions terminated successfully',
+  DEVICE_STATS_RETRIEVED: 'Device statistics retrieved successfully',
+  LOCATION_STATS_RETRIEVED: 'Location statistics retrieved successfully',
+  SECURITY_OVERVIEW_RETRIEVED: 'Security overview retrieved successfully',
+
   // Token Verification Success
   TOKEN_VERIFIED: 'Token verified successfully',
 
@@ -186,6 +195,14 @@ export const VALIDATION_MESSAGES = {
   // Email Validation
   EMAIL_REQUIRED: 'Email is required',
   EMAIL_INVALID: 'Please enter a valid email address',
+  EMAIL_VERIFICATION_TOKEN_REQUIRED: 'Email verification token is required',
+  EMAIL_VERIFICATION_TOKEN_INVALID: 'Invalid email verification token format',
+
+  // Session Validation
+  SESSION_ID_INVALID: 'Invalid session ID format',
+
+  // User Validation
+  USER_ID_INVALID: 'Invalid user ID format',
 
   // Password Validation
   PASSWORD_REQUIRED: 'Password is required',

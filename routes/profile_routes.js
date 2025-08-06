@@ -5,17 +5,13 @@
 
 import express from 'express';
 import {
-  uploadAvatar,
+  uploadAvatar as uploadAvatarMiddleware,
   protect,
   requireEmailVerification,
   avatarUploadLimiter,
 } from '../middleware/index.js';
-import {
-  getProfileController as getProfile,
-  uploadAvatarController,
-  removeAvatar,
-  updateProfileController as updateProfile,
-} from '../controllers/index.js';
+import { validate, profileUpdateSchema } from '../validations/index.js';
+import { getProfile, uploadAvatar, removeAvatar, updateProfile } from '../controllers/index.js';
 
 const router = express.Router();
 
@@ -35,7 +31,7 @@ router.get('/', getProfile);
  * @desc    Update user profile (excluding avatar)
  * @access  Private
  */
-router.patch('/', updateProfile);
+router.patch('/', validate(profileUpdateSchema), updateProfile);
 
 /**
  * @route   PATCH /api/profile/avatar
@@ -43,7 +39,7 @@ router.patch('/', updateProfile);
  * @access  Private
  * @rateLimit 10 requests per hour
  */
-router.patch('/avatar', avatarUploadLimiter, uploadAvatar, uploadAvatarController);
+router.patch('/avatar', avatarUploadLimiter, uploadAvatarMiddleware, uploadAvatar);
 
 /**
  * @route   DELETE /api/profile/avatar

@@ -5,27 +5,30 @@ import {
   registerSchema,
   loginSchema,
   changePasswordSchema,
+  resendVerificationSchema,
+  verifyEmailSchema,
 } from '../validations/index.js';
 import {
   register,
   login,
   logout,
   logoutAll,
-  getMe,
   changePassword,
   refreshToken,
   getAuthStatus,
-  getUserSessions,
+  getSessions,
   revokeSession,
   revokeAllSessions,
   cleanupSessions,
   getSecurityStatus,
   resetLoginAttempts,
   verifyToken,
+} from '../controllers/index.js';
+import {
   verifyEmail,
   resendVerification,
   checkEmailStatus,
-} from '../controllers/index.js';
+} from '../controllers/email_verification_controller.js';
 
 const router = express.Router();
 
@@ -49,11 +52,6 @@ router.post('/logout', protect, logout);
 // @access  Private
 router.post('/logout-all', protect, logoutAll);
 
-// @desc    Get current logged in user
-// @route   GET /api/auth/me
-// @access  Private
-router.get('/me', readOnlyLimiter, protect, getMe);
-
 // @desc    Change password
 // @route   PUT /api/auth/change-password
 // @access  Private
@@ -68,7 +66,7 @@ router.put(
 // @desc    Get user sessions
 // @route   GET /api/auth/sessions
 // @access  Private
-router.get('/sessions', readOnlyLimiter, protect, getUserSessions);
+router.get('/sessions', readOnlyLimiter, protect, getSessions);
 
 // @desc    Revoke a specific session
 // @route   DELETE /api/auth/sessions/:sessionId
@@ -103,12 +101,17 @@ router.get('/verify', readOnlyLimiter, protect, verifyToken);
 // // @desc    Verify email address
 // // @route   GET /api/auth/verify-email/:token
 // // @access  Public
-router.get('/verify-email/:token', verifyEmail);
+router.get('/verify-email/:token', validate(verifyEmailSchema), verifyEmail);
 
 // // @desc    Resend email verification
 // // @route   POST /api/auth/resend-verification
 // // @access  Public
-router.post('/resend-verification', authLimiter, resendVerification);
+router.post(
+  '/resend-verification',
+  authLimiter,
+  validate(resendVerificationSchema),
+  resendVerification,
+);
 
 // // @desc    Check email verification status
 // // @route   GET /api/auth/email-status

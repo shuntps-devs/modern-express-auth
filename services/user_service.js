@@ -342,6 +342,20 @@ class UserService {
       throw new Error(`Failed to remove user avatar: ${error.message}`);
     }
   }
+
+  async updateUserProfile(userId, profileData) {
+    try {
+      const profile = await Profile.findOneAndUpdate(
+        { userId },
+        { $set: profileData },
+        { new: true, upsert: true, runValidators: true },
+      ).populate('userId', 'username email role isActive isEmailVerified avatar');
+
+      return profile;
+    } catch (error) {
+      throw new Error(`Failed to update user profile: ${error.message}`);
+    }
+  }
 }
 
 export default new UserService();

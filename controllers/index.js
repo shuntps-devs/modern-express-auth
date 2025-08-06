@@ -1,17 +1,10 @@
-/**
- * Controllers Barrel Export
- * Centralizes all controller exports for easier imports
- */
-
-// Auth Controller
 export {
   register,
   login,
   logout,
   logoutAll,
-  getMe,
   changePassword,
-  getUserSessions,
+  getSessions,
   refreshToken,
   getAuthStatus,
   revokeSession,
@@ -20,10 +13,8 @@ export {
   getSecurityStatus,
   resetLoginAttempts,
   verifyToken,
-  checkEmailStatus,
 } from './auth_controller.js';
 
-// Session Controller
 export {
   getActiveSessions,
   getSessionDetails,
@@ -34,27 +25,19 @@ export {
   terminateOtherSessions,
 } from './session_controller.js';
 
-// User Controller
 export {
-  getProfile,
-  updateProfile,
-  deleteAccount,
   getAllUsers,
   getUserById,
   updateUser,
   deleteUser,
+  deleteAccount,
   getUserStats,
 } from './user_controller.js';
 
-// Profile Controller
+export { getProfile, updateProfile, uploadAvatar, removeAvatar } from './profile_controller.js';
+
 export {
-  getProfile as getProfileController,
-  updateProfile as updateProfileController,
-  uploadAvatar as uploadAvatarController,
-  removeAvatar,
-} from './profile_controller.js';
-
-// Email Verification Controller
-export { verifyEmail, resendVerification } from './email_verification_controller.js';
-
-// Individual function exports are available above - no default exports needed
+  verifyEmail,
+  resendVerification,
+  checkEmailStatus,
+} from './email_verification_controller.js';

@@ -13,7 +13,7 @@ import {
 // @route   GET /api/user/profile
 // @access  Private
 export const getProfile = asyncHandler(async (req, res) => {
-  const user = userService.formatUserResponse(req.user, true); // include additional details
+  const user = userService.formatUserResponse(req.user, true);
 
   return sendUserResponse(res, SUCCESS_MESSAGES.USER_PROFILE_RETRIEVED, user);
 });
@@ -24,7 +24,6 @@ export const getProfile = asyncHandler(async (req, res) => {
 export const updateProfile = asyncHandler(async (req, res) => {
   const { username, email, bio } = req.body;
 
-  // Check if username is already taken (if provided and different from current)
   if (username && username !== req.user.username) {
     const existingUser = await userService.findUserByUsername(username);
     if (existingUser) {
@@ -32,7 +31,6 @@ export const updateProfile = asyncHandler(async (req, res) => {
     }
   }
 
-  // Check if email is already taken (if provided and different from current)
   if (email && email !== req.user.email) {
     const existingUser = await userService.findUserByEmail(email);
     if (existingUser) {
@@ -40,14 +38,11 @@ export const updateProfile = asyncHandler(async (req, res) => {
     }
   }
 
-  // Update user
   const updatedUser = await userService.updateUser(req.user._id, {
     ...(username && { username }),
     ...(email && { email }),
     ...(bio && { bio }),
   });
-
-  logger.info(`Profile updated for user: ${updatedUser.email}`);
 
   const userResponse = userService.formatUserResponse(updatedUser, true);
 
@@ -58,21 +53,15 @@ export const updateProfile = asyncHandler(async (req, res) => {
 // @route   DELETE /api/user/profile
 // @access  Private
 export const deleteAccount = asyncHandler(async (req, res) => {
-  // Deactivate user instead of deleting (soft delete)
   await userService.deactivateUser(req.user._id);
-
-  // Deactivate all sessions
-  await req.user.deactivateAllSessions();
-
-  // Clear cookies
+  await authService.terminateSession(req.user._id);
   authService.clearAuthCookies(res);
 
-  logger.info(`User account deactivated: ${req.user.email}`);
+  logger.warn(`Account deactivated: ${req.user.email} from IP: ${req.ip}`);
 
   return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.ACCOUNT_DEACTIVATED_SUCCESS);
 });
 
-// Admin Controllers
 // @desc    Get all users
 // @route   GET /api/user/admin/users
 // @access  Private/Admin
@@ -124,14 +113,13 @@ export const updateUser = asyncHandler(async (req, res) => {
     return sendErrorResponse(res, 404, ERROR_MESSAGES.USER_NOT_FOUND);
   }
 
-  // Update user
   const updatedUser = await userService.updateUser(req.params.id, {
     ...(role && { role }),
     ...(isActive !== undefined && { isActive }),
     ...(isEmailVerified !== undefined && { isEmailVerified }),
   });
 
-  logger.info(`User updated by admin: ${updatedUser.email} by ${req.user.email}`);
+  logger.warn(`Admin action: User ${updatedUser.email} updated by ${req.user.email} from IP: ${req.ip}`);
 
   return sendUserResponse(
     res,
@@ -150,15 +138,13 @@ export const deleteUser = asyncHandler(async (req, res) => {
     return sendErrorResponse(res, 404, ERROR_MESSAGES.USER_NOT_FOUND);
   }
 
-  // Prevent admin from deleting themselves
   if (user._id.toString() === req.user._id.toString()) {
     return sendErrorResponse(res, 400, ERROR_MESSAGES.CANNOT_DELETE_OWN_ACCOUNT);
   }
 
-  // Soft delete - deactivate user
   await userService.deactivateUser(req.params.id);
 
-  logger.info(`User deleted by admin: ${user.email} by ${req.user.email}`);
+  logger.warn(`Admin action: User ${user.email} deleted by ${req.user.email} from IP: ${req.ip}`);
 
   return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.USER_DELETE_SUCCESS);
 });

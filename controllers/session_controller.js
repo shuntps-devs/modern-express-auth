@@ -1,27 +1,21 @@
-/**
- * Session Controller
- * Handles session-related operations with device and location information
- */
-
 import { authService } from '../services/index.js';
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../constants/index.js';
+import { logger } from '../config/index.js';
 import {
   formatSessionResponse,
   getSessionSecurityLevel,
   sendErrorResponse,
+  sendSuccessResponse,
+  sendSessionResponse,
 } from '../utils/index.js';
 import { asyncHandler } from '../middleware/index.js';
-import { sendSuccessResponse, sendSessionResponse } from '../utils/index.js';
 
-/**
- * Get current user's active sessions with device and location info
- * @route GET /api/sessions/active
- * @access Private
- */
+// @desc    Get current user's active sessions with device and location info
+// @route   GET /api/sessions/active
+// @access  Private
 export const getActiveSessions = asyncHandler(async (req, res) => {
   const sessions = await authService.getUserActiveSessions(req.user.id);
 
-  // Enrich sessions with security levels
   const enrichedSessions = sessions.map(session => ({
     ...formatSessionResponse(session, true),
     securityLevel: getSessionSecurityLevel(session),
@@ -30,11 +24,9 @@ export const getActiveSessions = asyncHandler(async (req, res) => {
   return sendSessionResponse(res, SUCCESS_MESSAGES.USER_SESSIONS_RETRIEVED, enrichedSessions);
 });
 
-/**
- * Get detailed information about a specific session
- * @route GET /api/sessions/:sessionId
- * @access Private
- */
+// @desc    Get detailed information about a specific session
+// @route   GET /api/sessions/:sessionId
+// @access  Private
 export const getSessionDetails = asyncHandler(async (req, res) => {
   const { sessionId } = req.params;
   const userId = req.user.id;
@@ -56,11 +48,9 @@ export const getSessionDetails = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * Get session statistics grouped by device type
- * @route GET /api/sessions/stats/devices
- * @access Private
- */
+// @desc    Get session statistics grouped by device type
+// @route   GET /api/sessions/stats/devices
+// @access  Private
 export const getDeviceStats = asyncHandler(async (req, res) => {
   const sessions = await authService.getUserActiveSessions(req.user.id);
 
@@ -98,11 +88,9 @@ export const getDeviceStats = asyncHandler(async (req, res) => {
   return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.DEVICE_STATS_RETRIEVED, deviceStats);
 });
 
-/**
- * Get session statistics grouped by location
- * @route GET /api/sessions/stats/locations
- * @access Private
- */
+// @desc    Get session statistics grouped by location
+// @route   GET /api/sessions/stats/locations
+// @access  Private
 export const getLocationStats = asyncHandler(async (req, res) => {
   const sessions = await authService.getUserActiveSessions(req.user.id);
 
@@ -134,11 +122,9 @@ export const getLocationStats = asyncHandler(async (req, res) => {
   return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.LOCATION_STATS_RETRIEVED, locationStats);
 });
 
-/**
- * Get security overview of all sessions
- * @route GET /api/sessions/security-overview
- * @access Private
- */
+// @desc    Get security overview of all sessions
+// @route   GET /api/sessions/security-overview
+// @access  Private
 export const getSecurityOverview = asyncHandler(async (req, res) => {
   const sessions = await authService.getUserActiveSessions(req.user.id);
 
@@ -153,7 +139,6 @@ export const getSecurityOverview = asyncHandler(async (req, res) => {
       overview.securityLevels[securityLevel]++;
       overview.totalSessions++;
 
-      // Track suspicious patterns
       if (securityLevel === 'low') {
         overview.suspiciousSessions.push({
           sessionId: session._id,
@@ -185,16 +170,13 @@ export const getSecurityOverview = asyncHandler(async (req, res) => {
   );
 });
 
-/**
- * Terminate a specific session (logout from specific device)
- * @route DELETE /api/sessions/:sessionId
- * @access Private
- */
+// @desc    Terminate a specific session (logout from specific device)
+// @route   DELETE /api/sessions/:sessionId
+// @access  Private
 export const terminateSession = asyncHandler(async (req, res) => {
   const { sessionId } = req.params;
   const userId = req.user.id;
 
-  // Prevent terminating current session
   if (sessionId === req.sessionId) {
     return sendErrorResponse(res, 400, ERROR_MESSAGES.CANNOT_TERMINATE_CURRENT_SESSION);
   }
@@ -205,19 +187,21 @@ export const terminateSession = asyncHandler(async (req, res) => {
     return sendErrorResponse(res, 404, ERROR_MESSAGES.SESSION_NOT_FOUND);
   }
 
+  logger.warn(`Session terminated: ${sessionId} by user ${req.user.email} from IP: ${req.ip}`);
+
   return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.SESSION_TERMINATED);
 });
 
-/**
- * Terminate all other sessions except current one
- * @route DELETE /api/sessions/terminate-others
- * @access Private
- */
+// @desc    Terminate all other sessions except current one
+// @route   DELETE /api/sessions/terminate-others
+// @access  Private
 export const terminateOtherSessions = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const currentSessionId = req.sessionId;
 
   const terminatedCount = await authService.terminateOtherSessions(userId, currentSessionId);
+
+  logger.warn(`All other sessions terminated: ${terminatedCount} sessions by user ${req.user.email} from IP: ${req.ip}`);
 
   return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.OTHER_SESSIONS_TERMINATED, {
     terminatedSessions: terminatedCount,

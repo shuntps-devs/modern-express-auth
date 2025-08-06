@@ -247,50 +247,6 @@ describe('Auth Routes Integration Tests', () => {
     });
   });
 
-  describe('GET /api/auth/me', () => {
-    let authCookies;
-
-    beforeEach(async () => {
-      // Login to get auth cookies
-      const loginResponse = await request(app).post('/api/auth/login').send({
-        email: testUser.email,
-        password: testUserData.password,
-      });
-
-      authCookies = loginResponse.headers['set-cookie'];
-    });
-
-    test('should get current user info', async () => {
-      const response = await request(app)
-        .get('/api/auth/me')
-        .set('Cookie', authCookies)
-        .expect(200);
-
-      expect(response.body.success).toBe(true);
-      expect(response.body.user).toBeDefined();
-      expect(response.body.user._id).toBe(testUser._id.toString());
-      expect(response.body.user.email).toBe(testUser.email);
-      expect(response.body.user.password).toBeUndefined();
-    });
-
-    test('should reject request without authentication', async () => {
-      const response = await request(app).get('/api/auth/me').expect(401);
-
-      expect(response.body.success).toBe(false);
-      expect(response.body.error.message).toContain(ERROR_MESSAGES.ACCESS_TOKEN_REQUIRED);
-    });
-
-    test('should reject request with invalid token', async () => {
-      const response = await request(app)
-        .get('/api/auth/me')
-        .set('Cookie', 'accessToken=invalid-token')
-        .expect(401);
-
-      expect(response.body.success).toBe(false);
-      expect(response.body.error.message).toContain(ERROR_MESSAGES.ACCESS_TOKEN_INVALID);
-    });
-  });
-
   describe('Rate limiting', () => {
     test('should apply rate limiting to login attempts', async () => {
       const loginData = {
@@ -317,7 +273,7 @@ describe('Auth Routes Integration Tests', () => {
 
   describe('Security headers', () => {
     test('should include security headers in responses', async () => {
-      const response = await request(app).get('/api/auth/me');
+      const response = await request(app).get('/api/auth/status');
 
       // Check for common security headers (set by helmet)
       expect(response.headers['x-content-type-options']).toBe('nosniff');

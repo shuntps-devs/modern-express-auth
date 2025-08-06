@@ -5,6 +5,57 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.6] - 2025-08-06
+
+### 🏗️ Controllers Architecture & Documentation Excellence
+
+#### ✨ Added
+
+- **Complete Zod Validation Integration** - Robust schema validation across all controllers:
+  - `sessionIdSchema` and `userIdSchema` for MongoDB ObjectId validation
+  - Email and token validation schemas for verification endpoints
+  - Middleware integration replacing manual validation
+- **Enhanced Security Logging** - Standardized Winston logging with IP tracking:
+  - Security events logged at appropriate levels (info/warn/error)
+  - IP address tracking for all authentication and admin actions
+  - Removal of redundant logs, addition of missing security events
+- **Missing Dependencies Documentation** - Added `resend` and `multer` to README
+- **Documentation Separation Principle** - Established clear README/CHANGELOG boundaries
+
+#### 🔄 Changed
+
+- **All Controllers Refactored** - Comprehensive audit and optimization:
+  - Removed unnecessary comments while preserving @desc/@route/@access documentation
+  - Integrated Zod validation middleware on all routes with parameters
+  - Enforced proper service layer usage (no direct model access)
+  - Centralized all success/error messages in constants
+- **README.md Restructured** - Professional documentation standards:
+  - Removed 65+ lines of changelog content ("Recent Improvements" section)
+  - Updated statistics to reflect reality (18 test suites, not 276 tests)
+  - Complete dependencies listing (14/14 production dependencies)
+  - Organized by logical categories (Core, Security, Validation, Email, Testing)
+- **Documentation Accuracy** - Corrected all files:
+  - API.md: Removed obsolete `/api/users/me` endpoint
+  - DEVELOPMENT.md: Updated test statistics and coverage information
+  - Previous CHANGELOG entries: Fixed test count references
+
+#### 📈 Improved
+
+- **Code Quality** - Clean, maintainable controller architecture
+- **Validation Robustness** - Schema-based validation prevents invalid requests
+- **Security Posture** - Enhanced logging and monitoring capabilities
+- **Documentation Standards** - Professional, accurate, and well-organized
+- **Developer Experience** - Clear separation of concerns and consistent patterns
+- **Test Reliability** - All 18 test suites pass after extensive refactoring
+
+#### 🎯 Principles Established
+
+- **Documentation Separation** - README for current features, CHANGELOG for history
+- **Validation First** - Zod schemas for all user inputs and parameters
+- **Service Layer Architecture** - Controllers delegate to services, no direct model access
+- **Centralized Messaging** - All user-facing messages in constants
+- **Security Logging** - Comprehensive audit trail with IP tracking
+
 ## [1.1.5] - 2025-08-06
 
 ### 🧹 Code Optimization & Documentation Cleanup
@@ -27,9 +78,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Simplified conditional logic for email verification
   - Removed inline comments while preserving `@desc` documentation
 - **Documentation Accuracy** - All documentation files updated with correct statistics:
-  - **276 tests** in **16 suites** (3.9s execution time)
-  - **177 centralized constants** (accurate count)
-  - Fixed broken file references in `docs/README.md`
+  - **18 test suites** with comprehensive unit + integration coverage
+  - **Centralized constants** for standardized messaging
+  - Fixed broken file references and obsolete endpoints
   - Reorganized documentation structure for better navigation
 
 #### 🐛 Fixed
@@ -95,7 +146,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Code Maintainability** - Consistent patterns across all controllers
 - **Response Consistency** - Standardized JSON response formats
 - **Developer Experience** - Cleaner, more readable controller code
-- **Test Reliability** - All 276 tests passing with 16/16 test suites
+- **Test Reliability** - All 18 test suites passing with comprehensive coverage
 
 ## [1.1.3] - 2025-01-05
 

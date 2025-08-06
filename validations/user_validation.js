@@ -71,3 +71,14 @@ export const getUsersQuerySchema = z.object({
     .max(100, VALIDATION_MESSAGES.SEARCH_TERM_MAX_LENGTH)
     .optional(),
 });
+
+// User ID parameter validation schema
+export const userIdSchema = z.object({
+  params: z.object({
+    id: z
+      .string()
+      .min(24, VALIDATION_MESSAGES.USER_ID_INVALID)
+      .max(24, VALIDATION_MESSAGES.USER_ID_INVALID)
+      .regex(/^[0-9a-fA-F]{24}$/, VALIDATION_MESSAGES.USER_ID_INVALID),
+  }),
+});

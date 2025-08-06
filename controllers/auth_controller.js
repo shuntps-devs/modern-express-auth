@@ -2,14 +2,8 @@ import crypto from 'crypto';
 import { logger } from '../config/index.js';
 import { asyncHandler } from '../middleware/index.js';
 import { userService, authService, emailService } from '../services/index.js';
-import { Session } from '../models/index.js';
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '../constants/index.js';
-import {
-  sendSuccessResponse,
-  sendErrorResponse,
-  sendUserResponse,
-  validateAdminRole,
-} from '../utils/index.js';
+import { sendSuccessResponse, sendErrorResponse, validateAdminRole } from '../utils/index.js';
 
 // @desc    Register user
 // @route   POST /api/auth/register
@@ -47,9 +41,11 @@ export const register = asyncHandler(async (req, res) => {
     logger.error(`Failed to send verification email to ${user.email}: ${error.message}`);
   }
 
-  logger.info(`New user registered: ${user.email}`);
+  logger.info(`User registered: ${user.email} from IP: ${req.ip}`);
 
-  return sendSuccessResponse(res, 201, SUCCESS_MESSAGES.REGISTRATION_SUCCESS);
+  return sendSuccessResponse(res, 201, SUCCESS_MESSAGES.REGISTRATION_SUCCESS, {
+    email: user.email,
+  });
 });
 
 // @desc    Login user
@@ -70,7 +66,7 @@ export const login = asyncHandler(async (req, res) => {
 // @access  Private
 export const logout = asyncHandler(async (req, res) => {
   if (req.session && req.session._id) {
-    await Session.findByIdAndUpdate(req.session._id, { isActive: false });
+    await authService.terminateSession(req.session._id, req.user._id);
   }
 
   authService.clearAuthCookies(res);
@@ -93,15 +89,6 @@ export const logoutAll = asyncHandler(async (req, res) => {
   return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.LOGOUT_ALL_SUCCESS);
 });
 
-// @desc    Get current logged in user
-// @route   GET /api/auth/me
-// @access  Private
-export const getMe = asyncHandler(async (req, res) => {
-  const user = userService.formatUserResponse(req.user);
-
-  return sendUserResponse(res, SUCCESS_MESSAGES.USER_PROFILE_RETRIEVED, user);
-});
-
 // @desc    Change password
 // @route   PUT /api/auth/change-password
 // @access  Private
@@ -118,26 +105,9 @@ export const changePassword = asyncHandler(async (req, res) => {
 
   await userService.updateUserPassword(user._id, newPassword);
 
-  logger.info(`Password changed for user: ${user.email}`);
+  logger.warn(`Password changed: ${user.email} from IP: ${req.ip}`);
 
   return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.PASSWORD_UPDATE_SUCCESS);
-});
-
-// @desc    Get user sessions
-// @route   GET /api/auth/sessions
-// @access  Private
-export const getSessions = asyncHandler(async (req, res) => {
-  const sessions = await Session.find({
-    userId: req.user._id,
-    isActive: true,
-    expiresAt: { $gt: new Date() },
-  }).sort({ lastActivity: -1 });
-
-  const formattedSessions = authService.formatUserSessions(sessions, req.cookies.sessionId);
-
-  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.SESSIONS_RETRIEVED, {
-    sessions: formattedSessions,
-  });
 });
 
 // @desc    Refresh access token using refresh token
@@ -182,10 +152,10 @@ export const getAuthStatus = asyncHandler(async (req, res) => {
   });
 });
 
-// @desc    Get user active sessions
+// @desc    Get user sessions
 // @route   GET /api/auth/sessions
 // @access  Private
-export const getUserSessions = asyncHandler(async (req, res) => {
+export const getSessions = asyncHandler(async (req, res) => {
   const sessions = await authService.getUserActiveSessions(req.user.id);
   const activeCount = await authService.getActiveSessionsCount(req.user.id);
 
@@ -231,9 +201,7 @@ export const cleanupSessions = asyncHandler(async (req, res) => {
 
   const result = await authService.cleanupExpiredSessions();
 
-  logger.info(`Session cleanup completed: ${result.deletedCount} sessions removed`);
-
-  return sendSuccessResponse(res, 200, result.message, {
+  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.SESSION_CLEANUP_SUCCESS, {
     deletedCount: result.deletedCount,
   });
 });
@@ -263,24 +231,5 @@ export const resetLoginAttempts = asyncHandler(async (req, res) => {
 
   return sendSuccessResponse(res, 200, result.message, {
     userId: result.userId,
-  });
-});
-
-// @desc    Check email verification status
-// @route   GET /api/auth/email-status
-// @access  Private
-export const checkEmailStatus = asyncHandler(async (req, res) => {
-  const user = await userService.findUserById(req.user._id);
-
-  if (!user) {
-    return sendErrorResponse(res, 404, ERROR_MESSAGES.USER_NOT_FOUND);
-  }
-
-  return sendSuccessResponse(res, 200, SUCCESS_MESSAGES.EMAIL_STATUS_RETRIEVED, {
-    isEmailVerified: user.isEmailVerified,
-    email: user.email,
-    emailVerificationExpires: user.emailVerificationExpires,
-    canResendVerification:
-      !user.emailVerificationExpires || new Date() > user.emailVerificationExpires,
   });
 });

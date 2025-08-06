@@ -1,13 +1,13 @@
 # Express Authentication API 🚀
 
-[![Tests](https://img.shields.io/badge/tests-276%20unit%20tests%20passing-brightgreen)](./tests/)
-[![Coverage](https://img.shields.io/badge/coverage-88%25-brightgreen)](#testing)
+[![Tests](https://img.shields.io/badge/tests-18%20test%20suites%20passing-brightgreen)](./tests/)
+[![Coverage](https://img.shields.io/badge/coverage-comprehensive-brightgreen)](#testing)
 [![CI/CD](https://img.shields.io/badge/CI%2FCD-stable-brightgreen)](#cicd)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
 [![MongoDB](https://img.shields.io/badge/mongodb-%3E%3D5.0.0-brightgreen)](https://mongodb.com/)
 [![GitHub](https://img.shields.io/badge/GitHub-shuntps%2Fmodern--express--auth-blue)](https://github.com/shuntps/modern-express-auth)
 
-A **production-ready** Express.js authentication API with comprehensive security features, advanced session management, secure avatar uploads, and rock-solid test coverage. Built with modern JavaScript, MongoDB, and industry best practices. **Now with 276 unit tests passing, advanced session tracking, and complete profile management.**
+A **production-ready** Express.js authentication API with comprehensive security features, advanced session management, secure avatar uploads, and optimized logging system. Built with modern JavaScript, MongoDB, and industry best practices. **Features complete Zod validation integration, standardized Winston logging, and comprehensive test coverage.**
 
 ## ✨ Key Highlights
 
@@ -15,12 +15,13 @@ A **production-ready** Express.js authentication API with comprehensive security
 - 🛡️ **Advanced Security** (Rate limiting, account lockout, IP tracking)
 - 📱 **Session Management** (Device detection, location tracking, security assessment)
 - 🎨 **Profile Management** (Secure avatar uploads, bio validation, file management)
-- 📊 **177 Centralized Constants** (Zero hardcoded strings)
-- ✅ **276 Unit Tests** (100% passing, comprehensive coverage)
-- 🚀 **Stable CI/CD Pipeline** (No more test blocking or timeouts)
-- 📚 **Comprehensive Documentation** (API, Architecture, Development)
+- ✅ **Zod Validation Integration** (Complete schema validation across all controllers)
+- 📊 **Centralized Constants** (Zero hardcoded strings, standardized messages)
+- 🔍 **Optimized Winston Logging** (Standardized format, IP tracking, security events)
+- 🧪 **Comprehensive Test Coverage** (18 test suites, unit + integration tests)
+- 🚀 **Stable CI/CD Pipeline** (Reliable test execution, no timeouts)
+- 📚 **Complete Documentation** (API, Architecture, Development guides)
 - 🏗️ **Clean Architecture** (Services, Controllers, Middleware separation)
-- 🔍 **Professional Logging** (Winston with structured logging)
 - ⚡ **Production Ready** (Error handling, validation, monitoring)
 
 ## 🚀 Features
@@ -85,6 +86,7 @@ A **production-ready** Express.js authentication API with comprehensive security
 - **express-rate-limit** - Rate limiting middleware
 - **cors** - Cross-origin resource sharing
 - **cookie-parser** - Cookie parsing and management
+- **multer** - File upload handling
 
 ### Validation & Logging
 
@@ -92,71 +94,16 @@ A **production-ready** Express.js authentication API with comprehensive security
 - **winston** - Professional logging library
 - **dotenv** - Environment variable management
 
+### Email Services
+
+- **resend** - Modern email delivery service for transactional emails
+
 ### Testing & Development
 
 - **jest** - Testing framework
 - **supertest** - HTTP assertion library
 - **eslint** - Code linting
 - **prettier** - Code formatting
-
-## 🎉 Recent Improvements
-
-### 🏗️ Code Quality & Architecture Refactoring (v1.1.4 - Latest)
-
-- **Centralized Response Patterns** - All controllers now use standardized response helpers
-- **Response Helper Utilities** - `sendSuccessResponse()`, `sendUserResponse()`, `sendSessionResponse()` for consistency
-- **Centralized Success Messages** - All hardcoded strings moved to `SUCCESS_MESSAGES` constants
-- **Admin Validation Utility** - Shared `validateAdminRole()` helper eliminates code duplication
-- **Jest Compatibility** - Fixed `import.meta.url` issues for 100% test suite compatibility
-- **Zero Hardcoded Strings** - Complete message centralization across all controllers
-- **Improved Maintainability** - Consistent patterns, reduced duplication, cleaner architecture
-- **276 Tests Still Passing** - All refactoring completed without breaking functionality
-
-### 🎨 Profile & Avatar System (v1.1.3)
-
-- **Complete Avatar Upload System** - Secure file uploads with Multer middleware
-- **Bio Profile Management** - Zod validation with 500 character limit
-- **4 New API Endpoints** - Full profile CRUD operations (GET, PATCH, DELETE)
-- **Enhanced Security** - Rate limiting, file validation, path traversal protection
-- **100% Test Coverage** - 276 unit tests passing (43 new tests added)
-- **API Response Integration** - Avatar and bio now exposed in all relevant endpoints
-- **Automatic File Cleanup** - Old avatars removed on replacement
-- **User Isolation** - Individual storage directories per user
-
-### ✅ Test Suite Excellence (Maintained)
-
-- **100% Unit Test Reliability** - All 276 tests passing with zero failures
-- **Pure Mock Strategy** - No database dependencies, lightning-fast execution
-- **Cross-Platform Stability** - Reliable execution on Windows, macOS, and Linux
-- **Barrel Export Optimization** - Consistent import patterns across entire codebase
-- **Zero Lint Errors** - Clean, maintainable code with ESLint compliance
-
-### 🔧 Technical Achievements
-
-- **16 Test Suites** - Controllers, services, middleware, and validations with comprehensive coverage
-- **276 Unit Tests** - All passing with advanced mocking strategies
-- **Import Standardization** - Fixed barrel export initialization issues in test environment
-- **Constants Centralization** - All validation messages and rate limiter types properly exported
-- **ESM Mocking Fixed** - Bypassed Jest ESM limitations with manual mock injection
-- **Lint-Free Codebase** - All ESLint errors resolved across test files
-
-### 📱 Advanced Session Management (New!)
-
-- **Device Detection** - Automatic browser, OS, and device type identification
-- **Location Tracking** - IP-based geolocation with country, city, and region
-- **Security Assessment** - Dynamic security level calculation for each session
-- **Session Control** - Individual session termination and bulk management
-- **Analytics Dashboard** - Device and location statistics for user sessions
-- **Suspicious Activity Detection** - Multi-location and unusual device monitoring
-- **7 New API Endpoints** - Complete RESTful session management interface
-- **54+ Dedicated Tests** - Comprehensive test coverage for all session features
-
-### 🚀 Developer Experience
-
-- **Instant Test Feedback** - No more waiting for tests to complete or timeout
-- **Reliable Development Workflow** - Tests that developers can trust and run frequently
-- **Production-Ready Quality** - Robust test coverage without infrastructure dependencies
-- **Maintainable Test Code** - Clean, readable test files with consistent patterns
 
 ## 📋 Prerequisites
 
@@ -256,7 +203,6 @@ curl -X POST http://localhost:3000/api/auth/register \
 | `/profile`              | PATCH  | Update profile bio     | ✅            |
 | `/profile/avatar`       | PATCH  | Upload/update avatar   | ✅            |
 | `/profile/avatar`       | DELETE | Remove user avatar     | ✅            |
-| `/users/me`             | GET    | Get current user       | ✅            |
 | `/users/profile`        | PUT    | Update profile         | ✅            |
 | `/users/sessions`       | GET    | Get active sessions    | ✅            |
 | `/admin/users`          | GET    | Get all users          | ✅ (Admin)    |
@@ -265,11 +211,13 @@ curl -X POST http://localhost:3000/api/auth/register \
 
 ### Test Suite Overview
 
-- **276 Tests** covering all critical functionality
-- **88% Global Coverage** with **100% Profile/Avatar Coverage**
-- **Pure Mock Strategy** - No database dependencies, lightning-fast execution
-- **Unit Tests** for controllers, services, middleware, and validation
-- **Cross-Platform Stability** - Reliable execution on Windows, macOS, and Linux
+- **18 Test Suites** covering all critical functionality
+- **Comprehensive Coverage** (Controllers, Services, Middleware, Validations)
+- **Fast Execution** for full test suite
+- **Pure Mock Strategy** (No database dependencies)
+- **Cross-Platform Compatible** (Windows, macOS, Linux)
+- **Stable CI/CD** (No hanging or timeout issues)
+- **Unit + Integration Tests** for complete coverage
 - **Lint-Free Test Suite** - All tests pass ESLint with zero warnings
 
 ### Running Tests
@@ -320,8 +268,8 @@ express-auth-api/
 │   ├── database_config.js   # MongoDB connection
 │   ├── env_config.js        # Environment variables
 │   └── logger_config.js     # Winston logger setup
-├── 📁 constants/           # Centralized constants (171 constants)
-│   └── messages.js         # All messages and constants
+├── 📁 constants/           # Centralized constants
+│   └── messages.js         # Success, error, and validation messages
 ├── 📁 controllers/         # Route controllers
 │   ├── auth_controller.js  # Authentication logic
 │   └── user_controller.js  # User management
@@ -343,9 +291,9 @@ express-auth-api/
 ├── 📁 services/           # Business logic layer
 │   ├── auth_service.js    # Authentication services
 │   └── user_service.js    # User services
-├── 📁 tests/              # Test suites (115 tests)
+├── 📁 tests/              # Test suites (18 test files)
 │   ├── integration/       # API integration tests
-│   ├── unit/             # Unit tests
+│   ├── unit/             # Unit tests (controllers, services, middleware)
 │   └── helpers/          # Test utilities
 ├── 📁 utils/              # Utility functions
 │   └── cookie_helper.js   # Cookie management
@@ -469,12 +417,13 @@ npm run test:watch
 
 ### Test Coverage
 
-| Test Suite  | Tests   | Status      | Coverage                       |
+| Test Suite  | Files   | Status      | Coverage                       |
 | ----------- | ------- | ----------- | ------------------------------ |
-| Controllers | 48      | ✅ 100%     | Auth, User, Email Verification |
-| Services    | 24      | ✅ 100%     | Auth Service, User Service     |
-| Validations | 30      | ✅ 100%     | Zod Schema Validation          |
-| **Total**   | **102** | **✅ 100%** | **54% Code Coverage**          |
+| Controllers | 5       | ✅ 100%     | Auth, User, Profile, Session, Email |
+| Services    | 4       | ✅ 100%     | Auth Service, User Service     |
+| Middleware  | 5       | ✅ 100%     | Auth, Rate Limiter, Error Handler |
+| Integration | 2       | ✅ 100%     | Route Integration Tests        |
+| **Total**   | **18**  | **✅ 100%** | **Comprehensive Coverage**     |
 
 ### Test Commands
 
@@ -488,6 +437,19 @@ npm run test:coverage      # Includes coverage report
 # Lint and test (CI pipeline)
 npm run ci                 # Full quality check
 ```
+
+## 🗺️ Roadmap
+
+Excited about what's coming next? Check out our [Roadmap](./ROADMAP.md) to see planned features including:
+
+- 🔐 **Two-Factor Authentication (2FA)** - TOTP and SMS support
+- 🔗 **OAuth Integration** - Google, GitHub, Discord
+- 🛡️ **Enhanced Security** - Advanced rate limiting and audit logging
+- 👥 **Role-Based Access Control** - Granular permissions
+- 🚀 **Real-time Features** - WebSocket integration
+- 📊 **Advanced Analytics** - Detailed insights and monitoring
+
+[View Full Roadmap →](./ROADMAP.md)
 
 ---
 

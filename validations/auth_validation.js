@@ -25,7 +25,7 @@ export const registerSchema = z
       .regex(/^(?=.*[a-z])/, VALIDATION_MESSAGES.PASSWORD_LOWERCASE_REQUIRED)
       .regex(/^(?=.*[A-Z])/, VALIDATION_MESSAGES.PASSWORD_UPPERCASE_REQUIRED)
       .regex(/^(?=.*\d)/, VALIDATION_MESSAGES.PASSWORD_NUMBER_REQUIRED)
-      .regex(/^(?=.*[!@#$%^&*(),.?":{}|<>])/, VALIDATION_MESSAGES.PASSWORD_SPECIAL_CHAR_REQUIRED),
+      .regex(/^(?=.*[!@#$%^&*(),.?":{}|<>_])/, VALIDATION_MESSAGES.PASSWORD_SPECIAL_CHAR_REQUIRED),
 
     confirmPassword: z.string().min(1, VALIDATION_MESSAGES.PASSWORD_CONFIRM_REQUIRED),
   })

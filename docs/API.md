@@ -71,7 +71,7 @@ Authenticate user and receive tokens.
 
 ```json
 {
-  "emailOrUsername": "john@example.com",
+  "email": "john@example.com",
   "password": "SecurePassword123!"
 }
 ```
@@ -178,32 +178,6 @@ Change password (authenticated users).
 ```
 
 ### User Routes (`/api/users`)
-
-#### GET `/api/users/me`
-
-Get current user profile.
-
-**Headers:** `Authorization: Bearer <access_token>`
-
-**Response (200):**
-
-```json
-{
-  "success": true,
-  "data": {
-    "user": {
-      "id": "user_id",
-      "username": "johndoe",
-      "email": "john@example.com",
-      "role": "user",
-      "isActive": true,
-      "isEmailVerified": true,
-      "lastLogin": "2024-01-15T10:30:00Z",
-      "createdAt": "2024-01-01T00:00:00Z"
-    }
-  }
-}
-```
 
 #### PUT `/api/users/profile`
 
